@@ -1,142 +1,61 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { FaXTwitter } from "react-icons/fa6";
-import { SiThreads } from "react-icons/si";
-import Image from "next/image";
+import { useTranslations } from 'next-intl'
 
 export default function Testimonials() {
-  const testimonials = [
-    {
-      quote: "¡Awesome project! Create products or startups faster. ¡This open-source template has everything you need!\n\n$ git clone shipfree",
-      name: "Miguel Ángel Durán",
-      title: "@midudev",
-      avatar: "/testimonial-image1.jpg",
-      avatarType: "image",
-      twitterLink: "https://x.com/midudev/status/1889327503207960690",
-      verified: true,
-    },
-    {
-      quote: "ShipFree is a free alternative to ShipFast, designed to simplify and optimize your shipping process.",
-      name: "developer.joy",
-      title: "@developer.joy",
-      avatar: "/testimonial-image2.png",
-      avatarType: "image",
-      threadsLink: "https://www.threads.com/@developer.joy/post/DGisRsoIAuE/shipfree-is-a-free-alternative-to-shipfast-designed-to-simplify-and-optimize-you?hl=en",
-    },
-    {
-      quote: "I'm not even exaggerating - this saved me weeks of work.\nInstead of fighting errors and configs, I actually built features.\nIt's the first time I've felt in control of the entire launch process.",
-      name: "Bong",
-      title: "Indie Builder",
-      avatar: "/testimonial-image3.png",
-      avatarType: "image",
-    },
-    {
-      quote: "I've used other Next.js starters but this one feels built by someone who's actually shipped.\nThe little details - onboarding, SEO, dashboard flow - make it production-grade out of the box.",
-      name: "David Alejandro",
-      title: "Full-Stack Developer",
-      avatar: "/testimonial-image4.png",
-      avatarType: "image",
-    },
-    {
-      quote: "Bought it on a Friday night, had a live SaaS by Sunday.\nEverything just clicked - no roadblocks, no setup headaches.",
-      name: "Finn Sheng",
-      title: "SaaS Founder",
-      avatar: "/testimonial-image5.png",
-      avatarType: "image",
-    },
-    {
-      quote: "I was burned out from endless setup and half-working templates.\nThis made me fall in love with building again.\nI opened my laptop, ran one command, and started designing instead of debugging.",
-      name: "Fabian Andres Parra Sanchez",
-      title: "Product Builder",
-      avatar: "/testimonial-image6.png",
-      avatarType: "image",
-    },
-  ];
+  const t = useTranslations('landing.howItWorks')
+
+  const steps = [
+    { k: t('s1k'), title: t('s1t'), body: t('s1d') },
+    { k: t('s2k'), title: t('s2t'), body: t('s2d') },
+    { k: t('s3k'), title: t('s3t'), body: t('s3d') },
+  ]
 
   return (
-    <section id="wall-of-love" className="py-24 bg-[#F4F4F5]">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <h2 className="text-center text-sm font-medium text-muted-foreground mb-8" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-          TESTIMONIALS
+    <section id='how-it-works' className='bg-[#080808] py-28 md:py-32'>
+      <div className='mx-auto max-w-6xl px-4 sm:px-6'>
+        <h2
+          className='mb-12 text-center text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-600'
+          style={{ fontFamily: 'var(--font-geist-mono)' }}
+        >
+          {t('label')}
         </h2>
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-semibold tracking-tight mb-4">
-            Trusted by developers
+        <div className='mb-16 text-center md:mb-20'>
+          <h2
+            className='text-3xl font-semibold tracking-[-0.04em] text-zinc-100 sm:text-4xl md:text-[2.5rem] md:leading-tight'
+            style={{ fontFamily: 'var(--font-inter)', letterSpacing: '-1.25px' }}
+          >
+            {t('heading')}
           </h2>
-          <p className="text-lg text-muted-foreground">
-            See what builders are saying about ShipFree
-          </p>
         </div>
 
-        <div className="border border-[#E4E4E7] rounded-none overflow-hidden bg-transparent">
-          <div className="grid grid-cols-2 md:grid-cols-3 auto-rows-auto">
-            {testimonials.map((testimonial, index) => (
+        <div className='overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0f0f0f] shadow-elevation-dark'>
+          <div className='grid grid-cols-1 md:grid-cols-3'>
+            {steps.map((step, index) => (
               <div
-                key={index}
-                className={`p-4 bg-transparent flex flex-col relative ${
-                  index % 3 !== 2 ? 'border-r border-[#E4E4E7]' : ''
-                } ${
-                  index < 3 ? 'border-b border-[#E4E4E7]' : ''
-                }`}
+                key={step.k}
+                className={`flex flex-col gap-4 p-9 sm:p-11 ${
+                  index < 2 ? 'border-b border-[rgba(255,255,255,0.06)] md:border-b-0' : ''
+                } ${index !== 2 ? 'md:border-r md:border-[rgba(255,255,255,0.06)]' : ''}`}
               >
-                {/* Quote */}
-                <p className="text-sm text-muted-foreground mb-4 whitespace-pre-line">
-                  "{testimonial.quote}"
+                <p
+                  className='text-[11px] font-semibold tabular-nums tracking-[-0.02em] text-[#2563eb]'
+                  style={{ fontFamily: 'var(--font-geist-mono)' }}
+                >
+                  {step.k}
                 </p>
-
-                {/* Profile */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {testimonial.avatarType === "image" ? (
-                      <Image
-                        src={testimonial.avatar}
-                        alt={testimonial.name}
-                        width={40}
-                        height={40}
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
-                        {testimonial.avatar}
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">
-                        {testimonial.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {testimonial.title}
-                      </p>
-                    </div>
-                  </div>
-                  {testimonial.twitterLink && (
-                    <Link
-                      href={testimonial.twitterLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <FaXTwitter className="h-5 w-5" />
-                    </Link>
-                  )}
-                  {testimonial.threadsLink && (
-                    <Link
-                      href={testimonial.threadsLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <SiThreads className="h-5 w-5" />
-                    </Link>
-                  )}
-                </div>
+                <h3
+                  className='text-lg font-semibold tracking-[-0.03em] text-zinc-100'
+                  style={{ fontFamily: 'var(--font-inter)' }}
+                >
+                  {step.title}
+                </h3>
+                <p className='text-[15px] leading-relaxed text-zinc-500'>{step.body}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }
-

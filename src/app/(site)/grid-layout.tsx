@@ -28,12 +28,15 @@ export const GridLayout = ({ children, className = '' }: GridLayoutProps) => {
 
 interface SectionDividerProps {
   className?: string
+  /** Landing (NumZero) uses dark hairlines */
+  variant?: 'light' | 'dark'
 }
 
-export const SectionDivider = ({ className = '' }: SectionDividerProps) => {
+export const SectionDivider = ({ className = '', variant = 'light' }: SectionDividerProps) => {
+  const line = variant === 'dark' ? 'bg-white/[0.06]' : 'bg-[#E4E4E7]'
   return (
     <div className={`${className}`}>
-      <div className='h-px w-full bg-[#E4E4E7]' />
+      <div className={`h-px w-full ${line}`} />
     </div>
   )
 }

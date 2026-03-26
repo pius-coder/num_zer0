@@ -1,153 +1,103 @@
 'use client'
 
-import { HugeiconsIcon } from '@hugeicons/react'
-import { CheckmarkCircle01Icon } from '@hugeicons/core-free-icons'
-import { Flame } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-// Premium template purchase - can be removed if not needed
-import { PremiumButton } from './pricing/premium-button'
+import { Link } from '@/i18n/navigation'
+import { cn } from '@/lib/utils'
 
 export default function Pricing() {
-  const communityFeatures = [
-    { text: 'Full Next.js boilerplate', included: true },
-    { text: 'Auth, payments & UI prewired', included: true },
-    { text: 'Built-in SEO', included: true },
-    { text: 'Resend transaction emails', included: true },
-    { text: 'Payments via Stripe / Lemon Squeezy / Polar', included: true },
-    { text: 'Up to 100+ hours saved', included: true },
-    { text: 'MIT open-source license', included: true },
-    { text: 'Community Releases & fixes', included: true },
-  ]
+  const t = useTranslations('landing.pricing')
 
-  const premiumFeatures = [
-    { text: 'Everything in free', included: true },
-    { text: 'Internationalization', included: true },
-    { text: 'Role-based access & invite system', included: true },
-    { text: 'Advanced SEO & Blog', included: true },
-    { text: 'Playwright and CI workflow', included: true },
-    { text: 'Analytics hooks ready for Posthog', included: true },
-    { text: 'Pro UI kit', included: true },
-    { text: 'Private Discord Community', included: true },
-    { text: 'Priority support', included: true },
+  const packs = [
+    { coins: '30', price: '500', currency: 'XAF', badge: 'starter' as const },
+    { coins: '60', price: '950', currency: 'XAF', badge: null },
+    { coins: '180', price: '2 500', currency: 'XAF', badge: 'popular' as const },
+    { coins: '600', price: '7 500', currency: 'XAF', badge: null },
+    { coins: '1 000', price: '11 500', currency: 'XAF', badge: 'discount' as const },
   ]
 
   return (
-    <section id='pricing' className='py-24 bg-[#F4F4F5]'>
+    <section id='pricing' className='bg-[#080808] py-28 md:py-32'>
       <div className='mx-auto max-w-6xl px-4 sm:px-6'>
-        <div className='mx-auto max-w-4xl'>
+        <h2
+          className='mb-12 text-center text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-600'
+          style={{ fontFamily: 'var(--font-geist-mono)' }}
+        >
+          {t('label')}
+        </h2>
+        <div className='mx-auto mb-20 max-w-4xl text-center'>
           <h2
-            className='text-center text-sm font-medium text-muted-foreground mb-8'
-            style={{ fontFamily: 'var(--font-geist-mono)' }}
+            className='mb-5 text-3xl font-semibold tracking-[-0.04em] text-zinc-100 sm:text-4xl md:text-[2.5rem]'
+            style={{ fontFamily: 'var(--font-inter)', letterSpacing: '-1.25px' }}
           >
-            Pricing
+            {t('title')}
           </h2>
-          <div className='text-center mb-16'>
-            <h2 className='text-4xl font-semibold tracking-tight mb-4'>
-              Built for builders who play to win
-            </h2>
-            <p className='text-lg text-muted-foreground'>
-              Launch faster, sell sooner, and grow without fighting setup pain
-            </p>
-          </div>
-
-          <div className='grid md:grid-cols-2 border border-[#E4E4E7] rounded-none overflow-hidden bg-transparent'>
-            {/* Community */}
-            <div className='flex flex-col p-8 border-r border-[#E4E4E7]'>
-              <div className='mb-6'>
-                <h3 className='text-2xl font-semibold mb-4'>Community</h3>
-                <div className='mb-4'>
-                  <span className='text-4xl font-semibold font-mono'>$0</span>
-                </div>
-                <p className='text-sm text-muted-foreground mb-4'>
-                  For learners, early builders & indie devs who love to experiment.
-                </p>
-                <p
-                  className='text-xs font-medium text-foreground uppercase'
-                  style={{ fontFamily: 'var(--font-geist-mono)' }}
-                >
-                  INCLUDING
-                </p>
-              </div>
-              <ul className='space-y-3 mb-8 flex-1'>
-                {communityFeatures.map((feature, index) => (
-                  <li key={index} className='flex items-center gap-2 text-sm'>
-                    <HugeiconsIcon
-                      icon={CheckmarkCircle01Icon}
-                      className='h-4 w-4 text-muted-foreground shrink-0'
-                    />
-                    <span className='text-muted-foreground'>{feature.text}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className='flex flex-col gap-2'>
-                <Button variant='outline' className='w-full h-12! text-sm font-medium' size='lg'>
-                  <svg
-                    viewBox='0 0 16 16'
-                    className='h-4 w-4'
-                    fill='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z' />
-                  </svg>
-                  Clone repo
-                </Button>
-                <p className='text-sm text-center text-muted-foreground'>
-                  Open source. Free forever
-                </p>
-              </div>
-            </div>
-
-            {/* Premium */}
-            <div className='flex flex-col p-8 relative'>
-              <div className='mb-6'>
-                <div className='flex items-start justify-between mb-4'>
-                  <h3 className='text-2xl font-semibold'>Premium</h3>
-                  <Badge className='bg-white border border-[#DBDAD6] text-[#878787] rounded-full px-3 py-3 font-medium flex items-center gap-1.5'>
-                    <Flame className='h-3.5 w-3.5' />
-                    Most popular
-                  </Badge>
-                </div>
-                <div className='mb-4'>
-                  <div className='flex items-baseline gap-2'>
-                    <span className='text-sm text-muted-foreground line-through font-mono'>
-                      $150
-                    </span>
-                    <span className='text-4xl font-semibold font-mono'>$90</span>
-                  </div>
-                </div>
-                <p className='text-sm text-muted-foreground mb-4'>
-                  For founders & builders ready to ship real products and make money.
-                </p>
-                <p
-                  className='text-xs font-medium text-foreground uppercase'
-                  style={{ fontFamily: 'var(--font-geist-mono)' }}
-                >
-                  INCLUDING
-                </p>
-              </div>
-              <ul className='space-y-3 mb-8 flex-1'>
-                {premiumFeatures.map((feature, index) => (
-                  <li key={index} className='flex items-center gap-2 text-sm'>
-                    <HugeiconsIcon
-                      icon={CheckmarkCircle01Icon}
-                      className='h-4 w-4 text-muted-foreground shrink-0'
-                    />
-                    <span className='text-muted-foreground'>{feature.text}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className='flex flex-col gap-2'>
-                {/* Premium template purchase - can be removed if not needed */}
-                <PremiumButton />
-                <p className='text-sm text-center text-muted-foreground'>
-                  Pay once. Build unlimited projects!
-                </p>
-              </div>
-            </div>
-          </div>
+          <p className='text-lg leading-relaxed text-zinc-500'>{t('sub')}</p>
         </div>
+
+        <div className='grid grid-cols-1 gap-px overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.06)] shadow-elevation-dark sm:grid-cols-2 lg:grid-cols-5'>
+          {packs.map((pack) => (
+            <div
+              key={pack.coins}
+              className={cn('relative flex min-h-full flex-col gap-5 bg-[#0f0f0f] p-7 sm:p-9')}
+            >
+              <div className='flex min-h-[32px] items-start justify-between gap-2'>
+                <span
+                  className='text-[11px] font-semibold uppercase tracking-[0.12em] text-[#2563eb]'
+                  style={{ fontFamily: 'var(--font-geist-mono)' }}
+                >
+                  {pack.coins} {t('coins')}
+                </span>
+                {pack.badge === 'popular' && (
+                  <span
+                    className='rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white'
+                    style={{ backgroundColor: '#2563eb' }}
+                  >
+                    {t('popular')}
+                  </span>
+                )}
+                {pack.badge === 'discount' && (
+                  <span className='rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400/90'>
+                    {t('discount')}
+                  </span>
+                )}
+                {pack.badge === 'starter' && (
+                  <span
+                    className='rounded-full border border-white/[0.08] bg-[#080808] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-zinc-500'
+                    style={{ fontFamily: 'var(--font-geist-mono)' }}
+                  >
+                    {t('starter')}
+                  </span>
+                )}
+              </div>
+              <div>
+                <p
+                  className='text-3xl font-semibold tabular-nums tracking-[-0.05em] text-zinc-100'
+                  style={{ fontFamily: 'var(--font-geist-mono)' }}
+                >
+                  {pack.price}{' '}
+                  <span className='text-base font-medium text-zinc-500'>{pack.currency}</span>
+                </p>
+              </div>
+              <div className='mt-auto pt-1'>
+                <Button
+                  className='h-10 w-full rounded-full border-transparent text-sm font-semibold text-white'
+                  style={{ backgroundColor: '#2563eb' }}
+                  render={(props) => (
+                    <Link {...props} href='/register'>
+                      {t('cta')}
+                    </Link>
+                  )}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className='mx-auto mt-14 max-w-3xl text-center text-sm leading-relaxed text-zinc-600'>
+          {t('pay')}
+        </p>
       </div>
     </section>
   )

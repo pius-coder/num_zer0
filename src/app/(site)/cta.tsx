@@ -1,38 +1,45 @@
 'use client'
 
-import { ArrowUpRight } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { ArrowRight } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
-import { PremiumButton } from './pricing/premium-button'
+import { Link } from '@/i18n/navigation'
 
 export default function CTA() {
+  const t = useTranslations('landing.cta')
+
   return (
-    <section className='py-24 px-4 sm:px-6 bg-[#F4F4F5]'>
+    <section className='bg-[#080808] px-4 py-28 sm:px-6 md:py-32'>
       <div className='mx-auto max-w-4xl'>
-        {/* Section label */}
         <h2
-          className='text-center text-sm font-medium text-muted-foreground mb-8'
+          className='mb-12 text-center text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-600'
           style={{ fontFamily: 'var(--font-geist-mono)' }}
         >
-          GET STARTED
+          {t('label')}
         </h2>
 
-        {/* Main heading */}
-        <div className='text-center mb-12'>
-          <h2 className='text-4xl font-semibold tracking-tight mb-4'>
-            Your next product could be live by tonight.
+        <div className='mb-14 text-center'>
+          <h2
+            className='mb-5 text-3xl font-semibold tracking-[-0.04em] text-zinc-100 sm:text-4xl md:text-[2.5rem]'
+            style={{ fontFamily: 'var(--font-inter)', letterSpacing: '-1.25px' }}
+          >
+            {t('title')}
           </h2>
-          <p className='text-lg text-muted-foreground'>
-            Focus on growth while the stack takes care of the heavy lifting
-          </p>
+          <p className='text-lg leading-relaxed text-zinc-500'>{t('sub')}</p>
         </div>
 
-        {/* Buttons */}
-        <div className='mx-auto mt-10 flex items-center justify-center gap-4'>
-          <PremiumButton className='text-white' />
-          <Button variant='outline' className='font-semibold h-12! px-8 text-base'>
-            Try demo
-            <ArrowUpRight className='h-8 w-8' />
-          </Button>
+        <div className='mx-auto flex items-center justify-center'>
+          <Button
+            className='h-11 rounded-full border-transparent px-8 text-sm font-semibold text-white'
+            style={{ backgroundColor: '#2563eb' }}
+            render={(props) => (
+              <Link {...props} href='/register'>
+                {t('button')}
+                <ArrowRight className='h-4 w-4' />
+              </Link>
+            )}
+          />
         </div>
       </div>
     </section>

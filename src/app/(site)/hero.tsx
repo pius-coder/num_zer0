@@ -1,166 +1,88 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { ArrowRight } from 'lucide-react'
+import { RiFlashlightLine, RiGlobalLine, RiLockLine } from 'react-icons/ri'
+
 import { Button } from '@/components/ui/button'
-import { ArrowUpRight } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipCreateHandle,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipPopup,
-} from '@/components/ui/tooltip'
-import { PremiumButton } from './pricing/premium-button'
-
-const tooltipHandle = TooltipCreateHandle<React.ComponentType>()
-
-// Tooltip content components
-const BetterAuthContent = () => <span>Better Auth</span>
-const TailwindCSSContent = () => <span>Tailwind CSS</span>
-const TypeScriptContent = () => <span>TypeScript</span>
-const TanStackContent = () => <span>TanStack</span>
-const VercelContent = () => <span>Vercel AI SDK</span>
-const BunContent = () => <span>Bun</span>
-const BaseUIContent = () => <span>Base UI</span>
+import { Link as LocalizedLink } from '@/i18n/navigation'
 
 export default function Hero() {
+  const t = useTranslations('landing.hero')
+  const badgeParts = t('badges')
+    .split(' · ')
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  const badgeIcons = [
+    <RiLockLine key='lock' className='mr-1.5 h-3.5 w-3.5 text-[#2563eb]' />,
+    <RiFlashlightLine key='flash' className='mr-1.5 h-3.5 w-3.5 text-[#2563eb]' />,
+    <RiGlobalLine key='global' className='mr-1.5 h-3.5 w-3.5 text-[#2563eb]' />,
+  ]
+
   return (
     <main
       id='hero'
-      className='flex min-h-screen flex-col bg-[#F4F4F5] items-center justify-start pt-40 pb-24'
+      className='flex min-h-screen flex-col items-center justify-start bg-[#080808] pb-28 pt-40 sm:pb-32 sm:pt-44'
     >
       <div className='mx-auto w-full max-w-6xl px-4 sm:px-6'>
-        <div className='mx-auto max-w-4xl text-center'>
-          <h1 className='mx-auto max-w-3xl text-balance text-center font-semibold text-4xl leading-tight tracking-tighter sm:text-5xl md:max-w-4xl md:text-6xl lg:leading-[1.1]'>
-            A production-ready{' '}
-            <img
-              src='/nextjs_logo.svg'
-              alt='Next.js'
-              className='inline-block h-[0.9em] w-[0.9em] align-middle mx-1'
-            />{' '}
-            Next.js boilerplate built to make $$$
-          </h1>
-          <p className='mx-auto mt-6 max-w-xl text-balance text-center text-muted-foreground md:max-w-2xl md:text-lg'>
-            Go from idea to income in record time. A modern boilerplate that saves you weeks of
-            setup so you can spend time building features that actually make money.{' '}
-          </p>
-          <div className='mx-auto mt-10 flex items-center justify-center gap-4'>
-            <PremiumButton className='text-white' />
-            <Button variant='outline' className='font-semibold h-12! px-8 text-base'>
-              Try demo
-              <ArrowUpRight className='h-8 w-8' />
-            </Button>
-          </div>
-        </div>
-
-        {/* Built With Section */}
-        <TooltipProvider>
-          <div className='mt-24 w-full'>
-            <h2
-              className='text-center text-sm font-medium text-muted-foreground mb-8'
+        <div className='overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0f0f0f] shadow-elevation-dark'>
+          <div className='mx-auto max-w-4xl px-6 py-16 text-center sm:px-12 sm:py-20'>
+            <p
+              className='mb-8 text-[11px] font-medium uppercase tracking-[0.2em] text-[#2563eb]'
               style={{ fontFamily: 'var(--font-geist-mono)' }}
             >
-              BUILT WITH THE BEST TOOLS
-            </h2>
-            <div className='flex items-center justify-center gap-1 sm:gap-5 md:gap-6 flex-wrap'>
-              {/* Vercel AI SDK */}
-              <TooltipTrigger
-                handle={tooltipHandle}
-                payload={VercelContent}
-                className='flex items-center justify-center h-12 w-12 cursor-pointer'
-              >
-                <img
-                  src='/stack-icons/vercel.svg'
-                  alt='Vercel AI SDK'
-                  className='h-12 w-12 opacity-70 transition-opacity duration-200 hover:opacity-100 brightness-0'
-                />
-              </TooltipTrigger>
-
-              {/* Tailwind CSS */}
-              <TooltipTrigger
-                handle={tooltipHandle}
-                payload={TailwindCSSContent}
-                className='flex items-center justify-center h-12 w-12 cursor-pointer'
-              >
-                <img
-                  src='/stack-icons/tailwindcss.svg'
-                  alt='Tailwind CSS'
-                  className='h-12 w-12 opacity-70 transition-opacity duration-200 hover:opacity-100'
-                />
-              </TooltipTrigger>
-
-              {/* TypeScript */}
-              <TooltipTrigger
-                handle={tooltipHandle}
-                payload={TypeScriptContent}
-                className='flex items-center justify-center h-12 w-12 cursor-pointer'
-              >
-                <img
-                  src='/stack-icons/typescript.svg'
-                  alt='TypeScript'
-                  className='h-12 w-12 opacity-70 transition-opacity duration-200 hover:opacity-100'
-                />
-              </TooltipTrigger>
-
-              {/* Better Auth */}
-              <TooltipTrigger
-                handle={tooltipHandle}
-                payload={BetterAuthContent}
-                className='flex items-center justify-center h-12 w-12 cursor-pointer'
-              >
-                <img
-                  src='/stack-icons/better-auth.svg'
-                  alt='Better Auth'
-                  className='h-12 w-12 opacity-70 transition-opacity duration-200 hover:opacity-100'
-                />
-              </TooltipTrigger>
-
-              {/* TanStack */}
-              <TooltipTrigger
-                handle={tooltipHandle}
-                payload={TanStackContent}
-                className='flex items-center justify-center h-12 w-12 cursor-pointer'
-              >
-                <img
-                  src='/stack-icons/tanstack.svg'
-                  alt='TanStack'
-                  className='h-12 w-12 opacity-70 transition-opacity duration-200 hover:opacity-100'
-                />
-              </TooltipTrigger>
-
-              {/* Base UI */}
-              <TooltipTrigger
-                handle={tooltipHandle}
-                payload={BaseUIContent}
-                className='flex items-center justify-center h-12 w-12 cursor-pointer'
-              >
-                <img
-                  src='/stack-icons/base-ui.svg'
-                  alt='Base UI'
-                  className='h-12 w-12 opacity-70 transition-opacity duration-200 hover:opacity-100'
-                />
-              </TooltipTrigger>
-
-              {/* Bun */}
-              <TooltipTrigger
-                handle={tooltipHandle}
-                payload={BunContent}
-                className='flex items-center justify-center h-12 w-12 cursor-pointer'
-              >
-                <img
-                  src='/stack-icons/bun.svg'
-                  alt='Bun'
-                  className='h-12 w-12 opacity-70 transition-opacity duration-200 hover:opacity-100'
-                />
-              </TooltipTrigger>
+              {t('tagline')}
+            </p>
+            <h1
+              className='mx-auto max-w-4xl text-balance text-[2rem] font-bold leading-[1.05] tracking-[-0.06em] text-[#fafafa] sm:text-5xl lg:text-[64px] lg:tracking-[-2.5px]'
+              style={{
+                fontFamily: 'var(--font-inter)',
+              }}
+            >
+              {t('h1')}
+            </h1>
+            <p className='mx-auto mt-8 max-w-2xl text-balance text-base leading-relaxed text-zinc-500 md:text-lg'>
+              {t('sub')}
+            </p>
+            <div className='mx-auto mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4'>
+              <Button
+                className='h-11 w-full min-w-[200px] border-transparent px-8 text-sm font-semibold text-white sm:w-auto'
+                style={{ backgroundColor: '#2563eb' }}
+                render={(props) => (
+                  <LocalizedLink {...props} href='/register'>
+                    {t('ctaPrimary')}
+                    <ArrowRight className='h-4 w-4' />
+                  </LocalizedLink>
+                )}
+              />
+              <Button
+                variant='outline'
+                className='h-11 w-full min-w-[200px] border-[rgba(255,255,255,0.08)] bg-transparent px-8 text-sm font-medium text-zinc-200 hover:bg-white/[0.03] sm:w-auto'
+                render={(props) => (
+                  <LocalizedLink {...props} href='/#pricing'>
+                    {t('ctaSecondary')}
+                  </LocalizedLink>
+                )}
+              />
+            </div>
+            <div
+              className='mx-auto mt-14 flex max-w-3xl flex-wrap items-center justify-center gap-2'
+              style={{ fontFamily: 'var(--font-geist-mono)' }}
+            >
+              {badgeParts.map((chunk, slice) => (
+                <span
+                  key={chunk}
+                  className='inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] font-medium leading-none text-zinc-500'
+                >
+                  {badgeIcons[slice]}
+                  {chunk}
+                </span>
+              ))}
             </div>
           </div>
-
-          <Tooltip handle={tooltipHandle}>
-            {({ payload: Payload }) => (
-              <TooltipPopup>{Payload !== undefined && <Payload />}</TooltipPopup>
-            )}
-          </Tooltip>
-        </TooltipProvider>
+        </div>
+        <div className='landing-hero-glow' aria-hidden />
       </div>
     </main>
   )

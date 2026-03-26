@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Bricolage_Grotesque } from 'next/font/google'
+import { Geist, Geist_Mono, Bricolage_Grotesque, Inter } from 'next/font/google'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
 
 import '@/app/_styles/globals.css'
 import { QueryProvider } from '@/app/_providers/query-provider'
@@ -21,6 +23,12 @@ const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ['latin'],
 })
 
+const inter = Inter({
+  variable: '--font-inter',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+})
+
 export const metadata: Metadata = {
   ...generateMetadata({
     title: 'ShipFree - Turn Ideas Into Products, Fast',
@@ -35,16 +43,21 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
   return (
-    <html lang="en">
+    <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} ${inter.variable} font-sans antialiased`}
       >
-        <QueryProvider>
-          <ToastProvider>{children}</ToastProvider>
-          <div className="h-screen w-full fixed top-0 left-0 -z-10  bg-[url('/grain.jpg')] opacity-5" />
-        </QueryProvider>
+        <NextIntlClientProvider messages={messages}>
+          <QueryProvider>
+            <ToastProvider>{children}</ToastProvider>
+            <div className="h-screen w-full fixed top-0 left-0 -z-10  bg-[url('/grain.jpg')] opacity-5" />
+          </QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )
