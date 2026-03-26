@@ -68,7 +68,7 @@ export class LemonSqueezyAdapter implements PaymentAdapter {
     const newCheckout: NewCheckout = {
       productOptions: {
         redirectUrl: successUrl || paymentConfig.providers.successUrl,
-        receiptButtonText: 'Go to Dashboard',
+        receiptButtonText: 'Go to My Space',
         receiptLinkUrl: paymentConfig.providers.successUrl,
       },
       checkoutData: {

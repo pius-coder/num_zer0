@@ -1,4 +1,4 @@
-import { emailOTPClient, organizationClient } from 'better-auth/client/plugins'
+import { emailOTPClient, organizationClient, phoneNumberClient, usernameClient } from 'better-auth/client/plugins'
 import { createAuthClient } from 'better-auth/react'
 
 import { getBaseUrl } from '../utils'
@@ -6,17 +6,17 @@ import { getBaseUrl } from '../utils'
 /**
  * Auth Client
  *
- * Core authentication client with email OTP and organization support.
- *
- * For billing operations, use the useBilling() hook from '@/lib/billing/client'.
- * The billing client plugin is configured separately to maintain proper TypeScript types.
- *
- * @see lib/billing/client.ts for billing configuration
- * @see lib/billing/hooks.ts for billing React hooks
+ * Core authentication client with phone-first auth, email OTP, and organization support.
+ * Phone numbers are the primary identifier. Email is optional.
  */
 export const client = createAuthClient({
   baseURL: getBaseUrl(),
-  plugins: [emailOTPClient(), organizationClient()],
+  plugins: [
+    emailOTPClient(),
+    organizationClient(),
+    phoneNumberClient(),
+    usernameClient(),
+  ],
   fetchOptions: {
     onError(error) {
       console.error('Auth error:', error)
@@ -28,3 +28,4 @@ export const client = createAuthClient({
 })
 
 export const { signIn, signUp, signOut, useSession } = client
+

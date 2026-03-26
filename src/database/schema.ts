@@ -4,8 +4,12 @@ import { pgTable, text, timestamp, boolean, index, decimal } from 'drizzle-orm/p
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
-  email: text('email').notNull().unique(),
+  email: text('email').unique(), // Nullable — phone-first auth generates a synthetic email
   emailVerified: boolean('email_verified').default(false).notNull(),
+  username: text('username').unique(), // Required by Better-Auth username plugin
+  displayUsername: text('display_username'), // Case-preserved username (required by username plugin)
+  phoneNumber: text('phone_number').unique(), // Primary identifier (raw phone with +)
+  phoneNumberVerified: boolean('phone_number_verified').default(false).notNull(),
   image: text('image'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')

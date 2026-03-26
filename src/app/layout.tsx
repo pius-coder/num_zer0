@@ -1,12 +1,11 @@
+import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { Geist, Geist_Mono, Bricolage_Grotesque, Inter } from 'next/font/google'
-import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getMessages } from 'next-intl/server'
 
+import { generateMetadata as getSeoMetadata } from '@/lib/seo'
+import { extractLocale } from '@/lib/i18n/extract-locale'
 import '@/app/_styles/globals.css'
-import { QueryProvider } from '@/app/_providers/query-provider'
-import { ToastProvider } from '@/components/ui/toast'
-import { generateMetadata } from '@/lib/seo'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,8 +28,25 @@ const inter = Inter({
   weight: ['400', '500', '600', '700'],
 })
 
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const headerList = await headers()
+  const pathname = headerList.get('x-next-pathname') || '/'
+  const locale = extractLocale(pathname)
+
+  return (
+    <html lang={locale} suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} ${inter.variable} font-sans antialiased`}
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
+    </html>
+  )
+}
+
 export const metadata: Metadata = {
-  ...generateMetadata({
+  ...getSeoMetadata({
     title: 'ShipFree - Turn Ideas Into Products, Fast',
     description:
       'Ship your startup in days, not weeks. A production-ready Next.js boilerplate with auth, payments, and everything you need to launch fast. Free forever, open source.',
@@ -41,24 +57,4 @@ export const metadata: Metadata = {
     shortcut: '/image.png',
     apple: '/image.png',
   },
-}
-
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale()
-  const messages = await getMessages()
-
-  return (
-    <html lang={locale} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} ${inter.variable} font-sans antialiased`}
-      >
-        <NextIntlClientProvider messages={messages}>
-          <QueryProvider>
-            <ToastProvider>{children}</ToastProvider>
-            <div className="h-screen w-full fixed top-0 left-0 -z-10  bg-[url('/grain.jpg')] opacity-5" />
-          </QueryProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
-  )
 }

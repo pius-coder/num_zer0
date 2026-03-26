@@ -189,6 +189,43 @@ ShipFree/
 9. **Error Handling**: Always handle errors gracefully with proper messages
 10. **Type Safety**: Leverage TypeScript, avoid `any` types
 
+## AI Agent Workflow: Observability-First (MANDATORY)
+
+Future AI agents working in this repository MUST follow a strict observability-first debugging and implementation workflow. You must **NOT** code blindly, and you must **NOT** make assumptions about runtime behavior when logs can verify it.
+
+### 1. Core Observability Rules
+- **No Blind Coding:** Always verify your assumptions by inspecting actual runtime logs.
+- **Use the Existing Logger:** Use `import { createLogger } from '@/lib/logger'` or `import { clientLogger } from '@/lib/logger/client-logger'` instead of `console.log`. Never create a parallel logging system.
+- **Instrument First:** When modifying critical flows (auth, redirects, API integrations, server actions), add structured logs first to understand the data, then verify through the CLI/Dashboard.
+- **Temporary vs. Permanent Logs:** Keep concise operational execution logs (e.g., `request_start`, `auth_success`, API latency) permanently. Remove extremely noisy, temporary variable-dumping logs before completing a task.
+- **Security:** NEVER log raw passwords, tokens, API keys, or sensitive cookies.
+
+### 2. The Verification Feedback Loop
+Before concluding a task is "done" or a bug is "fixed", an agent MUST:
+1. **Identify** the expected runtime behavior.
+2. **Instrument** code with structured logs that prove the behavior.
+3. **Trigger** the relevant user flow or code path.
+4. **Inspect** the logs using the CLI or the internal Dashboard (`/admin/logs`).
+5. **Confirm** the fix. Explain in your final summary exactly *what logs confirmed the result*.
+*A task is incomplete if behavior hasn't been verified via actual logs.*
+
+### 3. Using the Logs CLI
+The repository includes a dedicated Logs CLI (`bun run logs`) built on top of the shared logging infrastructure for local debugging.
+
+**Common Debugging Commands:**
+- `bun run logs -- list` -> Check which files have recent entries.
+- `bun run logs -- tail --channel error` -> Live-tail the error stream to catch crashes as they happen.
+- `bun run logs -- query --requestId <uuid>` -> Trace a complete request lifecycle across the system.
+- `bun run logs -- query --path /api/webhook --limit 50` -> Inspect recent webhook hits.
+
+**Agent Action:** When executing a complex implementation, first run `bun run logs -- tail` in a background terminal process, trigger the web request, and read the CLI output to confirm what happened.
+
+### 4. Logging Expectations by Area
+- **Middleware & Proxy:** Log locale routing decisions, auth gates, and redirects.
+- **API Routes:** Log request input summaries (redacted), external provider latency/status, and failure details.
+- **Server Actions:** Log validation results, DB mutation success/failure, and unhandled throws.
+- **Client Components:** Ingest crucial client-side errors or state anomalies to the server via `/api/internal/logs` using `clientLogger`.
+
 ## Resources
 
 - **Better-Auth**: https://better-auth.com

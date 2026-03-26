@@ -35,10 +35,10 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['developer tools', 'productivity', 'saas'],
     shortcuts: [
       {
-        name: 'Open dashboard',
-        short_name: 'Dashboard',
-        description: 'Go to your ShipFree dashboard',
-        url: '/dashboard',
+        name: 'Open My Space',
+        short_name: 'My Space',
+        description: 'Go to your ShipFree space',
+        url: '/my-space',
       },
     ],
     lang: 'en-US',

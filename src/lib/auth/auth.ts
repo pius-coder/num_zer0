@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { nextCookies } from 'better-auth/next-js'
-import { emailOTP, organization } from 'better-auth/plugins'
+import { emailOTP, organization, phoneNumber, username } from 'better-auth/plugins'
 
 import { db } from '@/database'
 import { APP_COOKIE_NAME, isProd } from '@/lib/constants'
@@ -26,10 +26,10 @@ export const auth = betterAuth({
   advanced: {
     cookiePrefix: APP_COOKIE_NAME, // Change this to your cookie prefix
     crossSubDomainCookies: {
-      enabled: !isProd,
+      enabled: isProd,
       domain: '.shipfree.app', // Change this to your domain, if you are using a custom domain
     },
-    useSecureCookies: !isProd,
+    useSecureCookies: isProd,
   },
 
   session: {
@@ -45,36 +45,36 @@ export const auth = betterAuth({
   socialProviders: {
     ...(env.GOOGLE_CLIENT_ID &&
       env.GOOGLE_CLIENT_SECRET && {
-        google: {
-          clientId: env.GOOGLE_CLIENT_ID,
-          clientSecret: env.GOOGLE_CLIENT_SECRET,
-          scope: ['email', 'profile'],
-        },
-      }),
+      google: {
+        clientId: env.GOOGLE_CLIENT_ID,
+        clientSecret: env.GOOGLE_CLIENT_SECRET,
+        scope: ['email', 'profile'],
+      },
+    }),
     ...(env.GITHUB_CLIENT_ID &&
       env.GITHUB_CLIENT_SECRET && {
-        github: {
-          clientId: env.GITHUB_CLIENT_ID,
-          clientSecret: env.GITHUB_CLIENT_SECRET,
-          scope: ['user:email'],
-        },
-      }),
+      github: {
+        clientId: env.GITHUB_CLIENT_ID,
+        clientSecret: env.GITHUB_CLIENT_SECRET,
+        scope: ['user:email'],
+      },
+    }),
     ...(env.MICROSOFT_CLIENT_ID &&
       env.MICROSOFT_CLIENT_SECRET && {
-        microsoft: {
-          clientId: env.MICROSOFT_CLIENT_ID,
-          clientSecret: env.MICROSOFT_CLIENT_SECRET,
-          tenantId: env.MICROSOFT_TENANT_ID || 'common',
-        },
-      }),
+      microsoft: {
+        clientId: env.MICROSOFT_CLIENT_ID,
+        clientSecret: env.MICROSOFT_CLIENT_SECRET,
+        tenantId: env.MICROSOFT_TENANT_ID || 'common',
+      },
+    }),
     ...(env.FACEBOOK_CLIENT_ID &&
       env.FACEBOOK_CLIENT_SECRET && {
-        facebook: {
-          clientId: env.FACEBOOK_CLIENT_ID,
-          clientSecret: env.FACEBOOK_CLIENT_SECRET,
-          scope: ['email', 'public_profile'],
-        },
-      }),
+      facebook: {
+        clientId: env.FACEBOOK_CLIENT_ID,
+        clientSecret: env.FACEBOOK_CLIENT_SECRET,
+        scope: ['email', 'public_profile'],
+      },
+    }),
   },
 
   emailVerification: {
@@ -127,6 +127,13 @@ export const auth = betterAuth({
   },
   plugins: [
     nextCookies(),
+    username(),
+    phoneNumber({
+      sendOTP: async ({ phoneNumber: phone, code }: { phoneNumber: string; code: string }) => {
+        // TODO: Replace with real SMS provider (e.g. SMSMAN)
+        console.info('📲 SMS VERIFICATION CODE', { phoneNumber: phone, code })
+      },
+    }),
     emailOTP({
       sendVerificationOTP: async (data: {
         email: string
@@ -147,7 +154,7 @@ export const auth = betterAuth({
             })
             throw new Error(
               validation.reason ||
-                "We are unable to deliver the verification email to that address. Please make sure it's valid and able to receive emails."
+              "We are unable to deliver the verification email to that address. Please make sure it's valid and able to receive emails."
             )
           }
 

@@ -1,0 +1,1612 @@
+{
+  "Common": {
+    "loading": "Wird geladen",
+    "added": "Hinzugefügt",
+    "back": "Zurück",
+    "cancel": "Abbrechen",
+    "valid": "Bestätigen",
+    "send": "Senden",
+    "see_more": "Mehr sehen",
+    "see_less": "Weniger sehen",
+    "uploading": "Wird hochgeladen",
+    "no_service_listing": "Sie haben keine Anzeige",
+    "no_service_listing_description": "Veröffentlichen Sie Ihre Anzeigen und erhalten Sie Nachrichten von Käufern",
+    "no_service_offer": "Sie haben kein Serviceangebot",
+    "no_service_offer_description": "Bieten Sie Ihre Dienstleistungen an und erhalten Sie Anfragen von Kunden",
+    "edit": "Bearbeiten",
+    "modify": "Ändern",
+    "explanation": "Erklärung",
+    "create": "Erstellen",
+    "hide": "Ausblenden",
+    "publish": "Veröffentlichen",
+    "save": "Speichern",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein",
+    "madam": "Frau",
+    "sir": "Herr",
+    "update_saved": "Änderungen gespeichert",
+    "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+    "year": "Jahr",
+    "years": "Jahre",
+    "month": "Monat",
+    "months": "Monate",
+    "day": "Tag",
+    "days": "Tage",
+    "hour": "Stunde",
+    "hours": "Stunden",
+    "minute": "Minute",
+    "minutes": "Minuten",
+    "clear": "Löschen",
+    "apply": "Anwenden",
+    "category": "Kategorie",
+    "status": "Status",
+    "date": "Datum",
+    "oder": "Sortieren",
+    "all_categories": "Alle Kategorien",
+    "all_status": "Alle Status",
+    "precise_the_month": "Monat angeben",
+    "must_recent": "Neueste zuerst",
+    "must_older": "Älteste zuerst",
+    "pending": "Ausstehend",
+    "planed": "Geplant",
+    "canceled": "Storniert",
+    "finished": "Abgeschlossen",
+    "time_placeholder": "Wählen Sie eine Uhrzeit",
+    "selected_time": "Ausgewählte Uhrzeit:",
+    "select_country": "Wählen Sie ein Land",
+    "search_country": "Land suchen",
+    "no_country_found": "Kein Land gefunden",
+    "see_reviews": "Bewertungen ansehen",
+    "know_more": "Mehr erfahren",
+    "hide_reviews": "Bewertungen ausblenden",
+    "user_no_reviews": "Noch keine Bewertungen",
+    "user_no_reviews_be_the_first": "Seien Sie der erste Nutzer, der seine Erfahrung teilt!",
+    "you_no_reviews": "Sie haben keine Bewertungen",
+    "share_service": "Dienstleistung teilen",
+    "service_shared_success": "Dienstleistung erfolgreich geteilt",
+    "service_shared_error": "Fehler beim Teilen der Dienstleistung",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "just_now": "Gerade eben",
+    "minutes_ago": "Minuten",
+    "one_hour_ago": "Vor 1 Stunde",
+    "hours_ago": "Stunden",
+    "yesterday": "Gestern",
+    "days_ago": "Tage",
+    "one_week_ago": "Vor 1 Woche",
+    "weeks_ago": "Wochen",
+    "one_month_ago": "Vor 1 Monat",
+    "months_ago": "Monate",
+    "one_year_ago": "Vor 1 Jahr",
+    "years_ago": "Jahre",
+    "error_loading_reviews": "Fehler beim Laden der Bewertungen",
+    "listing_list_title": "Anzeigenliste",
+    "error_loading_annonces": "Fehler beim Laden der Anzeigen",
+    "no_annonces": "Noch keine Anzeigen",
+    "no_reviews_yet": "Noch keine Bewertungen",
+    "leave_a_review": "Eine Bewertung hinterlassen",
+    "review": "Bewertung",
+    "reviews": "Bewertungen",
+    "need_help": "Brauchen Sie Hilfe?",
+    "need_help_description": "Kontaktieren Sie uns, indem Sie auf die Schaltfläche unten klicken.",
+    "chat_on_whatsapp": "Auf WhatsApp chatten",
+    "need_help_contact_us": "Brauchen Sie Hilfe? Kontaktieren Sie uns",
+    "click_here": "Klicken Sie hier",
+    "discuss_on_wa": "Auf WhatsApp sprechen",
+    "click_btn_below": "Kontaktieren Sie uns, indem Sie auf die Schaltfläche unten klicken."
+  },
+  "HomePage": {
+    "title": "Hallo Welt!",
+    "about": "Zur Über-uns-Seite gehen",
+    "banner_alt": "Finden Sie den richtigen Anbieter oder entwickeln Sie Ihr Geschäft",
+    "banner_tagline": "Kaufen, mieten oder verkaufen Sie überall in Kamerun"
+  },
+  "LocaleSwitcher": {
+    "de": "Deutsch",
+    "en": "Englisch",
+    "fr": "Französisch",
+    "code": "CODE",
+    "label": "Sprache"
+  },
+  "FormsValidation": {
+    "reason_required": "Der Grund ist erforderlich",
+    "input_field_required": "Pflichtfeld",
+    "select_field_required": "Pflichtfeld",
+    "textarea_field_required": "Pflichtfeld",
+    "date_field_min_error": "Das Datum muss nach dem aktuellen Datum liegen",
+    "email_required": "Die E-Mail-Adresse ist erforderlich",
+    "cv_file_required": "Bitte fügen Sie Ihren Lebenslauf hinzu",
+    "invalid_email_address": "Ungültige E-Mail-Adresse",
+    "password_required": "Das Passwort ist erforderlich",
+    "password_min_length": "Das Passwort muss mindestens 8 Zeichen enthalten",
+    "password_uppercase_required": "Das Passwort muss mindestens einen Großbuchstaben enthalten",
+    "password_lowercase_required": "Das Passwort muss mindestens einen Kleinbuchstaben enthalten",
+    "password_number_required": "Das Passwort muss mindestens eine Zahl enthalten",
+    "password_special_character_required": "Das Passwort muss mindestens ein Sonderzeichen enthalten",
+    "passwords_must_match": "Die Passwörter müssen übereinstimmen",
+    "new_password_required": "Das neue Passwort ist erforderlich",
+    "service_title_required": "Der Titel der Dienstleistung ist erforderlich",
+    "service_description_required": "Die Beschreibung der Dienstleistung ist erforderlich",
+    "service_long_description_required": "Die ausführliche Beschreibung der Dienstleistung ist erforderlich",
+    "service_categories_required": "Die Kategorien der Dienstleistung sind erforderlich",
+    "service_price_required": "Der Preis der Dienstleistung ist erforderlich",
+    "service_images_required": "Bitte wählen Sie mindestens zwei Bilder aus",
+    "currency_required": "Die Währung ist erforderlich",
+    "pricing_model_required": "Das Preismodell ist erforderlich",
+    "service_provider_id_required": "Die Anbieter-ID ist erforderlich",
+    "_service_locations_required": "Die Standorte der Dienstleistung sind erforderlich",
+    "Required": "Pflichtfeld",
+    "personal_info_civility_required": "Die Anrede ist erforderlich.",
+    "personal_info_last_name_required": "Der Nachname ist erforderlich.",
+    "personal_info_first_name_required": "Der Vorname ist erforderlich.",
+    "personal_info_birth_date_required": "Das Geburtsdatum ist erforderlich.",
+    "personal_info_email_required": "Die E-Mail-Adresse ist erforderlich.",
+    "personal_info_email_invalid": "Die E-Mail-Adresse ist ungültig.",
+    "personal_info_phone_required": "Die Telefonnummer ist erforderlich.",
+    "personal_info_country_required": "Das Herkunftsland ist erforderlich.",
+    "change_password_old_password_required": "Das alte Passwort ist erforderlich.",
+    "change_password_new_password_required": "Das neue Passwort ist erforderlich.",
+    "change_password_confirm_new_password_required": "Die Bestätigung des neuen Passworts ist erforderlich.",
+    "change_password_passwords_must_match": "Die neuen Passwörter müssen übereinstimmen.",
+    "task_description_required": "Die Aufgabenbeschreibung ist erforderlich",
+    "task_unit_price_required": "Der Stückpreis ist erforderlich",
+    "task_unit_price_min": "Der Stückpreis muss größer oder gleich 0 sein",
+    "task_quantity_required": "Die Menge ist erforderlich",
+    "task_quantity_min": "Die Menge muss mindestens 1 betragen",
+    "tasks_required": "Mindestens eine Aufgabe ist erforderlich",
+    "field_required": "Pflichtfeld",
+    "name_too_short": "Der Name muss mindestens 2 Zeichen enthalten",
+    "name_too_long": "Der Name darf nicht länger als 50 Zeichen sein",
+    "invalid_phone_number": "Ungültige Telefonnummer"
+  },
+  "Header": {
+    "cancel": "Löschen",
+    "create_service": "Dienstleistung erstellen",
+    "create_service_offer": "Anzeige erstellen",
+    "show_your_capacities": "Zeigen Sie Ihr Talent!",
+    "update_service_offer": "Meine Anzeige bearbeiten",
+    "update_service_offer_description": "Die Informationen zum Angebot aktualisieren",
+    "edit_service_offer": "Informationen aktualisieren",
+    "create_listing": "Anzeige erstellen",
+    "edit_listing": "Meine Anzeige bearbeiten",
+    "categories_label": "Kategorie",
+    "categories_placeholder": "Alle Kategorien",
+    "categories_title": "Kategorie wählen",
+    "search_categories_placeholder": "Kategorie suchen",
+    "search_categories_header": "Kategorie wählen",
+    "locations_label": "Standort",
+    "locations_placeholder": "Standort wählen",
+    "locations_title": "Standort wählen",
+    "all_locations": "Alle Städte",
+    "search_placeholder": "Wonach suchen Sie?",
+    "search_title": "Einen Anbieter suchen",
+    "filter": "Filtern",
+    "search_button": "Suchen",
+    "save": "Speichern",
+    "home": "Startseite",
+    "my_account": "Mein Konto",
+    "sign_in": "Anmelden",
+    "about_us": "Über uns",
+    "customer_support": "Kundensupport",
+    "terms_conditions": "AGB",
+    "log_out": "Abmelden",
+    "english": "Englisch",
+    "french": "Französisch",
+    "search_filter_label": "Suche filtern",
+    "go_back_button_label": "Zurück",
+    "price_label": "Preis",
+    "min_price_placeholder": "Minimum",
+    "max_price_placeholder": "Maximum",
+    "order_label": "Sortieren",
+    "home_label": "Startseite",
+    "greatting": "Hallo",
+    "no_services": "Kein Anbieter gefunden",
+    "no_services_description": "Wir haben keinen Anbieter gefunden, der Ihren Kriterien entspricht. Versuchen Sie, Ihre Suche zu erweitern oder Ihre Filter zu ändern.",
+    "apply": "Anwenden",
+    "button": {
+      "back": "Zurück",
+      "update_filters": "Filter ändern",
+      "see_all_providers": "Alle Anbieter anzeigen",
+      "see_all_listing": "Alle Anzeigen anzeigen"
+    },
+    "change_currency_alert": "Bitte ändern Sie die Währung in Ihren Kontoeinstellungen.",
+    "change_language_alert": "Bitte ändern Sie die Sprache in Ihren Kontoeinstellungen.",
+    "logo_alt": "AfreeDeal Logo",
+    "just_now": "Gerade eben",
+    "minutes_ago": "Minuten",
+    "one_hour_ago": "Vor 1 Stunde",
+    "hours_ago": "Stunden",
+    "yesterday": "Gestern",
+    "days_ago": "Tage",
+    "one_week_ago": "Vor 1 Woche",
+    "weeks_ago": "Wochen",
+    "one_month_ago": "Vor 1 Monat",
+    "months_ago": "Monate",
+    "one_year_ago": "Vor 1 Jahr",
+    "years_ago": "Jahre",
+    "error_loading_reviews": "Fehler beim Laden der Bewertungen",
+    "listing_list_title": "Anzeigenliste",
+    "error_loading_annonces": "Fehler beim Laden der Anzeigen",
+    "no_annonces": "Noch keine Anzeigen",
+    "no_reviews_yet": "Noch keine Bewertungen",
+    "marketplace_description": "Die Dienstleistungsplattform, die Ihnen hilft, Ihre Projekte zu verwirklichen",
+    "marketplace_description_new_service": "Finden Sie den idealen Anbieter oder bieten Sie Ihre Dienstleistungen mit AFreeServ an.",
+    "home_label": "Startseite",
+    "my_account_label": "Mein Konto",
+    "sign_in_label": "Anmelden",
+    "about_us_label": "Über uns",
+    "customer_support_label": "Kundensupport",
+    "terms_conditions_label": "AGB",
+    "log_out_label": "Abmelden",
+    "change_currency_alert": "Bitte ändern Sie die Währung in Ihren Kontoeinstellungen.",
+    "change_language_alert": "Bitte ändern Sie die Sprache in Ihren Kontoeinstellungen.",
+    "logo_alt": "AFreeDeal-Logo",
+    "marketplace_description": "Der Marktplatz für Dienstleistungen, der Ihnen hilft, Ihre Projekte zu verwirklichen",
+    "marketplace_description_new_service": "Finden Sie den idealen Anbieter oder bieten Sie Ihre Dienstleistungen mit AFreeDeal an.",
+    "register": "Registrieren",
+    "search_locations_placeholder": "Ein Land suchen",
+    "search_cities_placeholder": "Eine Stadt suchen",
+    "search_cities_header": "Eine Stadt wählen",
+    "notifications": "Benachrichtigungen",
+    "all_filter": "Filter",
+    "filter_by": "Sortieren nach",
+    "evaluation_label": "Bewertung",
+    "reviews_count_label": "Anzahl der Bewertungen",
+    "best_ratings_label": "Beste Bewertungen",
+    "relevance_label": "Relevanz",
+    "recent_label": "Neueste",
+    "old_label": "Älteste",
+    "asc_price_label": "Preis aufsteigend",
+    "desc_price_label": "Preis absteigend",
+    "display_type_label": "Anzeigeart",
+    "gallery_label": "Galerie",
+    "list_label": "Liste",
+    "invite": "Einen Angehörigen einladen",
+    "logout": "Abmelden",
+    "select_category": "Kategorie wählen",
+    "select_location": "Standort wählen",
+    "create_a_service_offer": "Eine Anzeige erstellen",
+    "propose_a_clear_offer": "Bieten Sie ein klares und attraktives Angebot an"
+  },
+  "Footer": {
+    "about_text": "AFreeDeal ist eine Online-Serviceanwendung, die sich der Vernetzung von Kunden und Dienstleistern rund um afrikanisches Know-how widmet.",
+    "copyright": "Alle Rechte vorbehalten.",
+    "social_media": "Soziale Netzwerke",
+    "follow_us": "Folgen Sie uns:",
+    "menu": "Menü",
+    "help": "Hilfe",
+    "social_links": {
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn"
+    },
+    "main_links": {
+      "home": "Startseite",
+      "about_us": "Über uns",
+      "services": "Dienstleistungen",
+      "providers": "Anbieter",
+      "login": "Anmeldung",
+      "signup": "Registrierung",
+      "terms_conditions": "Allgemeine Nutzungsbedingungen",
+      "privacy_policy": "Datenschutzrichtlinie",
+      "Need_help_Contact_us": "Brauchen Sie Hilfe? Kontaktieren Sie uns",
+      "Join_the_team_afreedeal": "Dem A.Free.Deal-Team beitreten"
+    },
+    "help_links": {
+      "faq": "FAQ",
+      "privacy_policy": "Datenschutzrichtlinie",
+      "legal_notice": "Impressum"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "phone": "Telefon",
+      "email": "E-Mail"
+    },
+    "logo_description": "Müssen Sie Ihr Haushaltsgerät reparieren oder Ihre Hochzeit organisieren? AFreeDeal hilft Ihnen, DIE richtige Person zu finden.",
+    "about_text": "AFreeDeal ist Ihr All-in-One-Marktplatz zum Kaufen, Verkaufen und Finden von Dienstleistungen in Ihrer Nähe, in ganz Afrika und seiner Diaspora."
+  },
+  "Categories": {
+    "apartment_for_rent": "Wohnung zu vermieten",
+    "jewelry": "Schmuck",
+    "shop_for_rent": "Geschäft zu vermieten",
+    "shoes": "Schuhe",
+    "cosmetics": "Kosmetik",
+    "home_appliances": "Haushaltsgeräte",
+    "spices_condiments": "Gewürze – Würzmittel",
+    "video_games_consoles": "Videospiele – Konsolen",
+    "toys": "Spielzeug",
+    "natural_juices": "Natürliche Säfte",
+    "books_school_supplies": "Bücher – Schulbedarf",
+    "home_living": "Haushalt",
+    "building_materials": "Baumaterialien",
+    "furniture": "Möbel – Einrichtung",
+    "watches": "Uhren",
+    "motorcycles": "Motorräder",
+    "computers_laptops": "Computer – Laptops",
+    "traditional_fabrics": "Stoffe",
+    "perfumes_deodorants": "Parfüms – Deodorants",
+    "wigs_extensions": "Perücken – Extensions",
+    "bags_leather_goods": "Taschen – Lederwaren",
+    "tablets_ipads": "Tablets – iPads",
+    "phones_accessories": "Telefone – Zubehör",
+    "televisions": "Fernseher",
+    "land_for_sale": "Grundstück zu verkaufen",
+    "bicycles": "Fahrräder",
+    "clothing": "Kleidung",
+    "wines_spirits": "Weine – Spirituosen",
+    "cars": "Autos – Motorräder",
+    "others": "Sonstiges",
+    "apt_rent": "Wohnung zu vermieten",
+    "jewelry_watches_bags": "Schmuck – Uhren – Taschen",
+    "appliances": "Haushaltsgeräte",
+    "home": "Haushalt",
+    "computers_laptops_tablets": "Computer – Laptops – Tablets",
+    "tv": "Fernseher",
+    "land_sale": "Grundstück zu verkaufen"
+  },
+  "Banner": {
+    "tagline": "Mit AFreeDeal kaufen, verkaufen und Dienstleistungen in Ihrer Nähe finden – alles an einem Ort.",
+    "marketplace_description": "Die Dienstleistungsplattform, die Ihnen hilft, Ihre Projekte zu verwirklichen",
+    "marketplace_description_new_service": "Finden Sie den idealen Anbieter oder bieten Sie Ihre Dienstleistungen mit AFreeServ an"
+  },
+  "Countries": {
+    "fra": "Frankreich",
+    "bel": "Belgien",
+    "deu": "Deutschland",
+    "cmr": "Kamerun"
+  },
+  "Cities": {
+    "all": "Alle Städte",
+    "baf": "Bafoussam",
+    "bam": "Bamenda",
+    "ber": "Bertoua",
+    "bue": "Buea",
+    "dou": "Douala",
+    "ebo": "Ebolowa",
+    "gar": "Garoua",
+    "mar": "Maroua",
+    "nga": "Ngaoundéré",
+    "yao": "Yaoundé",
+    "oth": "Meine Stadt ist nicht auf der Liste"
+  },
+  "ServiceCard": {
+    "see_more": "Mehr sehen",
+    "edit": "Bearbeiten",
+    "publier": "Veröffentlichen",
+    "from": "Ab",
+    "share_service_text": "Hallo, ich habe diesen Service auf AFreeDeal gefunden und denke, dass er dich interessieren könnte. Schau ihn dir gerne an, er könnte nützlich für dich sein!",
+    "status_button": {
+      "published": "Veröffentlicht",
+      "unpublished": "Ausgeblendet",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "pending": "Ausstehend",
+      "blocked": "Gesperrt",
+      "rejected": "Abgelehnt"
+    },
+    "rejected_explanation": "Erklärungen",
+    "reviews": "Bewertungen",
+    "review": "Bewertung"
+  },
+  "AccountHomePage": {
+    "profile_picture": "Profilbild",
+    "personal_info": "Persönliche Informationen",
+    "postal_address": "Postanschrift",
+    "contact_info": "Kontaktinformationen",
+    "change_password": "Mein Passwort ändern",
+    "about_you": "Verkäuferprofil",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "changes_saved": "Änderungen gespeichert",
+    "provider_name": "Verkäufername",
+    "expertise": "Expertise",
+    "textarea_expertise": "Beschreiben Sie Ihr Know-how und Ihre Stärken, um Käufer Ihrer Anzeigen zu überzeugen.",
+    "textarea_experience": "Geben Sie Ihre Fachgebiete und Ihre Berufserfahrung an.",
+    "experience": "Erfahrung",
+    "evaluations": "Bewertungen",
+    "see_public_profile": "Öffentliches Profil anzeigen",
+    "my_public_profile": "Mein öffentliches Profil",
+    "profile_title": "Mein Profil",
+    "profile_description": "Meine persönlichen Informationen",
+    "services_title": "Anzeigen",
+    "services_description": "Mein Anzeigekatalog",
+    "messages_title": "Nachrichten",
+    "messages_description": "Meine Unterhaltungen",
+    "orders_title": "Bestellungen",
+    "orders_description": "Meine Angebote und Anfragen",
+    "calendar_title": "Kalender",
+    "calendar_description": "Meine Termine",
+    "transactions_title": "Transaktionen",
+    "transactions_description": "Meine abgeschlossenen Verkäufe und Käufe",
+    "favorites_title": "Favoriten",
+    "favorites_description": "Meine ausgewählten Verkäufer",
+    "settings_title": "Einstellungen",
+    "settings_description": "Meine Konfigurationen",
+    "UpdateProfilePhoto": {
+      "profile_picture": "Profilbild",
+      "take_photo": "Ein Foto aufnehmen",
+      "choose_from_library": "Ein Foto aus der Galerie wählen"
+    },
+    "provider_name_warning": "Dieses Feld ermöglicht es Nutzern, die Dienstleistungen anbieten, ihren Anbieternamen anzuzeigen, der für andere Nutzer in den Details ihrer Dienstleistungen sichtbar ist.",
+    "provider_description_warning": "Dieses Feld ermöglicht es Nutzern, die Dienstleistungen anbieten, ihre Kompetenzen hervorzuheben. Diese werden für andere Nutzer in den Details der angebotenen Dienstleistungen sichtbar sein."
+  },
+  "ServiceDetail": {
+    "see_more": "Mehr sehen",
+    "leave_review": "Eine Bewertung hinterlassen",
+    "description": "Beschreibung",
+    "categories": "Kategorie",
+    "location": "Standort",
+    "about_provider": "Über den Verkäufer",
+    "view_more": "Mehr sehen",
+    "view_less": "Weniger sehen",
+    "report_offer": "Dieses Angebot melden",
+    "report_listing": "Diese Anzeige melden",
+    "report_offer_sheet_title": "Dieses Angebot melden",
+    "report_listing_sheet_title": "Diese Anzeige melden",
+    "report_profile": "Dieses Profil melden",
+    "make_a_request": "Eine Anfrage stellen",
+    "contact_provider": "Verkäufer kontaktieren",
+    "call": "Anrufen",
+    "write_on_whatsapp": "Auf WhatsApp schreiben",
+    "whatsapp_contact_message": "Hallo,\nIch kontaktiere Sie über AFreeDeal bezüglich Ihrer Anzeige: {listingUrl}\nWären Sie verfügbar, um darüber zu sprechen?\nVielen Dank!",
+    "send_email": "E-Mail senden",
+    "cancel": "Abbrechen",
+    "security_advice": "Sicherheitshinweis",
+    "security_warning": "Sie verlassen unsere Website. Der Austausch mit dem Anbieter erfolgt auf Ihre eigene Verantwortung. Seien Sie wachsam und teilen Sie niemals sensible Informationen.",
+    "continue": "Fortfahren",
+    "public_profile": "Öffentliches Profil",
+    "express_your_need": "Beschreiben Sie Ihren Bedarf",
+    "add_field": "Feld hinzufügen",
+    "request_sent_successfully": "Anfrage erfolgreich gesendet",
+    "error_sending_request": "Fehler beim Senden der Anfrage",
+    "refused_service_title": "Mein Serviceangebot",
+    "decision_label": "Entscheidung zu Ihrer Anfrage:",
+    "refused_service_status": "Serviceangebot abgelehnt",
+    "refused_reason_label": "Grund der Ablehnung",
+    "edit_service_button": "Dienstleistung bearbeiten",
+    "service_request_form": {
+      "show_advanced_form": "Alle Felder anzeigen",
+      "hide_advanced_form": "Erweiterte Felder ausblenden",
+      "required_field": "Dieses Feld ist erforderlich",
+      "request_label": "Beschreiben Sie Ihren Bedarf",
+      "request_placeholder": "Bitte geben Sie detaillierte Informationen zu Ihrem Bedarf an.",
+      "request_date_label": "Gewünschtes Datum",
+      "request_date_placeholder": "Wählen Sie ein Datum",
+      "request_date_min_error": "Das Startdatum muss nach dem aktuellen Datum liegen.",
+      "request_location_label": "Ort der Dienstleistung",
+      "request_location_placeholder": "Geben Sie Stadt und Land an",
+      "request_time_label": "Startzeit",
+      "request_time_placeholder": "Wählen Sie eine Uhrzeit",
+      "request_estimated_time_label": "Geschätzte Dauer",
+      "request_image_label": "Foto zur Veranschaulichung Ihres Bedarfs",
+      "add_optional_fields": "Feld hinzufügen oder entfernen",
+      "optional_fields_description": "Verwalten Sie die Formularfelder je nach Bedarf",
+      "added_field": "hinzugefügt"
+    },
+    "total_services_offer": "Anzahl der Dienstleistungen:",
+    "user_statistics": "Benutzerstatistiken",
+    "requests_made": "Gesendete Anfragen",
+    "requests_received": "Erhaltene Anfragen",
+    "average_rating": "Durchschnittliche Bewertung",
+    "reviews_received": "Erhaltene Bewertungen",
+    "reviews_given": "Vergebene Bewertungen",
+    "provider_seniority": "Mitglied seit:",
+    "update_service": "Serviceangebot bearbeiten",
+    "service_details": "Details der Anzeige",
+    "ReportAlert": {
+      "report_label": "Was ist der Grund?",
+      "report_raison": "Meldegrund",
+      "report_placeholder": "Bitte geben Sie an, warum Sie dieses Angebot melden"
+    },
+    "must_be_login": "Sie müssen sich anmelden, um eine Dienstleistungsanfrage zu stellen!",
+    "must_be_login_to_review": "Sie müssen sich anmelden, um eine Bewertung zu hinterlassen!"
+  },
+  "service_request_estimated_time": {
+    "placeholder": "Klicken Sie, um die Dauer festzulegen",
+    "modal": {
+      "title": "Geschätzte Dauer des Bedarfs",
+      "description": "Geben Sie die Dauer in den Feldern unten an:",
+      "preview": "Die geschätzte Dauer ist:",
+      "reset_button": "ZURÜCKSETZEN",
+      "save_button": "SPEICHERN"
+    },
+    "fields": {
+      "months_label": "Monate",
+      "days_label": "Tage",
+      "hours_label": "Stunden",
+      "minutes_label": "Minuten"
+    },
+    "units": {
+      "months": "Mon.",
+      "days": "Tg.",
+      "hours": "Std.",
+      "minutes": "Min."
+    },
+    "display": {
+      "not_defined": "Nicht definiert",
+      "estimated_duration_is": "Die geschätzte Dauer ist: {duration}",
+      "months": "{count, plural, =0 {0 Monate} one {# Monat} other {# Monate}}",
+      "days": "{count, plural, =0 {0 Tage} one {# Tag} other {# Tage}}",
+      "hours": "{count, plural, =0 {0 Stunden} one {# Stunde} other {# Stunden}}",
+      "minutes": "{count, plural, =0 {0 Minuten} one {# Minute} other {# Minuten}}"
+    },
+    "validation": {
+      "required": "Die Dauer ist erforderlich",
+      "at_least_one_duration": "Mindestens eine Dauer muss festgelegt sein"
+    }
+  },
+  "Auth": {
+    "email_label": "E-Mail-Adresse",
+    "phone_label": "Telefonnummer",
+    "password_label": "Passwort",
+    "login_button": "Anmelden",
+    "forgot_password": "Passwort vergessen?",
+    "login_with": "Anmelden mit",
+    "login_with_facebook": "Mit Facebook anmelden",
+    "login_with_google": "Mit Google anmelden",
+    "no_account": "Sie haben kein Konto?",
+    "create_account": "Konto erstellen",
+    "page_title_login": "Anmeldung",
+    "page_title_register": "Registrierung",
+    "page_title_forgot_password": "Passwort vergessen",
+    "page_title_confirm_account": "Code bestätigen",
+    "page_title_new_password": "Passwort",
+    "last_name_label": "Nachname",
+    "first_name_label": "Vorname",
+    "register_button": "Registrieren",
+    "or_register_with": "Oder registrieren mit",
+    "already_have_account": "Sie haben bereits ein Konto?",
+    "sign_in": "Anmelden",
+    "reset_password_title": "Passwort zurücksetzen",
+    "reset_password_description": "Geben Sie Ihre E-Mail-Adresse ein, um Ihr Passwort zurückzusetzen",
+    "reset_password_phone_description": "Geben Sie Ihre Telefonnummer ein und wir senden Ihnen ein neues Passwort per SMS oder WhatsApp.",
+    "reset_password_button": "Zurücksetzen",
+    "confirm_code_title": "Bestätigung des erhaltenen Codes",
+    "confirm_button": "Bestätigen",
+    "no_verification_code": "Sie haben keinen Bestätigungscode erhalten?",
+    "resend_code": "Neuen Code senden",
+    "new_password_title": "Neues Passwort",
+    "new_password_label": "Neues Passwort eingeben",
+    "confirm_password_label": "Passwort bestätigen",
+    "sign_in_button": "Anmelden",
+    "signed_in_success_title": "Anmeldung erfolgreich",
+    "signed_in_success_message": "Sie wurden erfolgreich angemeldet. Weiterleitung zu Ihrem Konto...",
+    "sign_in_error_title": "Anmeldung fehlgeschlagen",
+    "sign_in_error_message": "Bitte überprüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut.",
+    "account_not_found_message": "Konto nicht gefunden. Weiterleitung zur Registrierungsseite...",
+    "wrong_password_message": "Falsches Passwort. Bitte versuchen Sie es erneut.",
+    "account_inactive_message": "Ihr Konto ist inaktiv. Bitte kontaktieren Sie den Support.",
+    "logout": "Logout",
+    "sign_up_error_title": "Registrierung fehlgeschlagen",
+    "signed_up_success_message": "Ihr Konto wurde erfolgreich erstellt. Weiterleitung zu Ihrem Konto...",
+    "signed_up_success_title": "Registrierung erfolgreich",
+    "register_success_title": "Registrierung erfolgreich",
+    "register_success_message": "Sie wurden erfolgreich registriert.",
+    "send_new_code_success_title": "Code gesendet",
+    "send_new_code_success_message": "Ein neuer Bestätigungscode wurde an Ihre E-Mail-Adresse gesendet.",
+    "verify_code_button": "Überprüfen",
+    "code_verified_success_title": "Code bestätigt",
+    "code_verified_success_message": "Ihr Code wurde erfolgreich bestätigt. Sie können nun Ihr neues Passwort festlegen.",
+    "password_reset_success_title": "Passwort erfolgreich zurückgesetzt",
+    "password_reset_success_message": "Ihr Passwort wurde erfolgreich zurückgesetzt. Sie können sich nun mit Ihrem neuen Passwort anmelden.",
+    "login_to_continue": "Melden Sie sich an, um fortzufahren",
+    "register_to_continue": "Erstellen Sie ein Konto, um fortzufahren",
+    "civility_label": "Anrede",
+    "civility_mr": "Herr",
+    "civility_mme": "Frau",
+    "register_error_message": "Die Registrierung ist fehlgeschlagen. Bitte versuchen Sie es erneut."
+  },
+  "ReportOffer": {
+    "report_reason": "Meldegrund",
+    "why_report": "Warum melden Sie diese Anzeige?",
+    "not_shared": "Diese Informationen werden nicht an den Anbieter weitergegeben",
+    "incorrect_offer": "Ungenaue oder falsche Anzeige",
+    "fake_offer": "Betrug / betrügerische Aktivität",
+    "counterfeit_product": "Gefälschtes oder imitiertes Produkt",
+    "bad_information": "Irreführende Informationen",
+    "identity_theft": "Identitätsdiebstahl",
+    "others": "Sonstiges (bitte angeben)"
+  },
+  "ReportProfile": {
+    "report_reason": "Meldegrund",
+    "why_report": "Warum melden Sie dieses Profil?",
+    "not_shared": "Diese Informationen werden nicht an den Anbieter weitergegeben",
+    "abuse_or_disrespectful_behavior": "Missbräuchliches oder respektloses Verhalten",
+    "scam_or_fraud_attempt": "Betrug oder Betrugsversuch",
+    "fake_profile_or_identity_theft": "Falsches Profil oder Identitätsdiebstahl",
+    "illegal_or_suspicious_activity": "Illegale oder verdächtige Aktivität",
+    "others": "Sonstiges (bitte angeben)"
+  },
+  "image_cropper": {
+    "trigger_button": "Bild zuschneiden",
+    "modal": {
+      "title": "Bild zuschneiden",
+      "description": "Passen Sie den Zuschneidebereich an, indem Sie den Rahmen verschieben und seine Größe ändern",
+      "image_alt": "Zuzuschneidendes Bild",
+      "aspect_ratio_info": "Format: {ratio}",
+      "cancel_button": "Abbrechen",
+      "crop_button": "Zuschneiden",
+      "processing": "Verarbeitung..."
+    }
+  },
+  "image_field": {
+    "placeholder": "Ein Bild auswählen",
+    "click_to_upload": "Zum Hochladen klicken",
+    "validation": {
+      "required": "Dieses Feld ist erforderlich",
+      "invalid_type": "Nicht unterstützter Dateityp",
+      "file_too_large": "Die Datei ist zu groß (max: {maxSize}MB)"
+    },
+    "modal": {
+      "title": "Ein Bild hochladen und zuschneiden",
+      "description": "Wählen Sie ein Bild zum Hochladen und Zuschneiden aus",
+      "drag_drop_or_click": "Ziehen Sie ein Bild hierher oder klicken Sie zur Auswahl",
+      "select_file": "Datei auswählen",
+      "accepted_formats": "Akzeptierte Formate",
+      "max_size": "Maximale Größe",
+      "crop_description": "Passen Sie den Zuschneiderahmen nach Bedarf an",
+      "change_image": "Bild ändern",
+      "save_button": "Speichern",
+      "processing": "Verarbeitung..."
+    }
+  },
+  "About_us": {
+    "about_us_title": "Über uns",
+    "who_we_are": {
+      "title": "Wer sind wir?",
+      "description": "A.FREE.DEAL ist eine digitale Plattform für den Kauf und Verkauf von Produkten überall in Kamerun.",
+      "goal": "Unser Ziel ist es, einen sicheren, benutzerfreundlichen und vertrauenswürdigen Raum anzubieten, in dem jeder eine breite Palette von Produkten kaufen und verkaufen kann, aus jeder Stadt des Landes."
+    },
+    "mission": {
+      "title": "Unsere Mission",
+      "description": "Entwicklung einer intuitiven Plattform, die es unseren Mitgliedern ermöglicht, Produkte überall in Kamerun mit Vertrauen anzubieten, zu suchen und zu kaufen."
+    },
+    "vision": {
+      "title": "Unsere Vision",
+      "description": "Die führende Online-Handelsplattform in Kamerun werden und eine inklusive und solidarische digitale Wirtschaft zwischen den Kamerunern aufbauen."
+    },
+    "values": {
+      "title": "Unsere Werte",
+      "principles_intro": "Unsere Handlungen und Entscheidungen beruhen auf klaren Grundsätzen:",
+      "quality": "Vertrauen: ein sicheres und transparentes Umfeld schaffen.",
+      "trust": "Exzellenz: die optimale Zufriedenheit unserer Nutzer gewährleisten.",
+      "excellence": "Soziale Verantwortung: kamerunische Händler und Unternehmer unterstützen.",
+      "social_responsibility": "Solidarität: eine lokale, inklusive und gemeinschaftliche Wirtschaft fördern.",
+      "solidarity": ""
+    },
+    "differentiators": {
+      "title": "Was uns unterscheidet",
+      "community_focus": "Lokale Verankerung: ein exklusiver Fokus auf die besten Verkäufer und Produkte Kameruns.",
+      "enhanced_security": "Erhöhte Sicherheit: Überprüfungen, Bewertungen und Schlichtung für zuverlässige Transaktionen.",
+      "user_friendliness": "Benutzerfreundlichkeit: eine intuitive, einfache und angenehme Benutzeroberfläche.",
+      "positive_impact": "Positive Wirkung: jede Transaktion unterstützt lokale Unternehmer und ihre Sichtbarkeit."
+    },
+    "commitment": {
+      "title": "Unser Engagement für die Nutzer",
+      "for_providers": "Für Verkäufer: mehr Sichtbarkeit, neue Kunden und praktische Tools zur Geschäftsentwicklung.",
+      "for_clients": "Für Käufer: einfacher Zugang zu zuverlässigen, hochwertigen Produkten, die ihren Bedürfnissen entsprechen."
+    },
+    "about_us_why_choose_title": "Warum uns wählen?",
+    "about_us_why_choose_text": "Bei A.FREE.DEAL glauben wir an das Potenzial und die Stärke kamerunischer Unternehmer. Unsere Mission ist es, lokale Produkte zu fördern, das Vertrauen zu stärken und faire Chancen für alle zu schaffen. Ob Käufer oder Verkäufer, die Plattform begleitet Sie bei der Verwirklichung Ihrer Projekte und dem Aufbau einer erfolgreichen Zukunft.",
+    "about_us_start_title": "Starten Sie das Abenteuer!",
+    "about_us_start_text1": "Ihr Projekt ist bei AFreeDeal in guten Händen.",
+    "about_us_start_text2": "Schließen Sie sich uns an und wachsen wir gemeinsam!",
+    "about_us_start_button": "Eine Anzeige erstellen"
+  },
+  "Join_the_team": {
+    "header_title": "Dem AFREEDEAL-Team beitreten",
+    "mission_title": "Dem Team beizutreten ist viel mehr als ein Job",
+    "mission_content": "Wir sind ein Team von Enthusiasten, überzeugt von der Kraft des Kollektivs und dem Reichtum afrikanischer Talente. Jeden Tag arbeiten wir gemeinsam daran, Know-how sichtbar zu machen, das zu oft im Schatten bleibt. Authentizität, Kreativität und Exzellenz stehen im Mittelpunkt von allem, was wir unternehmen. Und wenn Sie sich dem Abenteuer anschließen? Wenn Sie ein sinnvolles Projekt suchen, bei dem Ihre Energie wirklich etwas bewirkt... dann willkommen, Sie sind am richtigen Ort.",
+    "share_your_cv": "Teilen Sie Ihren Lebenslauf",
+    "load_my_cv": "Meinen Lebenslauf hochladen",
+    "send_my_cv": "Meinen Lebenslauf senden",
+    "we_find_the_offer": "Wir finden das passende Angebot für Sie",
+    "page_title": "Dem AFREEDEAL-Team beitreten",
+    "intro_paragraph_1": "Wir sind ein Team von Enthusiasten, überzeugt von der Kraft des Kollektivs und dem Reichtum afrikanischer Talente. Jeden Tag arbeiten wir gemeinsam daran, Know-how sichtbar zu machen, das zu oft im Schatten bleibt. Authentizität, Kreativität und Exzellenz stehen im Mittelpunkt von allem, was wir unternehmen.",
+    "intro_paragraph_2": "Und wenn Sie sich dem Abenteuer anschließen? Wenn Sie ein sinnvolles Projekt suchen, bei dem Ihre Energie wirklich etwas bewirkt... dann willkommen, Sie sind am richtigen Ort.",
+    "upload_label": "Anhang",
+    "upload_subtext": "Zum Hinzufügen klicken",
+    "cta_button": "Meinen Lebenslauf senden"
+  },
+  "ServiceForm": {
+    "service_title_field": "Titel der Anzeige",
+    "service_title_placeholder": "Beschreiben Sie, was Sie verkaufen oder vermieten",
+    "service_description_field": "Beschreibung",
+    "service_description_placeholder": "Bitte geben Sie detaillierte Informationen zu Ihrer Anzeige an",
+    "service_category_field": "Kategorie",
+    "service_category_placeholder": "Wählen Sie eine Kategorie",
+    "service_pciture_field": "Fotos",
+    "service_price_field": "Preis",
+    "service_price_placeholder": "0",
+    "service_location_field": "Standort",
+    "service_location_place_holder": "Wählen Sie die Stadt(e)",
+    "service_whatsapp_field": "WhatsApp-Nummer",
+    "service_status_field": "Status der Online-Anzeige:",
+    "service_created": "Ihre Anzeige wurde erfolgreich erstellt und wartet auf die Validierung durch einen Administrator.",
+    "need_help_contact_us": "Brauchen Sie Hilfe? Kontaktieren Sie uns",
+    "click_here": "Klicken Sie hier",
+    "something_went_wrong": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+    "service_updated": "Ihr Serviceangebot wurde erfolgreich aktualisiert. Der Status wurde automatisch auf 'Ausstehend' gesetzt und wartet auf die Genehmigung des Administrators.",
+    "preview_before_publish": "Vorschau vor der Veröffentlichung",
+    "reminder": "Erinnerung",
+    "the_currency_used": "Die verwendete Währung ist:",
+    "noted": "Verstanden!",
+    "new_validation_required": "Neue Validierung erforderlich",
+    "new_validation_required_message": "Jede Änderung des Titels, der Beschreibung oder der Fotos erfordert eine neue Validierung durch unser Team. Während dieses Prozesses wird Ihr Service vorübergehend ausgeblendet und Sie können keine neuen Anfragen erhalten. Sie werden benachrichtigt, sobald er wieder online ist.",
+    "new_validation_required_confirm": "Möchten Sie fortfahren?",
+    "hidden_offer_alert": "Ein ausgeblendetes Angebot ist online nicht mehr sichtbar und es können keine neuen Anfragen gestellt werden. Laufende Anfragen bleiben jedoch aktiv.",
+    "validate": "Bestätigen",
+    "add_a_picture": "Ein Foto hinzufügen",
+    "click_to_add": "Zum Hinzufügen klicken"
+  },
+  "ServiceDelete": {
+    "delete_this_offer": "Dieses Angebot löschen",
+    "delete_this_listing": "Diese Anzeige löschen",
+    "confirm_delete": "Löschung bestätigen",
+    "confirm_delete_message": "Sie sind dabei, Ihr Serviceangebot zu löschen. Diese Aktion ist endgültig und unwiderruflich.",
+    "confirm_delete_description": "Alle mit diesem Angebot verbundenen Informationen werden gelöscht und können nicht wiederhergestellt werden. Es wird für andere Nutzer nicht mehr sichtbar sein und alle laufenden Bestellungen werden automatisch storniert.",
+    "confirm_delete_validate": "Möchten Sie die Löschung bestätigen?",
+    "service_deleted": "Ihr Serviceangebot wurde erfolgreich gelöscht.",
+    "something_went_wrong": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut."
+  },
+  "message_page": {
+    "title": "Meine Nachrichten",
+    "you_have_not_request": "Sie haben keine Anfrage gesendet",
+    "you_have_not_request_description": "Finden Sie den passenden Service, stellen Sie eine Anfrage an den Anbieter und tauschen Sie sich über Ihren Posteingang aus",
+    "you_have_not_offer": "Sie haben kein Angebot erhalten",
+    "you_have_not_offer_description": "Wenn Sie noch kein Serviceangebot haben, erstellen Sie eines, um von Kunden kontaktiert zu werden und sich über Ihren Posteingang auszutauschen",
+    "make_a_request": "Eine Anfrage stellen",
+    "make_an_service_offer": "Eine Anzeige erstellen",
+    "error_message": "Ein Fehler ist aufgetreten",
+    "retry": "Erneut versuchen",
+    "filters": {
+      "demands": "Meine Anfragen",
+      "offers": "Meine Angebote",
+      "status": "Status",
+      "all_messages": "Alle Nachrichten",
+      "unread_messages": "Ungelesene Nachrichten"
+    },
+    "conversation": {
+      "you_send": "Sie haben gesendet",
+      "desktop_chat_display_title": "Nachrichten",
+      "desktop_chat_display_placeholder": "Wählen Sie eine Unterhaltung aus der Liste, um den Chat hier anzuzeigen.",
+      "you_received": "Sie haben erhalten",
+      "show_cancellation_reason": "Stornierungsgrund anzeigen",
+      "cancellation_reason": "Stornierungsgrund",
+      "show_rejected_reason": "Ablehnungsgrund anzeigen",
+      "rejected_reason": "Ablehnungsgrund",
+      "request_message": "Eine Dienstleistungsanfrage",
+      "request_accepted_message": "Anfrage angenommen",
+      "request_refused_message": "Anfrage abgelehnt",
+      "request_canceled_message": "Anfrage storniert",
+      "offer_canceled_message": "Angebot storniert",
+      "offer_accepted_message": "Angebot angenommen",
+      "offer_rejected_message": "Angebot abgelehnt",
+      "service_completed_message": "Dienstleistung abgeschlossen",
+      "service_canceled_message": "Dienstleistung storniert",
+      "offer_message": "Ein Dienstleistungsangebot",
+      "write_message": "Nachricht schreiben...",
+      "last_message_offer_you": "Sie haben ein Angebot vorgeschlagen",
+      "last_message_offer": "Sie haben ein Angebot erhalten",
+      "last_message_service_you": "Sie haben eine Dienstleistungsanfrage gesendet",
+      "last_message_service": "Sie haben eine Dienstleistungsanfrage erhalten",
+      "leave_a_comment": "Einen Kommentar hinterlassen",
+      "prestation_finished": "Dienstleistung abgeschlossen",
+      "prestation_finished_description": "Sagen Sie uns, was Sie vom Kunden gehalten haben.",
+      "did_prestation_take_place": "Hat die Dienstleistung stattgefunden?",
+      "comment_placeholder": "Bitte geben Sie an, was Ihnen gefallen oder nicht gefallen hat.",
+      "which_note": "Welche Bewertung würden Sie geben?",
+      "write_your_comment": "Schreiben Sie Ihren Kommentar",
+      "rating_required": "Bitte geben Sie eine Bewertung ab",
+      "review_submitted_successfully": "Ihre Bewertung wurde erfolgreich eingereicht",
+      "review_submit_error": "Bei der Einreichung Ihrer Bewertung ist ein Fehler aufgetreten",
+      "review_already_exists": "Sie haben diesen Nutzer für diesen Service bereits bewertet",
+      "new_message": "neue Nachricht",
+      "new_messages": "neue Nachrichten",
+      "user_typing": "schreibt...",
+      "typing": "Schreibt...",
+      "user_online": "Online",
+      "user_offline": "Offline",
+      "last_seen_now": "gerade eben",
+      "last_seen_minutes": "{minutes} Min.",
+      "last_seen_hours": "{hours} Std.",
+      "last_seen_days": "{days} Tg.",
+      "seen": "Gesehen",
+      "conversation_canceled_successfully": "Unterhaltung erfolgreich storniert"
+    },
+    "service_details": {
+      "page_title": "Dienstleistungsanfrage",
+      "an_opportunity_to_take": "Eine Gelegenheit zu ergreifen",
+      "prestation_title": "Bezeichnung der Dienstleistung",
+      "prestation_description": "Beschreibung des Bedarfs",
+      "see_more": "Mehr sehen",
+      "desired_date": "Gewünschtes Datum für die Dienstleistung",
+      "desired_time": "Gewünschte Startzeit",
+      "estimated_duration": "Geschätzte Dauer des Bedarfs",
+      "prestation_location": "Ort der Dienstleistung",
+      "prestation_images": "Foto zur Veranschaulichung der Dienstleistung",
+      "customer_name": "Name des Kunden",
+      "refuse": "Ablehnen",
+      "accept": "Annehmen",
+      "make_an_offer": "Ein Angebot machen",
+      "make_offer_modal_title": "Ein Dienstleistungsangebot erstellen",
+      "cancel_service": "Diese Anfrage stornieren",
+      "confirm_cancellation": "Stornierung bestätigen",
+      "confirm_cancellation_message": "Möchten Sie diese Anfrage wirklich stornieren? Sobald storniert, kann dies nicht mehr rückgängig gemacht werden.",
+      "cancellation_reason_label": "Was ist der Grund der Stornierung?",
+      "cancellation_reason_placeholder": "Bitte geben Sie den Ablehnungsgrund an, der dem Anbieter mitgeteilt wird",
+      "confirm_refusal": "Ablehnung bestätigen",
+      "confirm_refusal_message": "Möchten Sie diese Anfrage wirklich ablehnen? Sobald abgelehnt, kann dies nicht mehr rückgängig gemacht werden.",
+      "refusal_reason_label": "Was ist der Grund der Ablehnung?",
+      "refusal_reason_placeholder": "Bitte geben Sie den Ablehnungsgrund an, der dem Kunden mitgeteilt wird"
+    },
+    "create_offer": {
+      "fields": {
+        "start_time": "Startzeit",
+        "duration": "Dauer der Dienstleistung",
+        "duration_placeholder": "Dauer auswählen",
+        "terms": "Leistungsbedingungen",
+        "terms_placeholder": "Beschreiben Sie die Bedingungen...",
+        "deposit": "Anzahlung",
+        "deposit_amount_to_pay": "Höhe der Anzahlung",
+        "penalties": "Verspätungsstrafen",
+        "penalties_placeholder": "Z.B.: 10€ pro 15 Minuten Verspätung",
+        "cancel_condition": "Stornierungsbedingung",
+        "cancel_condition_placeholder": "Wählen Sie eine Bedingung",
+        "cancel_condition_free": "Kostenlose Stornierung",
+        "cancel_condition_conditional": "Stornierung unter Bedingungen",
+        "cancel_condition_non_refundable": "Nicht erstattungsfähig",
+        "validity": "Gültigkeitsdauer des Angebots",
+        "validity_placeholder": "Gültigkeitsdauer auswählen"
+      },
+      "add_field_modal": {
+        "title": "Ein Feld zum Angebot hinzufügen",
+        "description": "Fügen Sie Informationen hinzu, um Ihr Angebot zu detaillieren"
+      },
+      "title": "Ein Angebot machen",
+      "detailed_information": "Machen Sie ein klares und detailliertes Angebot",
+      "date_label": "Datum der Dienstleistung",
+      "date_placeholder": "Wählen Sie das Datum",
+      "location_label": "Ort der Dienstleistung",
+      "location_placeholder": "Stadt und Land eingeben",
+      "description_label": "Beschreibung",
+      "description_placeholder": "Beschreiben Sie die auszuführenden Aufgaben",
+      "unit_price_label": "Stückpreis",
+      "quantity_label": "Menge",
+      "total_price": "Gesamtpreis",
+      "payment_method_label": "Zahlungsmethode",
+      "payment_method_placeholder": "Bar oder Überweisung?",
+      "add_description": "Beschreibung hinzufügen",
+      "add_field": "Feld hinzufügen",
+      "custom_field_label": "Benutzerdefiniertes Feld",
+      "agreement_text": "Ich bestätige, dass ich die allgemeinen Informationen zu diesem Angebot zur Kenntnis genommen habe",
+      "general_information_link": "allgemeine Informationen",
+      "general_information_modal_title": "Allgemeine Informationen des Angebots",
+      "general_information_modal_description": "Die folgenden Informationen werden im Dienstleistungsangebot an den Kunden aufgeführt.",
+      "general_information_modal_service_title": "Bezeichnung der Dienstleistung",
+      "general_information_modal_creation_date": "Erstellungsdatum des Angebots",
+      "general_information_modal_offer_number": "Angebotsnummer",
+      "general_information_modal_customer_name": "Name des Kunden",
+      "general_information_modal_provider_name": "Name des Anbieters",
+      "general_information_modal_button": "Verstanden!",
+      "preview_before_send": "Vorschau vor dem Senden",
+      "payment_methods": {
+        "cash": "Bar",
+        "transfer": "Überweisung"
+      }
+    },
+    "offer_details": {
+      "page_title": "Zusammenfassung des Angebots",
+      "page_title_demand": "Dienstleistungsangebot",
+      "page_title_offer": "Mein Dienstleistungsangebot",
+      "prestation_title": "Bezeichnung der Dienstleistung",
+      "devis_date": "Datum des Kostenvoranschlags",
+      "devis_number": "Nummer des Kostenvoranschlags",
+      "customer_name": "Name des Kunden",
+      "service_provider_name": "Name des Anbieters",
+      "prestation_date": "Datum der Dienstleistung",
+      "prestation_location": "Ort der Dienstleistung",
+      "prestation_hour": "Uhrzeit der Dienstleistung",
+      "prestation_duration": "Dauer der Dienstleistung",
+      "description": "Beschreibung",
+      "unit_price": "Stückpreis",
+      "quantity": "Menge",
+      "total_price": "Gesamtpreis",
+      "payment_method": "Zahlungsmethode",
+      "cash": "Bar",
+      "transfer": "Überweisung",
+      "deposit_amount_to_pay": "Höhe der Anzahlung",
+      "prestation_modality": "Leistungsbedingungen",
+      "penalties_for_late_arrival": "Verspätungsstrafen",
+      "cancellation_condition": "Stornierungsbedingungen",
+      "cancellation_on_condition": "Stornierung unter Bedingungen",
+      "free_cancellation": "Kostenlose Stornierung",
+      "show_cancellation_conditions": "Stornierungsbedingungen anzeigen",
+      "devis_validity_duration": "Gültigkeitsdauer des Kostenvoranschlags",
+      "refuse": "Ablehnen",
+      "accept": "Annehmen",
+      "cancel_offer": "Angebot stornieren",
+      "confirm_cancellation": "Stornierung bestätigen",
+      "confirm_cancellation_message": "Möchten Sie dieses Angebot wirklich stornieren?",
+      "refusal_reason": "Ablehnungsgrund",
+      "refusal_reason_label": "Was ist der Grund der Ablehnung?",
+      "refusal_reason_placeholder": "Bitte geben Sie den Ablehnungsgrund an, der dem Kunden mitgeteilt wird.",
+      "confirm_accept_offer": "Annahme des Angebots bestätigen",
+      "confirm_accept_offer_message": "Sind Sie sicher, dass Sie dieses Angebot annehmen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirm_refuse_offer": "Ablehnung des Angebots bestätigen",
+      "confirm_refuse_offer_message": "Sind Sie sicher, dass Sie dieses Angebot ablehnen möchten? Bitte geben Sie einen Grund an.",
+      "refuse_offer_reason_title": "Ablehnungsgrund",
+      "offer_accepted_successfully": "Angebot erfolgreich angenommen",
+      "offer_refused_successfully": "Angebot erfolgreich abgelehnt",
+      "see_general_information": "Allgemeine Informationen anzeigen",
+      "general_information_title": "Allgemeine Informationen",
+      "creation_date": "Erstellungsdatum des Angebots"
+    },
+    "answer_footer": {
+      "reply": "Antworten",
+      "view_offer": "Angebot ansehen",
+      "accept_offer": "Angebot annehmen",
+      "reject_offer": "Angebot ablehnen",
+      "view_request": "Anfrage ansehen",
+      "refuse_request": "Anfrage ablehnen"
+    }
+  },
+  "PersonalInfoForm": {
+    "civility": "Anrede",
+    "civility_placeholder": "Herr oder Frau",
+    "last_name": "Nachname",
+    "first_name": "Vorname",
+    "username_optional": "Benutzername (optional)",
+    "birth_date": "Geburtsdatum",
+    "email_address": "E-Mail-Adresse",
+    "phone_number": "Telefonnummer",
+    "country_of_origin": "Herkunftsland",
+    "nationality": "Nationalität",
+    "select_country": "Ein Land auswählen"
+  },
+  "MailingAddressForm": {
+    "town_of_residence": "Wohnort",
+    "country_of_residence": "Wohnsitzland",
+    "select_country": "Ein Land auswählen"
+  },
+  "ContactInfoForm": {
+    "email_address": "E-Mail-Adresse",
+    "whatsapp_number": "Telefonnummer",
+    "postal_address": "Postanschrift",
+    "postal_address_placeholder": "Geben Sie Ihre Postanschrift ein"
+  },
+  "ChangePasswordForm": {
+    "change_my_password": "Mein Passwort ändern",
+    "change_my_password_description": "Es muss mindestens 8 Zeichen enthalten, davon 1 Buchstabe, 1 Zahl und 1 Sonderzeichen",
+    "current_password": "Aktuelles Passwort",
+    "forgot_password": "Passwort vergessen?",
+    "new_password": "Neues Passwort",
+    "confirm_new_password": "Neues Passwort bestätigen",
+    "old_password_incorrect": "Das aktuelle Passwort ist falsch!"
+  },
+  "Orders": {
+    "no_requests_title": "Sie haben keine Anfrage gesendet",
+    "no_requests_description": "Finden Sie den passenden Service und stellen Sie eine Dienstleistungsanfrage",
+    "make_a_request": "Eine Anfrage stellen",
+    "no_offer_title": "Sie haben kein Angebot erhalten",
+    "no_offer_description": "Wenn Sie noch kein Serviceangebot haben, erstellen Sie eines und erhalten Sie Dienstleistungsanfragen von Kunden",
+    "my_requests": "Meine Anfragen",
+    "my_offers": "Meine Angebote",
+    "my_orders": "Meine Bestellungen"
+  },
+  "Agenda": {
+    "no_request": "Sie haben keine geplante Anfrage",
+    "no_request_description": "Finden Sie den passenden Service, stellen Sie eine Anfrage und planen Sie einen Termin.",
+    "no_offer": "Sie haben keine geplante Dienstleistung",
+    "no_offer_description": "Wenn Sie noch kein Serviceangebot haben, erstellen Sie eines, erhalten Sie Kundenanfragen und planen Sie Ihre Dienstleistungen.",
+    "my_agenda": "Mein Kalender",
+    "make_a_request": "Eine Anfrage stellen"
+  },
+  "Transaction": {
+    "no_request": "Sie haben keinen Kauf getätigt",
+    "no_request_description": "Finden Sie den passenden Service, stellen Sie eine Anfrage und bezahlen Sie den Anbieter nach erbrachter Leistung.",
+    "no_offer": "Sie haben keinen Verkauf getätigt",
+    "no_offer_description": "Wenn Sie noch kein Serviceangebot haben, erstellen Sie eines, erhalten Sie Kundenanfragen für Dienstleistungen und werden Sie nach jeder Leistung bezahlt.",
+    "my_transactions": "Meine Transaktionen",
+    "make_a_request": "Eine Anfrage stellen"
+  },
+  "Favorites": {
+    "my_favorites": "Meine Favoriten",
+    "no_favorites": "Sie haben keine gespeicherte Suche",
+    "no_favorites_description": "Finden Sie die passende Anzeige, speichern Sie sie in Ihren Favoriten und greifen Sie jederzeit einfach darauf zu.",
+    "find_provider": "Einen Anbieter suchen"
+  },
+  "Settings": {
+    "my_settings": "Meine Einstellungen",
+    "NavLink": {
+      "notifications": "Benachrichtigungen",
+      "language": "Sprache",
+      "currency": "Währung",
+      "invite": "Einen Angehörigen einladen",
+      "help": "Hilfe"
+    },
+    "Notifications": {
+      "email_notifications": "E-Mail-Benachrichtigungen",
+      "orders": "Bestellungen",
+      "orders_description": "Verfolgen Sie den Fortschritt Ihrer Anfragen und Angebote in Echtzeit.",
+      "members_messages": "Nachrichten anderer Mitglieder",
+      "members_messages_description": "Verpassen Sie keinen Austausch: sofortige Benachrichtigung bei jeder Nachricht oder Erinnerung.",
+      "reviews_and_ratings": "Bewertungen & Beurteilungen",
+      "reviews_and_ratings_description": "Erhalten Sie eine Benachrichtigung, wenn eine Bewertung abgegeben wird oder ein Feedback erwartet wird.",
+      "services": "Dienstleistungen",
+      "service_description": "Werden Sie über Statusänderungen Ihrer Dienstleistungen benachrichtigt.",
+      "account_security": "Konto & Sicherheit",
+      "account_security_description": "Überwachen Sie Ihr Konto: Benachrichtigungen bei jeder sensiblen Aktivität (verdächtige Anmeldung, Passwortänderung usw.).",
+      "afreeserv_news": "A.Free.Deal-Neuigkeiten",
+      "afreeserv_news_Description": "Erhalten Sie AGB-Aktualisierungen, neue Funktionen und Wartungsbenachrichtigungen.",
+      "promotions": "Marketing und Werbeaktionen",
+      "promotions_description": "Entdecken Sie Sonderangebote, Werbeaktionen und für Sie empfohlene Dienstleistungen.",
+      "preferences_updated_successfully": "Ihre Benachrichtigungseinstellungen wurden erfolgreich aktualisiert",
+      "preferences_update_failed": "Aktualisierung der Benachrichtigungseinstellungen fehlgeschlagen"
+    },
+    "Languages": {
+      "choose_language": "Sprache wählen",
+      "select_your_language": "Wählen Sie Ihre bevorzugte Sprache",
+      "french": "Französisch",
+      "english": "Englisch"
+    },
+    "Currency": {
+      "choose_currency": "Währung wählen",
+      "select_your_currency": "Wählen Sie Ihre bevorzugte Währung"
+    },
+    "Invite": {
+      "invite_people": "Einen Angehörigen einladen",
+      "invite_people_description": "Machen Sie A.FREE.DEAL bei Ihren Angehörigen bekannt: eine Plattform, die den Austausch von Dienstleistungen erleichtert und lokale Talente fördert. Gemeinsam schaffen wir ein Ökosystem des Vertrauens und der Exzellenz.",
+      "invite_now": "Jetzt einladen",
+      "link_copied": "Einladungslink kopiert!",
+      "invite_share_message": "Treten Sie mir auf A.FREE.DEAL bei, der Plattform für den Austausch von Dienstleistungen!",
+      "share_error": "Ein Fehler ist aufgetreten"
+    }
+  },
+  "HelpCenter": {
+    "help_center": "Hilfezentrum",
+    "MenuItems": {
+      "general_term": "Allgemeine Nutzungsbedingungen",
+      "privacy_policy": "Datenschutzrichtlinie",
+      "contact_us": "Kontaktieren Sie uns",
+      "delete_my_account": "Mein Konto löschen"
+    },
+    "ContactUs": {
+      "customer_support": "Kundensupport",
+      "customer_support_description": "Beschreiben Sie uns Ihr Problem oder Ihre Frage. Unser Team wird Ihnen schnellstmöglich über WhatsApp antworten.",
+      "message_field_label": "Ihre Nachricht",
+      "message_field_placeholder": "Sagen Sie uns, was Sie brauchen, wir sind für Sie da",
+      "whatsapp_field_label": "Ihre Telefonnummer",
+      "whatsapp_field_description": "Wir werden diese Nummer verwenden, um Ihnen zu antworten",
+      "send_my_request": "Meine Nachricht senden"
+    },
+    "DeleteAccount": {
+      "delete_my_account": "Mein Konto löschen",
+      "delete_my_account_description": "Es tut uns leid, Sie gehen zu sehen. Möchten Sie Ihr Konto vorübergehend deaktivieren oder endgültig löschen?",
+      "temporal_deactivate": "Mein Konto vorübergehend deaktivieren",
+      "temporal_deactivate_description": "(Sie können Ihr Konto jederzeit durch erneutes Anmelden reaktivieren.)",
+      "permanent_delete": "Mein Konto endgültig löschen",
+      "permanent_delete_description": "(Diese Aktion ist unwiderruflich.)",
+      "account_deactivation": "Kontodeaktivierung",
+      "confirm_account_deactivation": "Bestätigung der Deaktivierung",
+      "account_deactivation_description": "Sie sind dabei, Ihr Konto zu deaktivieren. Diese Aktion hat folgende Konsequenzen:",
+      "account_deactivation_duration_warning": "Ihr Konto wird für mindestens 3 Tage gesperrt.",
+      "account_deactivation_login_restriction": "Sie können sich während dieses Zeitraums nicht anmelden.",
+      "account_deactivation_reactivation_info": "Nach 3 Tagen wird es bei Ihrer nächsten Anmeldung automatisch reaktiviert.",
+      "account_deactivation_services_deactivation": "Alle Ihre Dienstleistungen werden deaktiviert. Sie müssen sie manuell reaktivieren.",
+      "accept_account_deactivation": "Möchten Sie die Deaktivierung Ihres Kontos bestätigen?",
+      "confirm_account_delete": "Bestätigung der Löschung",
+      "delete_account_description": "Warum möchten Sie Ihr Konto löschen?",
+      "delete_account_caption": "Helfen Sie uns, Ihre Entscheidung zu verstehen. Dies ermöglicht es uns, unseren Service zu verbessern",
+      "delete_account_reason_no_longer_use": "Ich nutze die Plattform nicht mehr",
+      "delete_account_reason_item_not_found": "Ich habe nicht gefunden, wonach ich gesucht habe",
+      "delete_account_reason_platform_complicated": "Die Plattform ist kompliziert zu bedienen",
+      "delete_account_reason_no_suitable_provider": "Ich habe keinen passenden Anbieter für meine Bedürfnisse gefunden",
+      "delete_account_reason_insufficient_requests": "Ich erhalte nicht genug Kundenanfragen",
+      "delete_account_reason_user_issue": "Ich hatte ein Problem mit einem anderen Nutzer",
+      "delete_account_reason_other": "Sonstiges (bitte angeben)",
+      "departure_raison": "Grund des Abgangs",
+      "departure_raison_label": "Was ist der Grund?",
+      "departure_raison_placeholder": "Bitte geben Sie an, was Sie zum Gehen veranlasst"
+    },
+    "TermsAndCondition": {
+      "1": {
+        "title": "1. Zweck",
+        "paragraphe": [
+          "AFREEDEAL stellt als Hosting-Website eine mobile Plattform (www.afreedeal.com) zur Verfügung, die es Verkäufern ermöglicht, ihre Produkte über einen öffentlich zugänglichen Katalog für Käufer in ganz Kamerun zu präsentieren und zu verkaufen.",
+          "AFREEDEAL ist keine Vertragspartei der zwischen den Mitgliedern geschlossenen Verträge. Die Plattform greift nicht in die Verhandlung, den Abschluss, die Ausführung oder die Bezahlung von Transaktionen ein.",
+          "Mit der Erstellung eines Kontos auf der Plattform AFREEDEAL akzeptiert das Mitglied alle vorliegenden Allgemeinen Nutzungsbedingungen. AFREEDEAL behält sich das Recht vor, diese Bedingungen zu ändern. In diesem Fall werden die Mitglieder per E-Mail innerhalb von 10 Werktagen vor Inkrafttreten der neuen Bedingungen informiert. Jedes Mitglied kann die geänderten Bedingungen akzeptieren oder die Nutzung der Website einstellen. Die geänderten Bedingungen treten automatisch in Kraft und ersetzen die vorherigen. Bei Ablehnung kann das Mitglied sein Konto über die Einstellungen der Website löschen."
+        ]
+      },
+      "2": {
+        "title": "2. Definitionen",
+        "list_items": [
+          "Website / Plattform: Die Website www.afreedeal.com.",
+          "Mitglied: Jede Person, die die Website als Verkäufer oder Käufer nutzt.",
+          "Verkäufer: Mitglied, das ein oder mehrere Produkte auf der Plattform zum Verkauf anbietet.",
+          "Käufer / Kunde: Mitglied, das ein oder mehrere Produkte auf der Plattform kauft.",
+          "Benutzername: Öffentliche Kennung, die von einem als Käufer handelnden Mitglied gewählt wird.",
+          "Shop-Name: Öffentliche Kennung, die speziell von einem Verkäufer für seinen Shop gewählt wird.",
+          "Produkt: Artikel oder Ware, die von einem Verkäufer zum Verkauf angeboten wird.",
+          "Brutto: Inklusive aller Steuern.",
+          "Externe Kommunikationskanäle: Von den Mitgliedern freiwillig bereitgestellte Kommunikationsmittel wie Telefon, WhatsApp oder E-Mail.",
+          "Cookie: Datei zur Speicherung von Navigationsdaten."
+        ]
+      },
+      "3": {
+        "title": "3. Konto",
+        "ordered_list": [
+          {
+            "title": "3.1. Kontoerstellung",
+            "content": [
+              "Die Kontoerstellung wird mit der Bestätigung des Registrierungsformulars wirksam.",
+              "Die Registrierung auf der Plattform ist kostenlos."
+            ]
+          },
+          {
+            "title": "3.2. Öffentliche Informationen",
+            "content": [
+              "Mit dem Beitritt zu AFREEDEAL akzeptieren die Mitglieder, dass bestimmte Informationen öffentlich zugänglich sind: Name, Vorname, Land, Benutzername oder Shop-Name (optional) und Profilbild (falls hinzugefügt).",
+              "Für mehr Transparenz müssen Verkäufer ein Profilbild anzeigen."
+            ]
+          },
+          {
+            "title": "3.3. Kontoänderung",
+            "content": [
+              "Mitglieder können ihre persönlichen Informationen jederzeit ändern. Informationen im Bereich \"Verkäuferprofil\" können einer Validierung durch das Support-Team unterliegen."
+            ]
+          },
+          {
+            "title": "3.4. Kontolöschung",
+            "content": [
+              "Mitglieder können ihr Konto über die Einstellungen vorübergehend deaktivieren oder endgültig löschen. Diese Aktion ist sofort wirksam.",
+              "Bei Nichteinhaltung der vorliegenden AGB behält sich AFREEDEAL das Recht vor, ein Konto zu sperren oder zu löschen."
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "4. Anzeigen",
+        "paragraphe": [
+          "Mitglieder können Anzeigen auf der Plattform erstellen und Bestellungen erhalten. Jede Erstellung oder Änderung einer Anzeige unterliegt der Validierung durch das Support-Team."
+        ],
+        "ordered_list": [
+          {
+            "title": "4.1. Erstellung einer Anzeige",
+            "content": [
+              "Die Veröffentlichung von Anzeigen ist kostenlos und unbegrenzt. Die Plattform behält sich jedoch das Recht vor, eine Anzeige anzunehmen oder abzulehnen.",
+              "Der Verkäufer legt den Preis seiner Anzeigen frei fest. Die Plattform kann jedoch eine Anzeige ablehnen, wenn der Preis im Verhältnis zum angebotenen Produkt inkohärent erscheint."
+            ]
+          },
+          {
+            "title": "4.2. Annahme oder Ablehnung einer Anzeige",
+            "content": [
+              "Die Plattform prüft jede Anzeige vor der Veröffentlichung. Sie kann Änderungen verlangen (z.B.: Korrekturen, Hinzufügen von Fotos). Um die Qualität zu wahren, kann sie eine Anzeige ohne Begründung ablehnen."
+            ]
+          },
+          {
+            "title": "4.3. Änderung einer Anzeige",
+            "content": [
+              "Der Verkäufer kann eine Anzeige jederzeit ändern. Jede vom Verkäufer vorgenommene Änderung unterliegt einer neuen Validierung durch das Support-Team."
+            ]
+          },
+          {
+            "title": "4.4. Löschung einer Anzeige",
+            "content": [
+              "Eine Anzeige kann jederzeit vom Verkäufer ausgeblendet werden. Sie wird dann für Käufer unsichtbar, aber laufende Transaktionen bleiben aktiv.",
+              "Bei endgültiger Löschung oder Deaktivierung werden alle mit dieser Anzeige verbundenen Informationen gelöscht und können nicht wiederhergestellt werden.",
+              "Die Plattform kann auch eine Anzeige nach Beschwerden veröffentlichen und wird den Verkäufer kontaktieren, um eine Lösung zu finden."
+            ]
+          },
+          {
+            "title": "4.5. Produktverkauf",
+            "content": [
+              "AFREEDEAL ist ein Marktplatz, der es seinen Mitgliedern ermöglicht, ihre Produkte kostenlos zu verkaufen. Während der Einführungsphase werden keine Provisionen erhoben. Nach dieser Phase wird eine offizielle Mitteilung die Höhe der Provision in einer Aktualisierung der AGB präzisieren."
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "5. Kommunikation zwischen Mitgliedern",
+        "paragraphe": [
+          "Die Mitglieder verfügen nicht über einen internen Posteingang auf der AFREEDEAL-Plattform. Der Austausch zwischen Käufern und Verkäufern erfolgt ausschließlich über externe Kanäle wie Telefonnummer, WhatsApp oder die freiwillig von den Mitgliedern bereitgestellte E-Mail-Adresse.",
+          "AFREEDEAL greift nicht in den Inhalt der Austausche, die Verhandlungen oder die Ausführung der zwischen den Mitgliedern geschlossenen Transaktionen ein. Die Mitglieder sind allein verantwortlich für die Informationen, die sie kommunizieren, und für den Austausch über diese externen Kanäle."
+        ]
+      },
+      "6": {
+        "title": "6. Haftung von AFREEDEAL",
+        "paragraphe": [
+          "AFREEDEAL setzt alles daran, einen sicheren und kontinuierlichen Zugang zur Plattform zu gewährleisten, ohne Ergebnisgarantie.",
+          "Verträge, Vereinbarungen, Zahlungen und Lieferungen werden direkt zwischen den Mitgliedern außerhalb der Plattform über externe Kommunikationskanäle geschlossen. AFREEDEAL greift zu keinem Zeitpunkt in diese Transaktionen ein und kann nicht für Streitigkeiten, Zahlungen, Liefermängel oder Nichtausführung von Bestellungen verantwortlich gemacht werden.",
+          "AFREEDEAL lehnt jede Haftung hinsichtlich der Richtigkeit der von den Mitgliedern veröffentlichten Informationen und Produkte ab."
+        ]
+      },
+      "7": {
+        "title": "7. Steuerliche Pflichten des Verkäufers",
+        "paragraphe": [
+          "Der Verkäufer ist allein für seine steuerlichen Pflichten verantwortlich, insbesondere die Erklärung und Zahlung aller anfallenden Steuern und Abgaben gemäß der geltenden kamerunischen Gesetzgebung. AFREEDEAL kann dafür nicht haftbar gemacht werden."
+        ]
+      },
+      "8": {
+        "title": "8. Geistiges Eigentum",
+        "paragraphe": [
+          "Der Verkäufer garantiert, alle erforderlichen Rechte für den Verkauf seiner Produkte und die Veröffentlichung seiner Fotos und Inhalte zu besitzen. Er genehmigt AFREEDEAL, die zugehörigen Inhalte zu Werbezwecken ohne zusätzliche Genehmigung zu verwenden."
+        ]
+      },
+      "9": {
+        "title": "9. Daten und Vertraulichkeit",
+        "paragraphe": [
+          "Die personenbezogenen Daten der Mitglieder werden gemäß der geltenden Gesetzgebung in Kamerun verarbeitet. Keine Daten werden ohne ausdrückliche Zustimmung an Dritte weitergegeben, außer bei gesetzlicher Verpflichtung."
+        ]
+      },
+      "10": {
+        "title": "10. Haftungsbeschränkung",
+        "paragraphe": [
+          "Soweit nach geltendem Recht zulässig, ist die Gesamthaftung von AFREEDEAL gegenüber einem Mitglied, aus welchem Grund auch immer, auf den Betrag beschränkt, den das Mitglied in den zwölf (12) Monaten vor Eintritt des Schadens gegebenenfalls an AFREEDEAL gezahlt hat.",
+          "AFREEDEAL kann in keinem Fall für indirekte Schäden, Datenverlust, Gewinnverlust, Kundenverlust oder Geschäftsschäden haftbar gemacht werden."
+        ]
+      },
+      "11": {
+        "title": "11. Entschädigung",
+        "paragraphe": [
+          "Das Mitglied verpflichtet sich, AFREEDEAL von allen Ansprüchen, Klagen, Schäden, Verlusten, Haftungen, Kosten und Ausgaben (einschließlich Anwaltskosten) freizustellen, die sich aus der Nutzung der Plattform, der Nichteinhaltung der vorliegenden AGB oder der Verletzung von Rechten Dritter ergeben."
+        ]
+      },
+      "12": {
+        "title": "12. Entschädigung",
+        "paragraphe": [
+          "Die vorliegenden AGB unterliegen dem kamerunischen Recht.",
+          "Im Streitfall sind die zuständigen Gerichte am Sitz von AFREEDEAL in Kamerun zuständig."
+        ]
+      },
+      "13": {
+        "title": "13. Anwendbares Recht und Gerichtsstand",
+        "paragraphe": [
+          "Mit der Registrierung auf der Plattform bestätigt das Mitglied, die vorliegenden Allgemeinen Nutzungsbedingungen gelesen, verstanden und vorbehaltlos akzeptiert zu haben."
+        ]
+      }
+    },
+    "PrivacyPolicy": {
+      "1": {
+        "title": "1. Präambel",
+        "paragraphe": [
+          "Bei AFreeDeal hat der Schutz Ihrer personenbezogenen Daten höchste Priorität.",
+          "Die vorliegende Datenschutzrichtlinie hat zum Ziel, Sie transparent darüber zu informieren, wie wir Ihre Informationen im Rahmen der Nutzung unserer Plattform erheben, verwenden, speichern und schützen."
+        ]
+      },
+      "2": {
+        "title": "2. Verantwortlicher für die Verarbeitung",
+        "paragraphe": [
+          "Der Verantwortliche für die Datenverarbeitung ist:",
+          "AFreeDeal, Herausgeber der Plattform www.afreedeal.com.",
+          "Bei Fragen zum Datenschutz, zur Ausübung Ihrer Rechte oder zur vorliegenden Richtlinie können Sie uns unter der E-Mail-Adresse kontaktieren: support@afreedeal.com."
+        ]
+      },
+      "3": {
+        "title": "3. Erhobene Daten",
+        "paragraphe": [
+          "AFreeDeal erhebt nur die für die Verwaltung der Plattform und die Vernetzung zwischen ihren Nutzern (Käufer und Anbieter) unbedingt erforderlichen Daten."
+        ],
+        "subsections": {
+          "1": {
+            "subtitle": "3.1. Direkt vom Nutzer bereitgestellte Daten",
+            "list": [
+              "Name, Vorname, Pseudonym, Anbietername",
+              "E-Mail-Adresse und Telefonnummer",
+              "Passwort (verschlüsselt)",
+              "Profilbild oder Logo (optional)",
+              "Berufliche Informationen (Beschreibung, Expertise, Tarife usw.)",
+              "Informationen zu den veröffentlichten Dienstleistungen",
+              "Auf der Plattform hinterlassene Bewertungen und Beurteilungen"
+            ]
+          },
+          "2": {
+            "subtitle": "3.2. Automatisch erhobene Daten",
+            "list": [
+              "Verbindungsdaten: IP-Adresse, Browsertyp, Betriebssystem",
+              "Cookies und ähnliche Technologien zur Verbesserung der Navigation und Sicherheit",
+              "Nutzungsstatistiken (besuchte Seiten, Verweildauer, Präferenzen)"
+            ]
+          },
+          "3": {
+            "subtitle": "3.3. Transaktionsbezogene Daten",
+            "paragraphe": [
+              "AFreeDeal verwaltet keine Zahlungen zwischen Mitgliedern und erhebt keine Bankdaten. Transaktionen werden direkt zwischen den Mitgliedern außerhalb der Plattform abgeschlossen."
+            ]
+          },
+          "4": {
+            "subtitle": "3.4. Kontolöschung",
+            "paragraphe": [
+              "Mitglieder können ihr Konto über die Einstellungen vorübergehend deaktivieren oder endgültig löschen. Diese Aktion ist sofort wirksam.",
+              "Bei Nichteinhaltung der vorliegenden AGB behält sich AFreeDeal das Recht vor, ein Konto zu sperren oder zu löschen."
+            ]
+          }
+        }
+      },
+      "4": {
+        "title": "4. Zwecke der Datenverarbeitung",
+        "paragraphe": [
+          "Die erhobenen Daten werden für folgende Zwecke verwendet:"
+        ],
+        "list": [
+          "Erstellung und Verwaltung von Benutzerkonten",
+          "Ermöglichung der Veröffentlichung und Einsicht der von den Verkäufern angebotenen Dienstleistungen",
+          "Erleichterung der Vernetzung zwischen Käufern und Verkäufern (ohne Eingriff von AFreeDeal in den Austausch)",
+          "Verwaltung der auf der Plattform hinterlassenen Bewertungen und Beurteilungen",
+          "Verbesserung der Nutzererfahrung und der Plattformqualität",
+          "Gewährleistung der Sicherheit, Betrugsprävention und Einhaltung der AGB",
+          "Einhaltung gesetzlicher und regulatorischer Verpflichtungen"
+        ],
+        "paragraphe2": [
+          "Keine personenbezogenen Daten werden ohne Ihre ausdrückliche Zustimmung verkauft, abgetreten oder an Dritte weitergegeben."
+        ]
+      },
+      "5": {
+        "title": "5. Rechtsgrundlage der Verarbeitung",
+        "paragraphe": [
+          "Die Verarbeitung personenbezogener Daten durch AFreeDeal beruht auf folgenden Rechtsgrundlagen:"
+        ],
+        "list": [
+          "Die Erfüllung des mit dem Nutzer geschlossenen Vertrags (AGB), die für die Bereitstellung der Plattformdienste erforderlich ist.",
+          "Das berechtigte Interesse von AFreeDeal, insbesondere für die Bewerbung seiner Dienste, die Betrugsprävention oder die Gewährleistung der Sicherheit der Website."
+        ],
+        "paragraphe2": [
+          "Die ausdrückliche Einwilligung des Nutzers für die Verwendung nicht wesentlicher Cookies oder Werbeinhalte."
+        ]
+      },
+      "6": {
+        "title": "6. Aufbewahrungsdauer",
+        "paragraphe": [
+          "Ihre Daten werden so lange aufbewahrt, wie Ihr Konto aktiv ist.",
+          "Im Falle der Löschung Ihres Kontos werden die Daten in einer Zwischenarchivdatenbank für einen Zeitraum von höchstens drei (3) Jahren ab der Löschung aufbewahrt, um gesetzliche Verpflichtungen (insbesondere steuerliche und buchhalterische) zu erfüllen und den Vertragsnachweis zu gewährleisten. Nach Ablauf dieser Frist werden sie endgültig gelöscht oder anonymisiert."
+        ]
+      },
+      "7": {
+        "title": "7. Weitergabe und Empfänger der Daten",
+        "paragraphe": [
+          "Die Daten können nur an folgende Personen weitergegeben werden:"
+        ],
+        "list": [
+          "Die anderen Mitglieder der Plattform (im Rahmen der für die Vernetzung erforderlichen Informationen).",
+          "Technische Dienstleister, die das Hosting, die Wartung, die Sicherheit oder den E-Mail-Versand gewährleisten.",
+          "Verwaltungs- oder Justizbehörden, sofern gesetzlich vorgeschrieben."
+        ],
+        "paragraphe2": [
+          "Alle Partner und Unterauftragnehmer von AFreeDeal unterliegen einer strengen Vertraulichkeitsverpflichtung und der DSGVO-Konformität.",
+          "Die Mitglieder erkennen an, allein für die Nutzung der von anderen Mitgliedern erhaltenen Daten verantwortlich zu sein, und verpflichten sich, diese nur im Rahmen der Suche oder Erbringung von Dienstleistungen zu verwenden."
+        ]
+      },
+      "8": {
+        "title": "8. Kommunikation zwischen Mitgliedern",
+        "paragraphe": [
+          "Der Austausch zwischen Käufern und Verkäufern kann über externe Kommunikationskanäle (Telefon, WhatsApp, E-Mail oder andere freiwillig von den Mitgliedern bereitgestellte Mittel) erfolgen.",
+          "AFreeDeal hat keinen Zugang zu diesen Austauschen und erhebt keine der dort geteilten Daten. Die Mitglieder sind allein für die Informationen verantwortlich, die sie über diese Kanäle kommunizieren."
+        ]
+      },
+      "9": {
+        "title": "9. Datensicherheit",
+        "paragraphe": [
+          "AFreeDeal setzt alle notwendigen technischen und organisatorischen Maßnahmen ein, um die Vertraulichkeit und Sicherheit der personenbezogenen Daten zu gewährleisten:"
+        ],
+        "list": [
+          "Sicheres Hosting auf DSGVO-konformen Servern",
+          "Verschlüsselung von Passwörtern und Verbindungen (SSL/TLS)",
+          "Regelmäßige Backups und interne Zugangskontrolle",
+          "Zugangsbeschränkung nach dem \"Need-to-know\"-Prinzip"
+        ],
+        "paragraphe2": [
+          "Im Falle einer Verletzung personenbezogener Daten wird AFreeDeal die CNIL und gegebenenfalls die betroffenen Nutzer gemäß der geltenden Gesetzgebung benachrichtigen."
+        ]
+      },
+      "10": {
+        "title": "10. Cookies",
+        "paragraphe": [
+          "Cookies werden verwendet für:"
+        ],
+        "list": [
+          "Gewährleistung des ordnungsgemäßen Betriebs der Website",
+          "Verbesserung der Navigation",
+          "Analyse des Datenverkehrs und Messung der Besucherzahlen",
+          "Personalisierung der angezeigten Inhalte"
+        ],
+        "paragraphe2": [
+          "Sie können Ihre Einstellungen jederzeit über die Browsereinstellungen verwalten.",
+          "Die Ablehnung nicht wesentlicher Cookies beeinträchtigt den Zugang zu den Hauptfunktionen der Plattform nicht."
+        ]
+      },
+      "11": {
+        "title": "11. Rechte der Nutzer",
+        "paragraphe": [
+          "Gemäß der Datenschutz-Grundverordnung (DSGVO) hat jeder Nutzer folgende Rechte hinsichtlich seiner Daten:"
+        ],
+        "list": [
+          "Auskunftsrecht: eine Kopie der gespeicherten Daten erhalten.",
+          "Recht auf Berichtigung: unrichtige oder unvollständige Daten korrigieren.",
+          "Recht auf Löschung (Recht auf Vergessenwerden).",
+          "Recht auf Einschränkung der Verarbeitung.",
+          "Widerspruchsrecht: insbesondere gegen die Verarbeitung zu Werbezwecken.",
+          "Recht auf Datenübertragbarkeit: seine Daten in einem strukturierten und lesbaren Format erhalten."
+        ],
+        "paragraphe2": [
+          "Um Ihre Rechte auszuüben, kontaktieren Sie uns unter support@afreedeal.com.",
+          "Eine Antwort wird Ihnen innerhalb von maximal 30 Tagen nach Eingang Ihrer Anfrage erteilt."
+        ]
+      },
+      "12": {
+        "title": "12. Übermittlung außerhalb der Europäischen Union",
+        "paragraphe": [
+          "AFreeDeal ist eine Plattform, die aus mehreren Ländern zugänglich ist. Die personenbezogenen Daten der Nutzer können in bestimmten Fällen außerhalb der Europäischen Union verarbeitet oder gespeichert werden.",
+          "In diesem Fall stellt AFreeDeal sicher, dass diese Übermittlungen unter Einhaltung der geltenden Datenschutzbestimmungen erfolgen, insbesondere durch von der Europäischen Kommission genehmigte Standardvertragsklauseln oder gleichwertige Garantien, um ein angemessenes Schutzniveau der personenbezogenen Daten der Nutzer unabhängig vom Verarbeitungsort zu gewährleisten."
+        ]
+      },
+      "13": {
+        "title": "13. Änderung der Richtlinie",
+        "paragraphe": [
+          "AFreeDeal behält sich das Recht vor, die vorliegende Datenschutzrichtlinie jederzeit zu ändern.",
+          "Die Nutzer werden über jede wesentliche Änderung per E-Mail oder Benachrichtigung auf der Plattform informiert.",
+          "Die geänderte Version tritt 10 Werktage nach ihrer Veröffentlichung in Kraft."
+        ]
+      }
+    }
+  },
+  "NotFoundPage": {
+    "title": "Seite nicht gefunden",
+    "subtitle": "Hoppla! Die gesuchte Seite scheint nicht zu existieren.",
+    "back_home": "Zurück zur Startseite",
+    "refresh": "Aktualisieren"
+  },
+  "UnknownErrors": {
+    "title": "Unerwarteter Fehler",
+    "subtitle": "Hoppla, ein Fehler ist aufgetreten... Bitte versuchen Sie es erneut.",
+    "back_home": "Zurück zur Startseite",
+    "try_again": "Erneut versuchen",
+    "problem_persist": "Wenn das Problem weiterhin besteht:",
+    "contact_support": "Support kontaktieren"
+  },
+  "ClientSupport": {
+    "header_title": "Brauchen Sie Hilfe",
+    "contact_us": "Kontaktieren Sie uns",
+    "contact_us_question": "Haben Sie eine Frage oder ein Problem?",
+    "contact_us_cta": "Klicken Sie auf die Schaltfläche unten, um die Unterhaltung zu starten",
+    "chat_on_whatsapp": "Auf WhatsApp chatten"
+  },
+  "LandingPage": {
+    "about_title": "Wer sind wir?",
+    "about_desc_bloc_1": "AFreeDeal ist eine digitale Plattform, die sich der Vernetzung von Dienstleistern und Kunden widmet.",
+    "about_desc_bloc_2": "Unser Ziel ist es, einen sicheren, benutzerfreundlichen und vertrauenswürdigen Raum anzubieten, in dem jeder eine breite Palette von Dienstleistungen kaufen und verkaufen kann.",
+    "about_points_0": "Für Anbieter: mehr Sichtbarkeit, neue Kunden und professionelle Tools zur Geschäftsentwicklung.",
+    "about_points_1": "Für Kunden: einfacher Zugang zu zuverlässigen, hochwertigen Dienstleistungen, die ihren Bedürfnissen entsprechen.",
+    "values_title": "Unsere Werte",
+    "values_desc_bloc_1": "Unsere Handlungen und Entscheidungen beruhen auf klaren Grundsätzen:",
+    "values_points_0": "Qualität: Dienstleistungen auf höchstem Niveau anbieten.",
+    "values_points_1": "Vertrauen: ein sicheres und transparentes Umfeld schaffen.",
+    "values_points_2": "Exzellenz: optimale Zufriedenheit unserer Nutzer.",
+    "values_points_3": "Verantwortung: Talente afrikanischer Herkunft unterstützen.",
+    "values_points_4": "Solidarität: inklusive und gemeinschaftliche Wirtschaft.",
+    "distinction_title": "Was uns unterscheidet",
+    "distinction_desc_bloc_1": "Ein einzigartiger Ansatz, der Qualität, Sicherheit und positive Auswirkungen auf die Gemeinschaft in den Vordergrund stellt.",
+    "distinction_points_0": "Gemeinschaftliche Spezialisierung afrikanischer Herkunft.",
+    "distinction_points_1": "Erhöhte Sicherheit mit Überprüfungen und Schlichtung.",
+    "distinction_points_2": "Benutzerfreundlichkeit: einfache und angenehme Benutzeroberfläche.",
+    "distinction_points_3": "Positive Wirkung: Unterstützung der Talente der Gemeinschaft.",
+    "title_available_mobile": "Derzeit nur auf dem Handy verfügbar",
+    "subtitle_available_mobile": "Desktop-Version in Entwicklung",
+    "description_available_mobile": "Wir arbeiten derzeit an einer vollständigen Desktop-Version, um Ihnen ein optimiertes Erlebnis auf all Ihren Geräten zu bieten.",
+    "title_scan": "Scannen Sie den QR-Code, um auf die mobile Version zuzugreifen",
+    "label_contact": "Kontaktieren Sie uns für weitere Informationen:",
+    "label_social": "Folgen Sie uns in den sozialen Netzwerken:",
+    "qr_code_available": "Jetzt verfügbar",
+    "title_why_us": "Warum uns wählen?",
+    "description_why_us": "Bei A.FREE.DEAL glauben wir an das Potenzial und die Stärke der Völker Afrikas und seiner Diaspora. Unsere Mission ist es, Kompetenzen zu fördern, das Vertrauen zu stärken und faire Chancen für alle zu schaffen. Ob Kunde oder Anbieter, die Plattform begleitet Sie bei der Verwirklichung Ihrer Projekte und dem Aufbau einer solidarischen Zukunft."
+  },
+  "NoInternet": {
+    "title": "Verbindungsproblem",
+    "subtitle": "Verbindung zum Server nicht möglich. Überprüfen Sie Ihre Internetverbindung.",
+    "retry": "Erneut versuchen",
+    "back_home": "Zurück zur Startseite",
+    "support_text": "Wenn das Problem weiterhin besteht, wenden Sie sich an Ihren Internetanbieter"
+  },
+  "MaintenanceMode": {
+    "title": "Wartung läuft",
+    "description": "Unsere Website wird derzeit gewartet, um Ihr Erlebnis zu verbessern.",
+    "expected_return": "Voraussichtliche Rückkehr am: ",
+    "thank_you_message": "Vielen Dank für Ihre Geduld, wir sind bald zurück!",
+    "follow_us": "Folgen Sie uns in unseren sozialen Netzwerken:"
+  },
+  "landing": {
+    "nav": {
+      "home": "Startseite",
+      "countries": "Länder",
+      "pricing": "Preise",
+      "faq": "FAQ",
+      "langAria": "Sprachauswahl",
+      "login": "Anmelden",
+      "register": "Registrieren",
+      "mySpace": "Mein Bereich"
+    },
+    "hero": {
+      "tagline": "Starten Sie Ihr Projekt heute",
+      "h1": "Vom Entwurf zum Produkt in Rekordzeit",
+      "sub": "NumZero ist das ultimative Next.js Boilerplate für den Aufbau robuster SaaS-Anwendungen. Sparen Sie hunderte von Entwicklungsstunden.",
+      "ctaPrimary": "Jetzt starten",
+      "ctaSecondary": "Preise sehen",
+      "badges": "Sichere Zahlungen · Ultimative Performance · Moderne Architektur",
+      "mySpace": "Mein Bereich"
+    },
+    "features": {
+      "label": "Warum NumZero wählen ?",
+      "b1k": "01",
+      "b1t": "Schnelle Entwicklung",
+      "b1d": "Sparen Sie Arbeitswochen mit unserem vorkonfigurierten Stack.",
+      "b2k": "02",
+      "b2t": "Internationalisierung",
+      "b2d": "Native Unterstützung für mehrere Sprachen mit automatischer Locale-Weiterleitung.",
+      "b3k": "03",
+      "b3t": "Maximale Sicherheit",
+      "b3d": "Robuste Authentifizierung und optimiertes Sitzungsmanagement mit Better-Auth."
+    },
+    "stats": {
+      "s1": "2.500+",
+      "l1": "Aktive Entwickler",
+      "s2": "150+",
+      "l2": "Gestartete Projekte",
+      "s3": "99,9%",
+      "l3": "Verfügbarkeit"
+    },
+    "howItWorks": {
+      "label": "Wie es funktioniert ?",
+      "heading": "Starten Sie Ihr SaaS in 3 einfachen Schritten",
+      "s1k": "01",
+      "s1t": "Repo klonen",
+      "s1d": "Holen Sie sich den Quellcode und installieren Sie Abhängigkeiten in Sekunden.",
+      "s2k": "02",
+      "s2t": "Envs konfigurieren",
+      "s2d": "Füllen Sie Ihre .env-Datei mit API-Schlüsseln und Datenbankverbindung aus.",
+      "s3k": "03",
+      "s3t": "Bereitstellen",
+      "s3d": "Pushen Sie auf Vercel und Ihre Anwendung ist live."
+    },
+    "pricing": {
+      "label": "Pläne & Preise",
+      "title": "Einfache und transparente Preisgestaltung",
+      "sub": "Wählen Sie den Plan, der zum Umfang Ihres Projekts passt.",
+      "coins": "Credits",
+      "popular": "Beliebte",
+      "discount": "Verkauf",
+      "starter": "Anfänger",
+      "cta": "Anmelden",
+      "pay": "Sichere Zahlungen über Stripe. Keine versteckten Gebühren.",
+      "mySpace": "Mein Bereich"
+    },
+    "cta": {
+      "label": "Bereit loszulegen ?",
+      "title": "Treten Sie der NumZero Revolution bei",
+      "sub": "Hören Sie auf, Zeit mit Boilerplate zu verschwenden, und bauen Sie Ihr Produkt.",
+      "button": "Los geht's !",
+      "mySpace": "Mein Bereich"
+    },
+    "footer": {
+      "line": "© 2026 NumZero. Alle Rechte vorbehalten.",
+      "terms": "AGB",
+      "privacy": "Datenschutz",
+      "contact": "Kontakt",
+      "legal": "NumZero ist eine Plattform, die von Enthusiasten für Unternehmer weltweit gebaut wurde."
+    },
+    "faq": {
+      "label": "FAQ",
+      "title": "Häufig gestellte Fragen",
+      "q1": "Ist NumZero kostenlos ?",
+      "a1": "Ja, NumZero bietet eine robuste Open-Source-Version an. Premium-Optionen sind für Unternehmen verfügbar.",
+      "q2": "Kann ich es für kommerzielle Projekte nutzen ?",
+      "a2": "Absolut. NumZero wurde entwickelt, um echte Geschäfte voranzutreiben.",
+      "q3": "Welche Technologien werden verwendet ?",
+      "a3": "Next.js 16, Tailwind CSS, TypeScript, Better-Auth und Prisma.",
+      "q4": "Ist die Einrichtung schwierig ?",
+      "a4": "Nein, die Dokumentation führt Sie Schritt für Schritt durch. Sie können in 15 Minuten live sein.",
+      "q5": "Ist Support enthalten ?",
+      "a5": "Community-Unterstützung ist auf Discord verfügbar, sowie dedizierter Support für Premium-Kunden."
+    }
+  }
+}

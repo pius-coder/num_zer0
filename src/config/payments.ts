@@ -237,11 +237,11 @@ export const paymentConfig = {
   /** Payment provider settings */
   providers: {
     /** Success and cancel URLs for checkout */
-    successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success`,
-    cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=canceled`,
+    successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my-space?checkout=success`,
+    cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my-space?checkout=canceled`,
 
     /** Portal return URL */
-    portalReturnUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+    portalReturnUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my-space`,
   },
 } as const satisfies {
   plans: PlansConfig
