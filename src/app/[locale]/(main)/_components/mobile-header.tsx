@@ -16,6 +16,10 @@ const LogoMark = () => (
     </div>
 )
 
+interface MobileHeaderProps {
+    locale: string
+}
+
 export function MobileHeader({ locale }: MobileHeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 

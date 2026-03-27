@@ -12,6 +12,7 @@ import { client } from '@/lib/auth/auth-client'
 import { clientLogger } from '@/lib/logger/client-logger'
 import { updateUserAction } from '@/app/actions/user-actions'
 import { Skeleton } from '@/components/ui/skeleton'
+import { LoaderCircle } from 'lucide-react'
 
 export function ProfileForm() {
     const { data: session, refetch, isPending: isSessionLoading } = useSession()
@@ -142,10 +143,16 @@ export function ProfileForm() {
                 <Button
                     onClick={handleUpdate}
                     disabled={isPending || name === session?.user?.name}
-                    loading={isPending}
                     className="h-12 w-full rounded-2xl bg-primary font-bold tracking-tight text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.98]"
                 >
-                    Save Changes
+                    {isPending ? (
+                        <>
+                            <LoaderCircle className="h-5 w-5 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        'Save Changes'
+                    )}
                 </Button>
             </div>
         </section>

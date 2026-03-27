@@ -1,6 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import { ProfileForm } from './_components/profile-form'
 import { DeleteAccount } from './_components/delete-account'
+import { LogoutButton } from './_components/logout-button'
 import { getServerSession } from '@/lib/auth/get-server-session'
 import { redirect } from 'next/navigation'
 
@@ -34,6 +35,9 @@ export default async function AccountPage({
 
             {/* ── Danger Zone ── */}
             <DeleteAccount locale={locale} />
+
+            {/* ── Session ── */}
+            <LogoutButton locale={locale} />
 
 
         </div>
