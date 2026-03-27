@@ -51,7 +51,7 @@ function VerificationForm({ isProduction }: { isProduction: boolean }) {
   return (
     <>
       <div className='space-y-1 text-center'>
-        <h1 className='font-medium text-[32px] text-black tracking-tight'>
+        <h1 className='font-medium text-[32px] text-foreground tracking-tight'>
           {isVerified ? 'Verified!' : 'Verify your account'}
         </h1>
         <p className='font-[380] text-[16px] text-muted-foreground'>
@@ -80,55 +80,55 @@ function VerificationForm({ isProduction }: { isProduction: boolean }) {
                   <InputOTPSlot
                     index={0}
                     className={cn(
-                      'h-12 w-12 rounded-[10px] border bg-white text-center font-medium text-lg shadow-sm transition-all duration-200',
-                      'border-gray-300 hover:border-gray-400',
-                      'focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100',
-                      isInvalidOtp && 'border-red-500 focus:border-red-500 focus:ring-red-100'
+                      'h-12 w-12 rounded-[10px] border bg-card text-center font-medium text-lg shadow-sm transition-all duration-200',
+                      'border-border hover:border-primary/30',
+                      'focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10',
+                      isInvalidOtp && 'border-destructive focus:border-destructive focus:ring-destructive/20'
                     )}
                   />
                   <InputOTPSlot
                     index={1}
                     className={cn(
-                      'h-12 w-12 rounded-[10px] border bg-white text-center font-medium text-lg shadow-sm transition-all duration-200',
-                      'border-gray-300 hover:border-gray-400',
-                      'focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100',
-                      isInvalidOtp && 'border-red-500 focus:border-red-500 focus:ring-red-100'
+                      'h-12 w-12 rounded-[10px] border bg-card text-center font-medium text-lg shadow-sm transition-all duration-200',
+                      'border-border hover:border-primary/30',
+                      'focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10',
+                      isInvalidOtp && 'border-destructive focus:border-destructive focus:ring-destructive/20'
                     )}
                   />
                   <InputOTPSlot
                     index={2}
                     className={cn(
-                      'h-12 w-12 rounded-[10px] border bg-white text-center font-medium text-lg shadow-sm transition-all duration-200',
-                      'border-gray-300 hover:border-gray-400',
-                      'focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100',
-                      isInvalidOtp && 'border-red-500 focus:border-red-500 focus:ring-red-100'
+                      'h-12 w-12 rounded-[10px] border bg-card text-center font-medium text-lg shadow-sm transition-all duration-200',
+                      'border-border hover:border-primary/30',
+                      'focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10',
+                      isInvalidOtp && 'border-destructive focus:border-destructive focus:ring-destructive/20'
                     )}
                   />
                   <InputOTPSlot
                     index={3}
                     className={cn(
-                      'h-12 w-12 rounded-[10px] border bg-white text-center font-medium text-lg shadow-sm transition-all duration-200',
-                      'border-gray-300 hover:border-gray-400',
-                      'focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100',
-                      isInvalidOtp && 'border-red-500 focus:border-red-500 focus:ring-red-100'
+                      'h-12 w-12 rounded-[10px] border bg-card text-center font-medium text-lg shadow-sm transition-all duration-200',
+                      'border-border hover:border-primary/30',
+                      'focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10',
+                      isInvalidOtp && 'border-destructive focus:border-destructive focus:ring-destructive/20'
                     )}
                   />
                   <InputOTPSlot
                     index={4}
                     className={cn(
-                      'h-12 w-12 rounded-[10px] border bg-white text-center font-medium text-lg shadow-sm transition-all duration-200',
-                      'border-gray-300 hover:border-gray-400',
-                      'focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100',
-                      isInvalidOtp && 'border-red-500 focus:border-red-500 focus:ring-red-100'
+                      'h-12 w-12 rounded-[10px] border bg-card text-center font-medium text-lg shadow-sm transition-all duration-200',
+                      'border-border hover:border-primary/30',
+                      'focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10',
+                      isInvalidOtp && 'border-destructive focus:border-destructive focus:ring-destructive/20'
                     )}
                   />
                   <InputOTPSlot
                     index={5}
                     className={cn(
-                      'h-12 w-12 rounded-[10px] border bg-white text-center font-medium text-lg shadow-sm transition-all duration-200',
-                      'border-gray-300 hover:border-gray-400',
-                      'focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100',
-                      isInvalidOtp && 'border-red-500 focus:border-red-500 focus:ring-red-100'
+                      'h-12 w-12 rounded-[10px] border bg-card text-center font-medium text-lg shadow-sm transition-all duration-200',
+                      'border-border hover:border-primary/30',
+                      'focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10',
+                      isInvalidOtp && 'border-destructive focus:border-destructive focus:ring-destructive/20'
                     )}
                   />
                 </InputOTPGroup>
@@ -145,7 +145,7 @@ function VerificationForm({ isProduction }: { isProduction: boolean }) {
 
           <Button
             onClick={verifyCode}
-            className='flex w-full items-center justify-center gap-2 rounded-[10px] py-[6px] pr-[10px] pl-[12px] text-[15px] font-medium text-white shadow-[inset_0_2px_4px_0_#9B77FF] transition-all'
+            className='flex w-full items-center justify-center gap-2 rounded-[10px] bg-primary py-[6px] pr-[10px] pl-[12px] text-[15px] font-medium text-primary-foreground shadow-sm transition-all'
             disabled={!isOtpComplete || isLoading}
           >
             {isLoading ? 'Verifying...' : 'Verify'}
@@ -160,7 +160,7 @@ function VerificationForm({ isProduction }: { isProduction: boolean }) {
                 </span>
               ) : (
                 <button
-                  className='font-medium text-(--brand-accent-hex) underline-offset-4 transition hover:text-(--brand-accent-hover-hex) hover:underline'
+                  className='font-medium text-primary underline-offset-4 transition hover:text-primary/80 hover:underline'
                   onClick={handleResend}
                   disabled={isLoading || isResendDisabled}
                 >
@@ -195,8 +195,8 @@ function VerificationFormFallback() {
   return (
     <div className='text-center'>
       <div className='animate-pulse'>
-        <div className='mx-auto mb-4 h-8 w-48 rounded bg-gray-200' />
-        <div className='mx-auto h-4 w-64 rounded bg-gray-200' />
+        <div className='mx-auto mb-4 h-8 w-48 rounded bg-muted' />
+        <div className='mx-auto h-4 w-64 rounded bg-muted' />
       </div>
     </div>
   )

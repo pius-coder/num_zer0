@@ -1,0 +1,112 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for SMS activations: get numbers, status, balance, prices, countries, services. All operations require api_key.",
+        "title": "Client API - Grizzly SMS",
+        "contact": {},
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/stubs/handler_api.php": {
+            "get": {
+                "description": "This endpoint handles various activation-related operations based on the 'action' query parameter. All actions require an 'api_key'. Other parameters depend on the action.\n\nActions:\n- getNumber: Request a number\nParameters: service, country, maxPrice (optional), providerIds (optional), exceptProviderIds (optional)\nResponse: ACCESS_NUMBER:activation_id:phone_number or error\n- setStatus: Activation status changes\nParameters: id, status\nResponse: ACCESS_READY, ACCESS_RETRY_GET, ACCESS_ACTIVATION, ACCESS_CANCEL or error\n- getStatus: Get the activation status\nParameters: id\nResponse: STATUS_WAIT_CODE, STATUS_WAIT_RETRY:lastcode, STATUS_WAIT_RESEND, STATUS_CANCEL, STATUS_OK:code or error\n- getStatusV2: Get the activation status (JSON)\nParameters: id\nResponse: JSON with verificationType, sms (dateTime, code, text), call (from, text, code, dateTime, url, parsingCount). Errors: NO_ACTIVATION, BAD_ACTION, ERROR_SQL\n- getActiveActivations: Get list of active activations\nParameters: none\nResponse: JSON array of activation objects (activationId, serviceCode, phoneNumber, activationCost, activationStatus, smsCode, smsText, etc.)\n- getBalance: Balance Request\nParameters: none additional\nResponse: ACCESS_BALANCE:balance or error\n- getPrices: Get current prices by country\nParameters: service, country\nResponse: JSON object with prices or error\n- getPricesV2: Get current prices v2\nParameters: service, country\nResponse: JSON object with prices or error\n- getPricesV3: Get current prices v3\nParameters: service, country\nResponse: JSON object with prices or error\n- getServicesList: Get services list\nParameters: none\nResponse: JSON array of services\n- getCountries: Get countries list\nParameters: none\nResponse: JSON array of countries\n\nPossible errors for all actions:\n- BAD_KEY: Invalid API key\n- BAD_ACTION: Incorrect action\n- SERVICE_UNAVAILABLE_REGION: Access from your region is restricted\n- Other action-specific errors as described",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "text/plain",
+                    "application/json"
+                ],
+                "tags": [
+                    "client"
+                ],
+                "summary": "Activation API",
+                "parameters": [
+                    {
+                        "enum": [
+                            "getNumber",
+                            "setStatus",
+                            "getStatus",
+                            "getStatusV2",
+                            "getBalance",
+                            "getPrices",
+                            "getPricesV2",
+                            "getPricesV3",
+                            "getServicesList",
+                            "getCountries",
+                            "getActiveActivations"
+                        ],
+                        "type": "string",
+                        "description": "Action to perform",
+                        "name": "action",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Your API key",
+                        "name": "api_key",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Service code (for getNumber, getPrices, getPricesV2, getPricesV3)",
+                        "name": "service",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Country code (for getNumber, getPrices, getPricesV2, getPricesV3). Can be omitted or set to 'any' for any-country selection.",
+                        "name": "country",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Maximum price (for getNumber)",
+                        "name": "maxPrice",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Provider IDs (for getNumber)",
+                        "name": "providerIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Excluded provider IDs (for getNumber)",
+                        "name": "exceptProviderIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Activation ID (for setStatus, getStatus, getStatusV2)",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status (for setStatus)",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Error response",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

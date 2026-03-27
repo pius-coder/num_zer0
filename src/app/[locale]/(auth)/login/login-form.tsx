@@ -319,7 +319,7 @@ export default function LoginPage({
               autoComplete='tel'
               size='lg'
               className={cn(
-                'transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
+                'transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10',
                 errors.phoneNumber &&
                 'border-destructive focus:border-destructive focus:ring-destructive/20'
               )}
@@ -352,7 +352,7 @@ export default function LoginPage({
                 placeholder='Enter your password'
                 size='lg'
                 className={cn(
-                  'pr-10 transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
+                  'pr-10 transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10',
                   errors.password &&
                   'border-destructive focus:border-destructive focus:ring-destructive/20'
                 )}
@@ -427,7 +427,7 @@ export default function LoginPage({
         <span className='font-normal'>Don&apos;t have an account? </span>
         <Link
           href={`/register?callbackUrl=${callbackUrl}`}
-          className='font-medium text-(--brand-accent-hex) underline-offset-4 transition hover:text-(--brand-accent-hover-hex) hover:underline'
+          className='font-medium text-primary underline-offset-4 transition hover:text-primary/80 hover:underline'
         >
           Sign up
         </Link>
@@ -439,7 +439,7 @@ export default function LoginPage({
           href='/terms'
           target='_blank'
           rel='noopener noreferrer'
-          className='text-(--brand-accent-hex) underline-offset-4 transition hover:text-(--brand-accent-hover-hex) hover:underline'
+          className='text-primary underline-offset-4 transition hover:text-primary/80 hover:underline'
         >
           Terms of Service
         </Link>{' '}
@@ -448,7 +448,7 @@ export default function LoginPage({
           href='/privacy'
           target='_blank'
           rel='noopener noreferrer'
-          className='text-(--brand-accent-hex) underline-offset-4 transition hover:text-(--brand-accent-hover-hex) hover:underline'
+          className='text-primary underline-offset-4 transition hover:text-primary/80 hover:underline'
         >
           Privacy Policy
         </Link>
@@ -477,9 +477,9 @@ export default function LoginPage({
                   type='tel'
                   disabled={isSubmittingReset}
                   className={cn(
-                    'transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
+                    'transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10',
                     (resetStatus.type === 'error' || forgotErrors.phoneNumber) &&
-                      'border-destructive focus:border-destructive focus:ring-destructive/20'
+                    'border-destructive focus:border-destructive focus:ring-destructive/20'
                   )}
                 />
                 {forgotErrors.phoneNumber && (

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "workflow-apex-free",
+  "owner": "melvynx",
+  "repo": "aiblueprint",
+  "path": "claude-code-config/skills/workflow-apex-free",
+  "branch": "main",
+  "sha": "a8f279958eb96f04416689a09436fda2fb43973d",
+  "source": "manual"
+}

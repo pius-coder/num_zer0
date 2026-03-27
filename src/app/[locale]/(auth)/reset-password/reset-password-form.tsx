@@ -49,7 +49,7 @@ export function RequestResetForm({
             type='tel'
             disabled={isSubmitting}
             required
-            className='transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100'
+            className='transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10'
           />
           <p className='text-muted-foreground text-sm'>
             We'll send a password reset link to your phone number.
@@ -59,7 +59,7 @@ export function RequestResetForm({
         {/* Status message display */}
         {statusType && statusMessage && (
           <div
-            className={cn('text-xs', statusType === 'success' ? 'text-[#4CAF50]' : 'text-red-400')}
+            className={cn('text-xs', statusType === 'success' ? 'text-success' : 'text-destructive')}
           >
             <p>{statusMessage}</p>
           </div>
@@ -71,7 +71,7 @@ export function RequestResetForm({
         disabled={isSubmitting}
         onMouseEnter={() => setIsButtonHovered(true)}
         onMouseLeave={() => setIsButtonHovered(false)}
-        className='group inline-flex w-full items-center justify-center gap-2 rounded-[10px] py-[6px] pr-[10px] pl-[12px] text-[15px] text-white shadow-[inset_0_2px_4px_0_#9B77FF] transition-all'
+        className='group inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-primary py-[6px] pr-[10px] pl-[12px] text-[15px] text-primary-foreground shadow-sm transition-all'
       >
         <span className='flex items-center gap-1'>
           {isSubmitting ? 'Sending...' : 'Send Reset Link'}
@@ -175,15 +175,15 @@ export function SetNewPasswordForm({
               required
               placeholder='Enter new password'
               className={cn(
-                'pr-10 transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
+                'pr-10 transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10',
                 validationMessage &&
-                  'border-red-500 focus:border-red-500 focus:ring-red-100 focus-visible:ring-red-500'
+                'border-destructive focus:border-destructive focus:ring-destructive/20'
               )}
             />
             <button
               type='button'
               onClick={() => setShowPassword(!showPassword)}
-              className='-translate-y-1/2 absolute top-1/2 right-3 text-gray-500 transition hover:text-gray-700'
+              className='-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground transition hover:text-foreground'
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -210,13 +210,13 @@ export function SetNewPasswordForm({
               className={cn(
                 'pr-10 transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
                 validationMessage &&
-                  'border-red-500 focus:border-red-500 focus:ring-red-100 focus-visible:ring-red-500'
+                'border-red-500 focus:border-red-500 focus:ring-red-100 focus-visible:ring-red-500'
               )}
             />
             <button
               type='button'
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className='-translate-y-1/2 absolute top-1/2 right-3 text-gray-500 transition hover:text-gray-700'
+              className='-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground transition hover:text-foreground'
               aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -225,7 +225,7 @@ export function SetNewPasswordForm({
         </div>
 
         {validationMessage && (
-          <div className='mt-1 space-y-1 text-red-400 text-xs'>
+          <div className='mt-1 space-y-1 text-destructive text-xs'>
             <p>{validationMessage}</p>
           </div>
         )}
@@ -234,7 +234,7 @@ export function SetNewPasswordForm({
           <div
             className={cn(
               'mt-1 space-y-1 text-xs',
-              statusType === 'success' ? 'text-[#4CAF50]' : 'text-red-400'
+              statusType === 'success' ? 'text-success' : 'text-destructive'
             )}
           >
             <p>{statusMessage}</p>
@@ -248,7 +248,7 @@ export function SetNewPasswordForm({
         size='lg'
         onMouseEnter={() => setIsButtonHovered(true)}
         onMouseLeave={() => setIsButtonHovered(false)}
-        className='group inline-flex w-full items-center justify-center gap-2 rounded-[10px] py-[6px] pr-[10px] pl-[12px] text-[15px] text-white shadow-[inset_0_2px_4px_0_#9B77FF] transition-all'
+        className='group inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-primary py-[6px] pr-[10px] pl-[12px] text-[15px] text-primary-foreground shadow-sm transition-all'
       >
         <span className='flex items-center gap-1'>
           {isSubmitting ? 'Resetting...' : 'Reset Password'}

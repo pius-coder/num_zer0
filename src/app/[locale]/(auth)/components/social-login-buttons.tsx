@@ -133,7 +133,7 @@ export function SocialLoginButtons({
     <Button
       variant='outline'
       size='lg'
-      className='w-full hover:bg-gray-50'
+      className='w-full hover:bg-accent'
       disabled={!githubAvailable || isGithubLoading}
       onClick={signInWithGithub}
     >
@@ -146,7 +146,7 @@ export function SocialLoginButtons({
     <Button
       variant='outline'
       size='lg'
-      className='w-full hover:bg-gray-50'
+      className='w-full hover:bg-accent'
       disabled={!googleAvailable || isGoogleLoading}
       onClick={signInWithGoogle}
     >

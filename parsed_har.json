@@ -1,0 +1,208 @@
+[
+  {
+    "url": "/api/sms-users/me",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "{\"id\":1510949,\"username\":\"tuekampius13\",\"email\":\"tuekampius13@gmail.com\",\"is_email_confirmed\":true,\"name\":\"Pius Tuekam\",\"settings\":{\"ip\":\"143.105.152.149 (Код страны: CM)\",\"apiKey\":\"bfd065dcea699fe99611072dba584e05\"},\"lang_id\":2,\"is_two_factor_enabled\":false,\"is_totp_enabled\":false,\"telegram_id\":null,\"screenName\":\"Pius Tuekam\",\"custom_price\":false,\"is_p\":false,\"is_p_hub\":false,\"is_a\":false,\"e_id\":1499330,\"need_update_key\":false,\"ref_params\":false,\"is_referral_soft\":false,\"is_first_large_payment\"..."
+  },
+  {
+    "url": "/api/sms-users/balance",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "0"
+  },
+  {
+    "url": "/api/notify",
+    "method": "GET",
+    "queryParams": [
+      [
+        "sort",
+        "-id"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "[]"
+  },
+  {
+    "url": "/api/service",
+    "method": "GET",
+    "queryParams": [
+      [
+        "per-page",
+        "40"
+      ],
+      [
+        "page",
+        "1"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "[{\"id\":62,\"name\":\"Whatsapp\",\"external_id\":\"wa\",\"icon\":228,\"slug\":\"whatsapp\"},{\"id\":52,\"name\":\"Telegram\",\"external_id\":\"tg\",\"icon\":199,\"slug\":\"telegram\"},{\"id\":27,\"name\":\"Google, Gmail, Youtube\",\"external_id\":\"go\",\"icon\":214,\"slug\":\"gmail\"},{\"id\":24,\"name\":\"facebook\",\"external_id\":\"fb\",\"icon\":211,\"slug\":\"facebook\"},{\"id\":105,\"name\":\"AnyOther\",\"external_id\":\"ot\",\"icon\":3753,\"slug\":\"anyother\"},{\"id\":381,\"name\":\"Claude\",\"external_id\":\"acz\",\"icon\":14346,\"slug\":\"claude\"},{\"id\":10,\"name\":\"Amazon\",\"exte..."
+  },
+  {
+    "url": "/api/service/get-service-data/whatsapp",
+    "method": "GET",
+    "queryParams": [
+      [
+        "user",
+        "guest"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "{\"service\":{\"id\":62,\"name\":\"Whatsapp\",\"synonyms\":\"Whatsapp Ватсап Ватсапп\",\"external_id\":\"wa\",\"slug\":\"whatsapp\",\"seo_title\":\"Buy a Virtual Number for WhatsApp Verification | Grizzly SMS\",\"seo_description\":\"Get a temporary phone number for WhatsApp from Grizzly SMS. Receive SMS online for WhatsApp verification using disposable numbers from India, the USA, the UK, and other countries worldwide.\",\"seo_keywords\":\"\",\"description\":\"<p>Creating or verifying an account on Whatsapp often requires providi..."
+  },
+  {
+    "url": "/api/users/commerce-orders",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "[]"
+  },
+  {
+    "url": "/api/cms/page/178",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "{\"page\":{\"id\":178,\"nav_id\":71,\"lang_id\":2,\"title\":\"Get a Temporary Phone Number for WhatsApp\",\"alias\":\"how-to-buy-virtual-number-for-whatsapp\",\"description\":\"Get a temporary phone number for WhatsApp from Grizzly SMS. Receive SMS online for WhatsApp verification using disposable numbers from India, the USA, the UK, and other countries worldwide.\",\"keywords\":\"\",\"title_tag\":\"Buy a Virtual Number for WhatsApp Verification | Grizzly SMS\",\"image_id\":2324},\"placeholders\":{\"content\":[{\"id\":4921,\"index\"..."
+  },
+  {
+    "url": "/api/country/get-prices/62",
+    "method": "GET",
+    "queryParams": [
+      [
+        "wholesale",
+        "0"
+      ],
+      [
+        "user",
+        "guest"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "[{\"service_external_id\":\"wa\",\"country_external_id\":175,\"count\":18847,\"price\":\"6\",\"name\":\"Australia\",\"icon_id\":176,\"icon\":\"/api/storage/image/176_w-46_h-46.webp\",\"sort\":0,\"button_status\":true,\"country_id\":11,\"country_slug\":\"australia\",\"service_slug\":\"whatsapp\",\"synonyms\":\"{\\\"en\\\":\\\"\\\",\\\"ru\\\":\\\"\\\",\\\"cn\\\":\\\"\\\",\\\"tr\\\":\\\"\\\",\\\"es\\\":\\\"\\\",\\\"hi\\\":\\\"\\\",\\\"ar\\\":\\\"\\\",\\\"fr\\\":\\\"\\\"}\",\"delivery\":\"0\",\"status\":1,\"prices\":[{\"name\":\"provider0\",\"providerId\":\"226\",\"delivery\":43.75,\"quantity\":148,\"value\":6},{\"name\":\"pr..."
+  },
+  {
+    "url": "/api/cms/page-by-path",
+    "method": "GET",
+    "queryParams": [
+      [
+        "path",
+        "/payments"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "{\"page\":{\"id\":1716,\"nav_id\":676,\"lang_id\":2,\"title\":\"Payment methods\",\"alias\":\"payments\",\"description\":\"\",\"keywords\":\"\",\"title_tag\":\"\",\"image_id\":null},\"placeholders\":{\"content\":[{\"id\":15068,\"index\":0,\"block_id\":82,\"block_name\":\"PaymentsBlock\",\"full_block_name\":\"AppModulesBlocksBlocksPaymentsBlock\",\"is_container\":true,\"values\":{\"heading\":\"Top up balance\"},\"cfgs\":[],\"extras\":{\"heading\":\"Top up balance\",\"payments\":[{\"id\":\"47348419\",\"name\":\"By bank card\",\"is_payssion\":false,\"label\":\"Bank cards\",\"co..."
+  },
+  {
+    "url": "/api/service/get-countries-services-prices",
+    "method": "POST",
+    "queryParams": [],
+    "body": "{\"filter\":[{\"country_external_id\":\"undefined\",\"service_external_id\":\"wa\"}]}",
+    "responseSnippet": "[]"
+  },
+  {
+    "url": "/api/sms-users/numbers",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "[]"
+  },
+  {
+    "url": "/api/sms-users/get-transactions",
+    "method": "GET",
+    "queryParams": [
+      [
+        "type",
+        "incoming"
+      ],
+      [
+        "page",
+        "1"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "[]"
+  },
+  {
+    "url": "/api/users/settings",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "{\"ip\":\"143.105.152.149 (Код страны: CM)\",\"apiKey\":\"bfd065dcea699fe99611072dba584e05\"}"
+  },
+  {
+    "url": "/api/sms-users/get-ref-params",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "[]"
+  },
+  {
+    "url": "/api/currency/rate/USDT_TRC_20",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "{\"rate\":1}"
+  },
+  {
+    "url": "/api/ref-balance/info",
+    "method": "GET",
+    "queryParams": [
+      [
+        "balance_type",
+        "1"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "{\"balance\":0}"
+  },
+  {
+    "url": "/api/ref-balance",
+    "method": "GET",
+    "queryParams": [
+      [
+        "per-page",
+        "10"
+      ],
+      [
+        "filter[balance_type]",
+        "1"
+      ],
+      [
+        "page",
+        "1"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "[]"
+  },
+  {
+    "url": "/api/ref-payouts",
+    "method": "GET",
+    "queryParams": [
+      [
+        "per-page",
+        "10"
+      ],
+      [
+        "filter[balance_type]",
+        "1"
+      ],
+      [
+        "page",
+        "1"
+      ]
+    ],
+    "body": null,
+    "responseSnippet": "[]"
+  },
+  {
+    "url": "/api/ref-codes",
+    "method": "GET",
+    "queryParams": [],
+    "body": null,
+    "responseSnippet": "[]"
+  }
+]

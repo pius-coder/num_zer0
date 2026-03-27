@@ -170,7 +170,7 @@ export default function RegisterForm({
               autoCorrect='off'
               size='lg'
               className={cn(
-                'transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
+                'transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10',
                 errors.username &&
                 'border-destructive focus:border-destructive focus:ring-destructive/20'
               )}
@@ -190,7 +190,7 @@ export default function RegisterForm({
               autoComplete='tel'
               size='lg'
               className={cn(
-                'transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
+                'transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10',
                 errors.phoneNumber &&
                 'border-destructive focus:border-destructive focus:ring-destructive/20'
               )}
@@ -214,7 +214,7 @@ export default function RegisterForm({
                 autoCorrect='off'
                 size='lg'
                 className={cn(
-                  'pr-10 transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
+                  'pr-10 transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10',
                   errors.password &&
                   'border-destructive focus:border-destructive focus:ring-destructive/20'
                 )}
@@ -246,7 +246,7 @@ export default function RegisterForm({
               autoCorrect='off'
               size='lg'
               className={cn(
-                'transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',
+                'transition-all duration-200 focus:border-primary/40 focus:ring-2 focus:ring-primary/10',
                 errors.confirmPassword &&
                 'border-destructive focus:border-destructive focus:ring-destructive/20'
               )}
@@ -323,7 +323,7 @@ export default function RegisterForm({
           href='/terms'
           target='_blank'
           rel='noopener noreferrer'
-          className='text-(--brand-accent-hex) underline-offset-4 transition hover:text-(--brand-accent-hover-hex) hover:underline'
+          className='text-primary underline-offset-4 transition hover:text-primary/80 hover:underline'
         >
           Terms of Service
         </Link>{' '}
@@ -332,7 +332,7 @@ export default function RegisterForm({
           href='/privacy'
           target='_blank'
           rel='noopener noreferrer'
-          className='text-(--brand-accent-hex) underline-offset-4 transition hover:text-(--brand-accent-hover-hex) hover:underline'
+          className='text-primary underline-offset-4 transition hover:text-primary/80 hover:underline'
         >
           Privacy Policy
         </Link>
