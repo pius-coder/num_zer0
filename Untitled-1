@@ -1,0 +1,120 @@
+---
+name: admin-dashboard
+overview: Créer une surface admin unifiée sous `/{locale}/admin` (avec sidebar shadcn) qui couvre dashboard, gestion utilisateurs et gestion financière, en reliant correctement les APIs client/admin déjà existantes et en ajoutant les endpoints manquants côté admin. Les anciennes routes admin actuelles seront redirigées vers la nouvelle structure, avec vérification d’accès ADMIN avant exécution.
+todos:
+  - id: admin-routing-unify
+    content: Créer `src/app/[locale]/(admin)/admin/**` (layout + pages) et rediriger `src/app/[locale]/(main)/admin/**` + `src/app/[locale]/admin/logs` vers la nouvelle racine `/{locale}/admin`.
+    status: in_progress
+  - id: admin-layout-sidebar
+    content: Installer/adapter sidebar shadcn (sidebar-07 si besoin) et implémenter `src/app/[locale]/(admin)/admin/layout.tsx` avec navigation unifiée. Réutiliser `src/app/[locale]/(main)/_components/mobile-header.tsx` (PixelHeading NumZero) pour le header/logo.
+    status: in_progress
+  - id: admin-auth-admin-role
+    content: Créer un util `requireAdminSession` (server-only) basé sur session Better-Auth et check robuste du rôle `ADMIN`. Appliquer ce check dans toutes les routes API admin et dans le layout admin.
+    status: pending
+  - id: admin-api-users-finance
+    content: Créer endpoints admin manquants (users/transactions/activations/purchases) dans `src/app/api/admin/**` protégés par `requireAdminSession`. Utiliser Drizzle + `CreditLedgerService.getBalance` + queries creditTransaction/smsActivation/creditPurchase.
+    status: pending
+  - id: admin-ui-pages-components
+    content: "Implémenter pages UI: dashboard, users, finance, credits, fraud, audit, logs. Ajouter composants: `AdminPageShell`, `FilterBar`, wrappers table/skeleton/empty. Reuse `src/components/ui/table.tsx` et autres UI shadcn."
+    status: pending
+  - id: admin-wiring-and-observability
+    content: Brancher UI->APIs avec fetch/React Query, ajouter journaux structurés côté serveur sur les endpoints admin (sans données sensibles) et vérifier manuellement via navigation.
+    status: pending
+isProject: false
+---
+
+## Objectif
+
+Mettre en place un **côté admin complet** qui gère tout ce qui existe côté client (wallet/credits, activations, achats, configuration économique, fraud/audit/logs) en limitant la 1ère version à **gestion utilisateurs + gestion financière** (pas encore de “service catalog management” côté admin).
+
+## Routes / unification demandée
+
+- Vérité d’URL (confirmée): `/{locale}/admin`.
+- Nouvelle route group:
+  - `src/app/[locale]/(admin)/admin/`**
+- Unification des sources existantes:
+  - `src/app/[locale]/(main)/admin/`** (stubs + layout actuel)
+  - `src/app/[locale]/admin/logs/`** (log explorer)
+- Stratégie:
+  - Créer le nouveau layout + pages dans `/(admin)/admin`.
+  - Remplacer les pages existantes par des `redirect()` vers la nouvelle structure (sans casser l’historique), ou des wrappers server components.
+
+## Layout admin (sidebar shadcn)
+
+1. Générer/adapter la sidebar avec `pnpm dlx shadcn@latest add sidebar-07` (si nécessaire), sinon réutiliser `src/components/ui/sidebar.tsx`.
+2. Layout admin:
+  - `src/app/[locale]/(admin)/admin/layout.tsx`
+  - Montre une `SidebarProvider` + sidebar menu (dashboard/users/finance/credits/fraud/audit/logs).
+  - Branding/Logo: réutiliser `@src/app/[locale]/(main)/_components/mobile-header.tsx` (le snippet PixelHeading “NumZero” pour le rendu header/logos).
+3. Responsivité: sidebar collapsible + rail icon selon le composant sidebar.
+
+## Auth ADMIN (mise en place avant tout UI/APIs)
+
+- Créer un util `requireAdminSession` (server-only) qui:
+  - appelle `requireSession` / `getServerSession`
+  - valide que l’utilisateur a le rôle/permission `ADMIN`.
+- Comme le modèle de rôle n’est pas explicitement présent dans `src/database/schema.ts`, le check sera implémenté de façon robuste (plusieurs chemins possibles dans le session Better-Auth) + fallback par env si besoin.
+- Les API admin créées utiliseront systématiquement `requireAdminSession`.
+
+## Pages Admin (1ère itération “users + finance”)
+
+- `/{locale}/admin` : dashboard KPI (purchases/activations/volume credits) via `/api/admin/dashboard/overview`.
+- `/{locale}/admin/users` : liste users + balances + actions futures (suspend/ajustements en placeholder si pas d’engine existant).
+- `/{locale}/admin/finance` : vue transactions + achats + achats crédits / activations (read-only, filtres & pagination).
+- `/{locale}/admin/credits` : lecture packages + (option) création packages via `/api/admin/credits/packages`.
+- `/{locale}/admin/fraud` : lecture fraud events via `/api/admin/fraud/events`.
+- `/{locale}/admin/audit` : lecture admin_audit_log via `/api/admin/audit/logs`.
+- `/{locale}/admin/logs` : réutiliser `src/app/[locale]/admin/logs/log-explorer.tsx` (Log Explorer), mais monté dans le nouveau layout.
+
+## Données & APIs (contrat UI)
+
+### APIs déjà existantes (read)
+
+- `/api/admin/dashboard/overview`
+- `/api/admin/config/settings`
+- `/api/admin/credits/packages`
+- `/api/admin/fraud/events`
+- `/api/admin/audit/logs`
+
+### APIs à ajouter pour “users + finance”
+
+Créer (protégées ADMIN):
+
+- `GET /api/admin/users` (pagination)
+- `GET /api/admin/users/:id` (détails + balance)
+- `GET /api/admin/users/:id/transactions` (credit_transaction)
+- `GET /api/admin/activations` (sms_activation) + pagination
+- `GET /api/admin/purchases` (credit_purchase) + pagination
+
+## Composants admin (UI)
+
+- `AdminPageShell` (reçoit title/subtitle + children).
+- `AdminTable` (wrapper sur `src/components/ui/table.tsx`).
+- `FilterBar` (search + select + date range) inspiré du pattern MySpace sticky search.
+- `Skeleton` + `EmptyState`.
+
+## Diagramme (flow)
+
+```mermaid
+flowchart LR
+  UIAdmin[Admin UI] -->|fetch| APIAdmin[Admin API (requireAdminSession)]
+  APIAdmin --> DBS[PostgreSQL (Drizzle)]
+  UIAdmin -->|render| Pages[Pages: Users/Finance/Dashboard]
+```
+
+
+
+## Étapes (todo)
+
+1. Ajouter util `requireAdminSession`.
+2. Créer `src/app/[locale]/(admin)/admin/layout.tsx` + sidebar (sidebar-07) + branding.
+3. Créer pages admin + wrappers/redirections pour les routes existantes.
+4. Ajouter APIs manquantes pour Users/Finance/Activations/Purchases.
+5. Créer composants UI admin (tables/filters/skeleton).
+6. Brancher UI -> APIs (data flow complet) et ajouter logs structurés côté serveur.
+7. Vérifier manuellement:
+  - Navigation sidebar fonctionne
+  - Pages affichent données
+  - Contrôle ADMIN bloque les accès non-admin
+  - Logs page fonctionne dans le nouveau layout.
+

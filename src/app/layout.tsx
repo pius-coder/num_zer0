@@ -1,7 +1,14 @@
 import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
-import { Geist, Geist_Mono, Bricolage_Grotesque, Inter } from 'next/font/google'
+import { Geist, Geist_Mono, Bricolage_Grotesque, Roboto } from 'next/font/google'
+import {
+  GeistPixelSquare,
+  GeistPixelGrid,
+  GeistPixelCircle,
+  GeistPixelTriangle,
+  GeistPixelLine,
+} from 'geist/font/pixel'
 
 import { generateMetadata as getSeoMetadata } from '@/lib/seo'
 import { extractLocale } from '@/lib/i18n/extract-locale'
@@ -22,7 +29,7 @@ const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ['latin'],
 })
 
-const inter = Inter({
+const inter = Roboto({
   variable: '--font-inter',
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
@@ -36,7 +43,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} ${inter.variable} font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${GeistPixelSquare.variable} ${GeistPixelGrid.variable} ${GeistPixelCircle.variable} ${GeistPixelTriangle.variable} ${GeistPixelLine.variable} ${bricolageGrotesque.variable} ${inter.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         {children}
@@ -47,9 +54,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
 export const metadata: Metadata = {
   ...getSeoMetadata({
-    title: 'ShipFree - Turn Ideas Into Products, Fast',
+    title: 'NumZero - Virtual Numbers for SMS OTP Verification',
     description:
-      'Ship your startup in days, not weeks. A production-ready Next.js boilerplate with auth, payments, and everything you need to launch fast. Free forever, open source.',
+      'NumZero is a Cameroon-first platform to buy virtual numbers for SMS OTP verification with local payments, transparent credit pricing, and anti-fraud controls.',
     isRootLayout: true,
   }),
   icons: {

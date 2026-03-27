@@ -73,7 +73,7 @@ export default async function DesktopEndpointPage({
               subtitle='Simple UI'
               title='Choose service then country'
               body='Desktop keeps dense layout while preserving the same card-style components used on phone.'
-              accent='#2563eb'
+              accent='#adfa1b'
             />
             <ProfileCard
               subtitle='Fast Flow'

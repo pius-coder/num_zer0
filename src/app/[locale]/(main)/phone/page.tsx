@@ -43,7 +43,7 @@ export default async function PhoneEndpointPage({
         subtitle='SimpleUI'
         title='Easy to use'
         body='Track your order and complete verifications with compact mobile cards.'
-        accent='#2563eb'
+        accent='#adfa1b'
       />
 
       <PhoneFrameMock heading='Your order' rows={progressRows} />

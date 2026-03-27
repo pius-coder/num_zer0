@@ -26,11 +26,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <SectionDivider variant="dark" />
         <Features />
         <SectionDivider variant="dark" />
-        <Stats />
+        <Pricing isAuthenticated={isAuthenticated} />
         <SectionDivider variant="dark" />
         <Testimonials />
         <SectionDivider variant="dark" />
-        <Pricing isAuthenticated={isAuthenticated} />
+        <Stats />
         <SectionDivider variant="dark" />
         <FAQ />
         <CTA isAuthenticated={isAuthenticated} />

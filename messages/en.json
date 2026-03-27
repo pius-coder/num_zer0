@@ -1505,95 +1505,101 @@
   "landing": {
     "nav": {
       "home": "Home",
-      "countries": "Countries",
+      "creditModel": "Credit model",
+      "howItWorks": "Flow",
       "pricing": "Pricing",
+      "trust": "Trust",
       "faq": "FAQ",
-      "langAria": "Language Selector",
+      "langAria": "Language selector",
       "login": "Login",
       "register": "Register",
-      "mySpace": "My Space"
+      "mySpace": "My space"
     },
     "hero": {
-      "tagline": "Launch Your Project Today",
-      "h1": "Go from Idea to Product in Record Time",
-      "sub": "NumZero is the ultimate Next.js boilerplate for building robust SaaS applications. Save hundreds of development hours.",
-      "ctaPrimary": "Get Started",
-      "ctaSecondary": "View Pricing",
-      "badges": "Secure Payments · Ultimate Performance · Modern Architecture",
-      "mySpace": "My Space"
+      "tagline": "NumZero for Cameroon and CEMAC",
+      "h1": "Buy virtual phone numbers for SMS OTP verification",
+      "sub": "NumZero lets you buy credits in XAF, reserve a temporary number, and receive OTP codes quickly with local mobile money payments.",
+      "ctaPrimary": "Start now",
+      "ctaSecondary": "See pricing",
+      "badges": "MTN MoMo and Orange Money · Transparent credits · Local support",
+      "mySpace": "My space"
     },
     "features": {
-      "label": "Why Choose NumZero?",
+      "label": "Hybrid credit model",
       "b1k": "01",
-      "b1t": "Rapid Development",
-      "b1d": "Save weeks of work with our pre-configured and ready-to-use stack.",
+      "b1t": "Base and bonus credits",
+      "b1d": "Base credits never expire. Bonus credits expire after 90 days with warnings at D-7 and D-1.",
       "b2k": "02",
-      "b2t": "Internationalization",
-      "b2d": "Native multi-language support with automatic locale redirection.",
+      "b2t": "Service and country pricing",
+      "b2d": "Credit prices adapt by service and country to protect margins and keep number availability stable.",
       "b3k": "03",
-      "b3t": "Maximum Security",
-      "b3d": "Robust authentication and optimized session management with Better-Auth."
+      "b3t": "Local payment first",
+      "b3d": "Top up in XAF with MTN Mobile Money and Orange Money, using round amounts suited to Cameroon."
     },
     "stats": {
-      "s1": "2,500+",
-      "l1": "Active Developers",
-      "s2": "150+",
-      "l2": "Projects Launched",
-      "s3": "99.9%",
-      "l3": "Uptime"
+      "s1": "99.7%",
+      "l1": "Average provider uptime",
+      "s2": "< 120s",
+      "l2": "OTP delivery target",
+      "s3": "8-12%",
+      "l3": "Target breakage rate"
     },
     "howItWorks": {
-      "label": "How It Works?",
-      "heading": "Launch Your SaaS in 3 Simple Steps",
+      "label": "How it works",
+      "heading": "Credit reservation and OTP verification in 3 steps",
       "s1k": "01",
-      "s1t": "Clone the Repo",
-      "s1d": "Grab the source code and install dependencies in seconds.",
+      "s1t": "Buy a credit package",
+      "s1d": "Choose a package in XAF. You receive base credits and, depending on the pack, bonus credits.",
       "s2k": "02",
-      "s2t": "Configure Envs",
-      "s2d": "Fill your .env file with your API keys and database connection.",
+      "s2t": "Request a number",
+      "s2d": "NumZero reserves credits, calls the provider, and starts a timer based on your user tier.",
       "s3k": "03",
-      "s3t": "Deploy",
-      "s3d": "Push to Vercel and your application is live, ready for your customers."
+      "s3t": "Receive OTP or get refunded",
+      "s3d": "If the SMS arrives, debit is confirmed. In timeout, cancel, or failure cases, you get a 100% refund."
     },
     "pricing": {
-      "label": "Plans & Pricing",
-      "title": "Simple and Transparent Pricing",
-      "sub": "Choose the plan that fits your project's scale.",
-      "coins": "Credits",
-      "popular": "Popular",
-      "discount": "Sale",
-      "starter": "Starter",
-      "cta": "Sign Up",
-      "pay": "Secure payments processed via Stripe. No hidden fees.",
-      "mySpace": "My Space"
+      "label": "Credit packages",
+      "title": "7 packages tuned for Cameroon",
+      "sub": "XAF pricing, local psychological anchors, and progressive bonuses to maximize value.",
+      "coins": "credits",
+      "popular": "Most popular",
+      "bestValue": "Best value",
+      "teams": "For teams",
+      "bonus": "bonus",
+      "noBonus": "No bonus",
+      "cta": "Buy now",
+      "pay": "Payments are prioritized through MTN MoMo and Orange Money. Expiration terms are clearly shown before purchase.",
+      "mySpace": "My space"
     },
     "cta": {
-      "label": "Ready to Jump In?",
-      "title": "Join the NumZero Revolution",
-      "sub": "Stop wasting time on boilerplate and start building your product.",
-      "button": "Let's Go!",
-      "mySpace": "My Space"
+      "label": "Ready to verify at scale",
+      "title": "Launch with NumZero today",
+      "sub": "Run OTP verification with transparent credits, anti-fraud safeguards, and local Cameroon/CEMAC support.",
+      "button": "Create account",
+      "mySpace": "My space"
     },
     "footer": {
       "line": "© 2026 NumZero. All rights reserved.",
       "terms": "Terms",
       "privacy": "Privacy",
       "contact": "Contact",
-      "legal": "NumZero is a platform built by enthusiasts for entrepreneurs around the world."
+      "legal": "NumZero is a virtual SMS OTP number resale platform built for Cameroon first, then CEMAC, with compliance-minded anti-fraud operations."
     },
     "faq": {
       "label": "FAQ",
-      "title": "Frequently Asked Questions",
-      "q1": "Is NumZero free?",
-      "a1": "Yes, NumZero offers a robust open-source version. Premium options are available for businesses.",
-      "q2": "Can I use it for commercial projects?",
-      "a2": "Absolutely. NumZero is designed to power real businesses.",
-      "q3": "What technologies are used?",
-      "a3": "Next.js 16, Tailwind CSS, TypeScript, Better-Auth, and Prisma.",
-      "q4": "Is it hard to set up?",
-      "a4": "No, the documentation guides you step-by-step. You can be live in 15 minutes.",
-      "q5": "Is support included?",
-      "a5": "Community assistance is available on Discord, and dedicated support for premium customers."
+      "title": "Frequently asked questions",
+      "q1": "Do base credits expire?",
+      "a1": "No. Base credits never expire. Only bonus credits expire after 90 days and promotional credits after 30 days.",
+      "q2": "Which payment methods are available?",
+      "a2": "Local payment methods are prioritized: MTN Mobile Money and Orange Money. Additional rails may be added by market.",
+      "q3": "What if I do not receive an SMS?",
+      "a3": "Your reservation is refunded 100% on provider failure, timeout, or user cancellation.",
+      "q4": "How do you handle fraud risk?",
+      "a4": "NumZero applies fraud thresholds, temporary bans, hourly limits, and manual review for suspicious behavior.",
+      "q5": "Can prices change over time?",
+      "a5": "Yes. Credit pricing can adapt based on provider cost, availability, and country, with a protected price floor.",
+      "q6": "Is NumZero aligned with local regulations?",
+      "a6": "NumZero applies transparent terms, KYC at higher thresholds, and operation logs to support Cameroon/CEMAC compliance expectations."
     }
   }
 }

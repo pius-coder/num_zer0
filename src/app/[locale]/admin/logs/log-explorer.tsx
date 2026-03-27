@@ -1,740 +1,665 @@
 'use client'
 
-/**
- * Log Explorer — Internal Observability Dashboard
- *
- * A Vercel/Sentry-inspired internal log viewer.
- * Reads from /api/internal/logs (JSONL files on disk).
- *
- * Features:
- * - Auto-discovers all available log channels and dates
- * - Summary cards (total, by level, by channel, recent errors)
- * - Filter by channel, level, prefix, search, requestId, userId, path, date
- * - Paginated results with diagnostic metadata
- * - Expandable row detail panel with raw JSON
- * - Auto-refresh toggle
- * - Empty/loading/error states
- * - File inventory diagnostics
- */
-
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import {
+  Search,
+  RefreshCcw,
+  Activity,
+  AlertCircle,
+  Info,
+  Terminal,
+  FileText,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Layers,
+  Calendar,
+  Zap,
+  Clock,
+  ExternalLink,
+  Laptop,
+  ShieldCheck,
+  Globe
+} from 'lucide-react'
+import { useAdminLogs, useAdminLogStats } from '@/hooks/use-admin'
+import { AdminPageShell } from '@/app/[locale]/(admin)/admin/_components/admin-page-shell'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import { Separator } from '@/components/ui/separator'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { cn } from '@/lib/utils'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface LogEntry {
-    timestamp: string
-    level: string
+  timestamp: string
+  level: string
+  message: string
+  prefix?: string
+  requestId?: string
+  traceId?: string
+  method?: string
+  path?: string
+  pathname?: string
+  url?: string
+  statusCode?: number
+  durationMs?: number
+  userId?: string
+  sessionId?: string
+  locale?: string
+  ip?: string
+  userAgent?: string
+  referer?: string
+  source?: string
+  channel?: string
+  event?: string
+  runtime?: string
+  environment?: string
+  hostname?: string
+  pid?: number
+  stream?: string
+  error?: {
+    name: string
     message: string
-    prefix?: string
-    requestId?: string
-    traceId?: string
-    method?: string
-    path?: string
-    pathname?: string
-    url?: string
+    stack?: string
+    code?: string
     statusCode?: number
-    durationMs?: number
-    userId?: string
-    sessionId?: string
-    locale?: string
-    ip?: string
-    userAgent?: string
-    referer?: string
-    source?: string
-    channel?: string
-    event?: string
-    runtime?: string
-    environment?: string
-    hostname?: string
-    pid?: number
-    stream?: string
-    error?: {
-        name: string
-        message: string
-        stack?: string
-        code?: string
-        statusCode?: number
-    }
-    data?: Record<string, unknown>
-    context?: Record<string, unknown>
-    metadata?: Record<string, unknown>
-    [key: string]: unknown
-}
-
-interface QueryResult {
-    entries: LogEntry[]
-    total: number
-    page: number
-    pageSize: number
-    totalPages: number
-    filesRead: string[]
-    linesParsed: number
-    linesSkipped: number
+  }
+  data?: Record<string, unknown>
+  context?: Record<string, unknown>
+  metadata?: Record<string, unknown>
+  [key: string]: unknown
 }
 
 interface FileInfo {
-    name: string
-    channel: string
-    date: string
-    sizeBytes: number
-}
-
-interface Stats {
-    logDir: string
-    logDirExists: boolean
-    totalFiles: number
-    totalSizeBytes: number
-    channels: Record<string, { files: number; sizeBytes: number }>
-    dates: string[]
-    files: FileInfo[]
+  name: string
+  channel: string
+  date: string
+  sizeBytes: number
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const LEVEL_CONFIG: Record<string, { color: string; bg: string }> = {
-    trace: { color: '#6B7280', bg: '#6B728015' },
-    debug: { color: '#3B82F6', bg: '#3B82F615' },
-    info: { color: '#10B981', bg: '#10B98115' },
-    warn: { color: '#F59E0B', bg: '#F59E0B15' },
-    error: { color: '#EF4444', bg: '#EF444420' },
-    fatal: { color: '#DC2626', bg: '#DC262630' },
+const LEVEL_CONFIG: Record<string, { variant: 'default' | 'error' | 'warning' | 'outline' | 'secondary' | 'success', color: string }> = {
+  trace: { variant: 'outline', color: 'text-zinc-500' },
+  debug: { variant: 'secondary', color: 'text-blue-500' },
+  info: { variant: 'success', color: 'text-emerald-500' },
+  warn: { variant: 'warning', color: 'text-amber-500' },
+  error: { variant: 'error', color: 'text-red-500' },
+  fatal: { variant: 'default', color: 'text-red-600' },
 }
 
 const CHANNEL_COLORS: Record<string, string> = {
-    app: '#8B5CF6',
-    access: '#06B6D4',
-    error: '#EF4444',
-    audit: '#F59E0B',
-    client: '#EC4899',
+  app: 'text-purple-500 ring-purple-500/20 bg-purple-500/10',
+  access: 'text-cyan-500 ring-cyan-500/20 bg-cyan-500/10',
+  error: 'text-red-500 ring-red-500/20 bg-red-500/10',
+  audit: 'text-amber-500 ring-amber-500/20 bg-amber-500/10',
+  client: 'text-pink-500 ring-pink-500/20 bg-pink-500/10',
 }
 
-// ─── Styles (inline object factory to keep component self-contained) ─────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const s = {
-    root: { fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ui-monospace, monospace', fontSize: '13px', background: '#09090b', color: '#e4e4e7', minHeight: '100vh' } as React.CSSProperties,
-    container: { maxWidth: '1600px', margin: '0 auto', padding: '20px 24px' } as React.CSSProperties,
-    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: '16px', flexWrap: 'wrap' } as React.CSSProperties,
-    title: { margin: 0, fontSize: '20px', fontWeight: 700, color: '#fafafa', letterSpacing: '-0.3px' } as React.CSSProperties,
-    subtitle: { margin: '4px 0 0', color: '#71717a', fontSize: '12px' } as React.CSSProperties,
-    card: { background: '#18181b', border: '1px solid #27272a', borderRadius: '10px', padding: '14px 18px' } as React.CSSProperties,
-    cardLabel: { fontSize: '10px', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '4px' } as React.CSSProperties,
-    cardValue: { fontSize: '22px', fontWeight: 700, color: '#fafafa' } as React.CSSProperties,
-    filterBar: { background: '#18181b', border: '1px solid #27272a', borderRadius: '10px', padding: '16px', marginBottom: '16px' } as React.CSSProperties,
-    filterGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px' } as React.CSSProperties,
-    label: { display: 'block', fontSize: '10px', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 } as React.CSSProperties,
-    input: { width: '100%', padding: '6px 10px', background: '#09090b', border: '1px solid #3f3f46', borderRadius: '6px', color: '#e4e4e7', fontSize: '12px', boxSizing: 'border-box', outline: 'none' } as React.CSSProperties,
-    select: { width: '100%', padding: '6px 10px', background: '#09090b', border: '1px solid #3f3f46', borderRadius: '6px', color: '#e4e4e7', fontSize: '12px' } as React.CSSProperties,
-    btnPrimary: { padding: '7px 18px', background: '#3b82f6', border: 'none', borderRadius: '6px', color: '#fff', cursor: 'pointer', fontSize: '12px', fontWeight: 600 } as React.CSSProperties,
-    btnSecondary: { padding: '6px 12px', background: '#27272a', border: '1px solid #3f3f46', borderRadius: '6px', color: '#e4e4e7', cursor: 'pointer', fontSize: '11px' } as React.CSSProperties,
-    chip: (active: boolean, color: string) => ({
-        padding: '3px 10px',
-        fontSize: '11px',
-        fontWeight: 600,
-        borderRadius: '6px',
-        border: `1px solid ${active ? color : '#3f3f46'}`,
-        background: active ? `${color}18` : 'transparent',
-        color: active ? color : '#a1a1aa',
-        cursor: 'pointer',
-        transition: 'all 120ms ease',
-    }) as React.CSSProperties,
-    errorBox: { padding: '12px 16px', background: '#2D1215', border: '1px solid #7F1D1D', borderRadius: '8px', marginBottom: '16px', color: '#FCA5A5', fontSize: '12px' } as React.CSSProperties,
-    diagBox: { padding: '10px 14px', background: '#18181b', border: '1px solid #27272a', borderRadius: '8px', marginBottom: '12px', fontSize: '11px', color: '#71717a', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' } as React.CSSProperties,
-    table: { width: '100%', borderCollapse: 'collapse', fontSize: '12px' } as React.CSSProperties,
-    th: { textAlign: 'left' as const, padding: '8px 10px', color: '#71717a', fontSize: '10px', textTransform: 'uppercase' as const, letterSpacing: '0.5px', borderBottom: '1px solid #27272a', fontWeight: 600 },
-    td: { padding: '7px 10px', borderBottom: '1px solid #18181b' } as React.CSSProperties,
-    detailPanel: { background: '#18181b', border: '1px solid #27272a', borderRadius: '10px', padding: '18px', overflow: 'auto', maxHeight: 'calc(100vh - 180px)', position: 'sticky' as const, top: '20px' } as React.CSSProperties,
+const fmtSize = (b: number) => {
+  if (b < 1024) return `${b} B`
+  if (b < 1048576) return `${(b / 1024).toFixed(1)} KB`
+  return `${(b / 1048576).toFixed(1)} MB`
+}
+
+const fmtTime = (ts: string) => {
+  try {
+    return new Date(ts).toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+  } catch {
+    return ts.slice(11, 19)
+  }
 }
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function LogExplorer() {
-    const [result, setResult] = useState<QueryResult | null>(null)
-    const [stats, setStats] = useState<Stats | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+  // Basic filters
+  const [page, setPage] = useState(1)
+  const [pageSize] = useState(50)
+  const [channels, setChannels] = useState<string[]>([])
+  const [level, setLevel] = useState('')
+  const [prefix, setPrefix] = useState('')
+  const [search, setSearch] = useState('')
+  const [requestId, setRequestId] = useState('')
+  const [userId, setUserId] = useState('')
+  const [pathFilter, setPathFilter] = useState('')
+  const [date, setDate] = useState('')
+  const [autoRefresh, setAutoRefresh] = useState(false)
 
-    // Filters
-    const [channels, setChannels] = useState<string[]>([]) // empty = all
-    const [level, setLevel] = useState('')
-    const [prefix, setPrefix] = useState('')
-    const [search, setSearch] = useState('')
-    const [requestId, setRequestId] = useState('')
-    const [userId, setUserId] = useState('')
-    const [pathFilter, setPathFilter] = useState('')
-    const [date, setDate] = useState('')
-    const [page, setPage] = useState(1)
-    const [pageSize] = useState(50)
-    const [autoRefresh, setAutoRefresh] = useState(false)
-    const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Selection
+  const [selectedEntry, setSelectedEntry] = useState<LogEntry | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
 
-    const [selectedEntry, setSelectedEntry] = useState<LogEntry | null>(null)
-    const [selectedIdx, setSelectedIdx] = useState<number>(-1)
-
-    // ── Fetching ─────────────────────────────────────────────────────────
-
-    const fetchStats = useCallback(async () => {
-        try {
-            const res = await fetch('/api/internal/logs?action=stats')
-            if (res.ok) setStats(await res.json())
-        } catch { /* ignore */ }
-    }, [])
-
-    const fetchLogs = useCallback(async (params: Record<string, string>) => {
-        setLoading(true)
-        setError(null)
-        try {
-            const qs = new URLSearchParams(params).toString()
-            const res = await fetch(`/api/internal/logs?${qs}`)
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}))
-                throw new Error(body.error || body.detail || `HTTP ${res.status}`)
-            }
-            setResult(await res.json())
-        } catch (err) {
-            setError(err instanceof Error ? err.message : String(err))
-        } finally {
-            setLoading(false)
-        }
-    }, [])
-
-    const doSearch = useCallback(() => {
-        const params: Record<string, string> = {
-            page: String(page),
-            pageSize: String(pageSize),
-            sort: 'desc',
-        }
-        if (channels.length > 0) params.channels = channels.join(',')
-        if (level) params.level = level
-        if (prefix) params.prefix = prefix
-        if (search) params.search = search
-        if (requestId) params.requestId = requestId
-        if (userId) params.userId = userId
-        if (pathFilter) params.path = pathFilter
-        if (date) params.date = date
-        fetchLogs(params)
-    }, [channels, level, prefix, search, requestId, userId, pathFilter, date, page, pageSize, fetchLogs])
-
-    // ── Init ─────────────────────────────────────────────────────────────
-
-    useEffect(() => {
-        fetchStats()
-        doSearch()
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => { doSearch() }, [page]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    // ── Auto-refresh ─────────────────────────────────────────────────────
-
-    useEffect(() => {
-        if (autoRefresh) {
-            autoRefreshRef.current = setInterval(() => {
-                doSearch()
-                fetchStats()
-            }, 5000)
-        } else if (autoRefreshRef.current) {
-            clearInterval(autoRefreshRef.current)
-            autoRefreshRef.current = null
-        }
-        return () => {
-            if (autoRefreshRef.current) clearInterval(autoRefreshRef.current)
-        }
-    }, [autoRefresh, doSearch, fetchStats])
-
-    // ── Handlers ─────────────────────────────────────────────────────────
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        setPage(1)
-        setSelectedEntry(null)
-        setSelectedIdx(-1)
-        doSearch()
+  // Build memoized query params
+  const queryParams = useMemo(() => {
+    const p: Record<string, string> = {
+      page: String(page),
+      pageSize: String(pageSize),
+      sort: 'desc',
     }
+    if (channels.length > 0) p.channels = channels.join(',')
+    if (level) p.level = level
+    if (prefix) p.prefix = prefix
+    if (search) p.search = search
+    if (requestId) p.requestId = requestId
+    if (userId) p.userId = userId
+    if (pathFilter) p.path = pathFilter
+    if (date) p.date = date
+    return p
+  }, [channels, level, prefix, search, requestId, userId, pathFilter, date, page, pageSize])
 
-    const toggleChannel = (ch: string) => {
-        setChannels((prev) =>
-            prev.includes(ch) ? prev.filter((c) => c !== ch) : [...prev, ch]
-        )
-    }
+  // React Query Hooks
+  const {
+    data: result,
+    isLoading: logsLoading,
+    error: logsError,
+    refetch: refetchLogs,
+  } = useAdminLogs(queryParams)
 
-    const handleSelectEntry = (entry: LogEntry, idx: number) => {
-        if (selectedIdx === idx) {
-            setSelectedEntry(null)
-            setSelectedIdx(-1)
-        } else {
-            setSelectedEntry(entry)
-            setSelectedIdx(idx)
-        }
-    }
+  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useAdminLogStats()
 
-    const fmtSize = (b: number) => {
-        if (b < 1024) return `${b} B`
-        if (b < 1048576) return `${(b / 1024).toFixed(1)} KB`
-        return `${(b / 1048576).toFixed(1)} MB`
-    }
+  // Handle auto-refresh effect
+  useEffect(() => {
+    if (!autoRefresh) return
+    const timer = setInterval(() => {
+      refetchLogs()
+      refetchStats()
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [autoRefresh, refetchLogs, refetchStats])
 
-    const fmtTime = (ts: string) => ts.replace(/.*T/, '').replace('Z', '').slice(0, 12)
+  const loading = logsLoading || statsLoading
+  const error = logsError ? (logsError as Error).message : null
 
-    // ── Computed summary ─────────────────────────────────────────────────
+  // ── Handlers ─────────────────────────────────────────────────────────
 
-    const levelCounts: Record<string, number> = {}
-    const channelCounts: Record<string, number> = {}
-    if (result) {
-        // We don't have total counts by level from the API — show from current page
-        // This is intentionally from the current result set to keep it snappy
-    }
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault()
+    setPage(1)
+    setSelectedEntry(null)
+    refetchLogs()
+    refetchStats()
+  }
 
-    // ── Available channels from stats ────────────────────────────────────
+  const toggleChannel = (ch: string) => {
+    setChannels((prev) => (prev.includes(ch) ? prev.filter((c) => c !== ch) : [...prev, ch]))
+  }
 
-    const availableChannels = stats
-        ? Object.keys(stats.channels).filter((ch) => stats.channels[ch].files > 0)
-        : ['app', 'access', 'error', 'audit', 'client']
+  const handleOpenEntry = (entry: LogEntry) => {
+    setSelectedEntry(entry)
+    setSheetOpen(true)
+  }
 
-    const availableDates = stats?.dates ?? []
+  const availableChannels = stats
+    ? Object.keys(stats.channels).filter((ch) => stats.channels[ch].files > 0)
+    : ['app', 'access', 'error', 'audit', 'client']
 
-    // ── Render ───────────────────────────────────────────────────────────
+  const availableDates = stats?.dates ?? []
 
-    return (
-        <div style={s.root}>
-            <div style={s.container}>
-                {/* ── Header ────────────────────────────────────────────── */}
-                <div style={s.header}>
-                    <div>
-                        <h1 style={s.title}>Log Explorer</h1>
-                        <p style={s.subtitle}>
-                            Internal observability
-                            {stats && stats.logDirExists && (
-                                <> &middot; {stats.totalFiles} file{stats.totalFiles !== 1 ? 's' : ''} &middot; {fmtSize(stats.totalSizeBytes)} &middot; <code style={{ color: '#52525b', fontSize: '11px' }}>{stats.logDir}</code></>
-                            )}
-                            {stats && !stats.logDirExists && (
-                                <span style={{ color: '#EF4444' }}> &middot; Log directory not found: {stats.logDir}</span>
-                            )}
-                        </p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#71717a', cursor: 'pointer' }}>
-                            <input
-                                type="checkbox"
-                                checked={autoRefresh}
-                                onChange={(e) => setAutoRefresh(e.target.checked)}
-                                style={{ accentColor: '#3b82f6' }}
-                            />
-                            Auto-refresh
-                        </label>
-                        <button
-                            onClick={() => { doSearch(); fetchStats() }}
-                            disabled={loading}
-                            style={s.btnSecondary}
-                        >
-                            {loading ? 'Loading...' : 'Refresh'}
-                        </button>
-                    </div>
-                </div>
+  // ── Render ───────────────────────────────────────────────────────────
 
-                {/* ── Summary Cards ─────────────────────────────────────── */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px', marginBottom: '16px' }}>
-                    <div style={s.card}>
-                        <div style={s.cardLabel}>Total Entries</div>
-                        <div style={s.cardValue}>{result?.total ?? '—'}</div>
-                    </div>
-                    {availableChannels.map((ch) => (
-                        <div key={ch} style={s.card}>
-                            <div style={s.cardLabel}>
-                                <span style={{ color: CHANNEL_COLORS[ch] ?? '#71717a' }}>{ch}</span> files
-                            </div>
-                            <div style={{ ...s.cardValue, fontSize: '18px' }}>
-                                {stats?.channels[ch]?.files ?? 0}
-                                <span style={{ fontSize: '11px', color: '#52525b', marginLeft: '6px' }}>
-                                    {fmtSize(stats?.channels[ch]?.sizeBytes ?? 0)}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* ── Filter Bar ────────────────────────────────────────── */}
-                <form onSubmit={handleSubmit} style={s.filterBar}>
-                    {/* Channels row */}
-                    <div style={{ marginBottom: '12px' }}>
-                        <div style={s.label}>Channels</div>
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-                            <button
-                                type="button"
-                                onClick={() => setChannels([])}
-                                style={s.chip(channels.length === 0, '#3b82f6')}
-                            >
-                                ALL
-                            </button>
-                            {availableChannels.map((ch) => (
-                                <button
-                                    key={ch}
-                                    type="button"
-                                    onClick={() => toggleChannel(ch)}
-                                    style={s.chip(channels.includes(ch), CHANNEL_COLORS[ch] ?? '#71717a')}
-                                >
-                                    {ch}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Filter inputs */}
-                    <div style={s.filterGrid}>
-                        <div>
-                            <label style={s.label}>Level</label>
-                            <select value={level} onChange={(e) => setLevel(e.target.value)} style={s.select}>
-                                <option value="">All levels</option>
-                                {Object.keys(LEVEL_CONFIG).map((l) => (
-                                    <option key={l} value={l}>{l.toUpperCase()}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label style={s.label}>Search</label>
-                            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Text search..." style={s.input} />
-                        </div>
-                        <div>
-                            <label style={s.label}>Prefix</label>
-                            <input value={prefix} onChange={(e) => setPrefix(e.target.value)} placeholder="e.g. proxy" style={s.input} />
-                        </div>
-                        <div>
-                            <label style={s.label}>Request ID</label>
-                            <input value={requestId} onChange={(e) => setRequestId(e.target.value)} placeholder="UUID..." style={s.input} />
-                        </div>
-                        <div>
-                            <label style={s.label}>User ID</label>
-                            <input value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="User ID..." style={s.input} />
-                        </div>
-                        <div>
-                            <label style={s.label}>Path</label>
-                            <input value={pathFilter} onChange={(e) => setPathFilter(e.target.value)} placeholder="/fr/dashboard" style={s.input} />
-                        </div>
-                        <div>
-                            <label style={s.label}>Date</label>
-                            <select value={date} onChange={(e) => setDate(e.target.value)} style={s.select}>
-                                <option value="">Recent (last 7 days)</option>
-                                {availableDates.map((d) => (
-                                    <option key={d} value={d}>{d}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                            <button type="submit" disabled={loading} style={s.btnPrimary}>
-                                {loading ? 'Searching...' : 'Search'}
-                            </button>
-                        </div>
-                    </div>
-                </form>
-
-                {/* ── Error State ───────────────────────────────────────── */}
-                {error && (
-                    <div style={s.errorBox}>
-                        <strong>Error:</strong> {error}
-                    </div>
-                )}
-
-                {/* ── Diagnostics Bar ───────────────────────────────────── */}
-                {result && (
-                    <div style={s.diagBox}>
-                        <span><strong style={{ color: '#a1a1aa' }}>{result.total}</strong> entries matched</span>
-                        <span>Page {result.page}/{result.totalPages}</span>
-                        <span>{result.linesParsed} lines parsed</span>
-                        {result.linesSkipped > 0 && (
-                            <span style={{ color: '#F59E0B' }}>{result.linesSkipped} malformed lines skipped</span>
-                        )}
-                        <span>{result.filesRead.length} file{result.filesRead.length !== 1 ? 's' : ''} read: {result.filesRead.join(', ') || 'none'}</span>
-                    </div>
-                )}
-
-                {/* ── Loading State ─────────────────────────────────────── */}
-                {loading && !result && (
-                    <div style={{ textAlign: 'center', padding: '60px 0', color: '#52525b' }}>
-                        Loading logs...
-                    </div>
-                )}
-
-                {/* ── Results ───────────────────────────────────────────── */}
-                {result && (
-                    <div style={{ display: 'grid', gridTemplateColumns: selectedEntry ? '1fr 440px' : '1fr', gap: '16px' }}>
-                        {/* ── Table ─────────────────────────────── */}
-                        <div style={{ overflow: 'auto' }}>
-                            {/* Pagination */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                <span style={{ color: '#52525b', fontSize: '12px' }}>
-                                    Showing {Math.min(result.entries.length, result.total)} of {result.total}
-                                </span>
-                                <div style={{ display: 'flex', gap: '4px' }}>
-                                    <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1 || loading} style={s.btnSecondary}>
-                                        Prev
-                                    </button>
-                                    <span style={{ padding: '6px 10px', fontSize: '11px', color: '#71717a' }}>{page}/{result.totalPages}</span>
-                                    <button onClick={() => setPage((p) => p + 1)} disabled={page >= result.totalPages || loading} style={s.btnSecondary}>
-                                        Next
-                                    </button>
-                                </div>
-                            </div>
-
-                            <table style={s.table}>
-                                <thead>
-                                    <tr>
-                                        <th style={s.th}>Time</th>
-                                        <th style={s.th}>Level</th>
-                                        <th style={s.th}>Channel</th>
-                                        <th style={s.th}>Prefix</th>
-                                        <th style={s.th}>Message</th>
-                                        <th style={s.th}>Path</th>
-                                        <th style={{ ...s.th, textAlign: 'right' }}>Duration</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {result.entries.map((entry, i) => {
-                                        const isSelected = selectedIdx === i
-                                        const lc = LEVEL_CONFIG[entry.level] ?? { color: '#71717a', bg: '#71717a15' }
-                                        const channel = (entry.channel ?? entry.stream ?? '') as string
-                                        return (
-                                            <tr
-                                                key={`${entry.timestamp}-${i}`}
-                                                onClick={() => handleSelectEntry(entry, i)}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    background: isSelected ? '#1e293b' : 'transparent',
-                                                    transition: 'background 80ms',
-                                                }}
-                                                onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#18181b' }}
-                                                onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
-                                            >
-                                                <td style={{ ...s.td, color: '#52525b', whiteSpace: 'nowrap', fontFamily: 'ui-monospace, monospace', fontSize: '11px' }}>
-                                                    {fmtTime(entry.timestamp)}
-                                                </td>
-                                                <td style={s.td}>
-                                                    <span style={{
-                                                        display: 'inline-block', padding: '1px 8px', borderRadius: '4px',
-                                                        fontSize: '10px', fontWeight: 700, color: lc.color, background: lc.bg,
-                                                        textTransform: 'uppercase', letterSpacing: '0.3px',
-                                                    }}>
-                                                        {entry.level}
-                                                    </span>
-                                                </td>
-                                                <td style={s.td}>
-                                                    {channel && (
-                                                        <span style={{
-                                                            display: 'inline-block', padding: '1px 7px', borderRadius: '4px',
-                                                            fontSize: '10px', fontWeight: 600,
-                                                            color: CHANNEL_COLORS[channel] ?? '#71717a',
-                                                            background: `${CHANNEL_COLORS[channel] ?? '#71717a'}15`,
-                                                        }}>
-                                                            {channel}
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td style={{ ...s.td, color: '#3b82f6', fontFamily: 'ui-monospace, monospace', fontSize: '11px' }}>
-                                                    {(entry.prefix as string) ?? ''}
-                                                </td>
-                                                <td style={{ ...s.td, maxWidth: '360px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                    {entry.message}
-                                                    {entry.error && (
-                                                        <span style={{ color: '#EF4444', marginLeft: '8px', fontSize: '11px' }}>
-                                                            [{entry.error.name}]
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td style={{ ...s.td, color: '#71717a', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'ui-monospace, monospace', fontSize: '11px' }}>
-                                                    {(entry.path ?? entry.pathname ?? '') as string}
-                                                </td>
-                                                <td style={{ ...s.td, textAlign: 'right', color: '#71717a', whiteSpace: 'nowrap', fontFamily: 'ui-monospace, monospace', fontSize: '11px' }}>
-                                                    {entry.durationMs !== undefined && entry.durationMs !== null
-                                                        ? `${Number(entry.durationMs).toFixed(0)}ms`
-                                                        : ''}
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                    {result.entries.length === 0 && (
-                                        <tr>
-                                            <td colSpan={7} style={{ padding: '48px 16px', textAlign: 'center', color: '#3f3f46' }}>
-                                                <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>No entries found</div>
-                                                <div style={{ fontSize: '12px', color: '#52525b' }}>
-                                                    {result.filesRead.length === 0
-                                                        ? 'No log files matched the selected filters. Check that log files exist in the logs/ directory.'
-                                                        : `${result.filesRead.length} file(s) were read but no entries matched your filters.`}
-                                                    {result.linesSkipped > 0 && ` (${result.linesSkipped} malformed lines were skipped.)`}
-                                                </div>
-                                                {stats && !stats.logDirExists && (
-                                                    <div style={{ marginTop: '8px', color: '#EF4444', fontSize: '12px' }}>
-                                                        Log directory does not exist: {stats.logDir}
-                                                    </div>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* ── Detail Panel ──────────────────────── */}
-                        {selectedEntry && (
-                            <div style={s.detailPanel}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#fafafa' }}>Event Detail</h3>
-                                    <button onClick={() => { setSelectedEntry(null); setSelectedIdx(-1) }} style={s.btnSecondary}>
-                                        Close
-                                    </button>
-                                </div>
-
-                                <DetailSection title="Core">
-                                    <DetailRow label="timestamp" value={selectedEntry.timestamp} />
-                                    <DetailRow label="level" value={selectedEntry.level} color={LEVEL_CONFIG[selectedEntry.level]?.color} />
-                                    <DetailRow label="message" value={selectedEntry.message} />
-                                    <DetailRow label="event" value={selectedEntry.event as string} />
-                                    <DetailRow label="channel" value={(selectedEntry.channel ?? selectedEntry.stream) as string} />
-                                    <DetailRow label="prefix" value={selectedEntry.prefix as string} />
-                                    <DetailRow label="source" value={selectedEntry.source as string} />
-                                </DetailSection>
-
-                                <DetailSection title="Request">
-                                    <DetailRow label="requestId" value={selectedEntry.requestId} copyable />
-                                    <DetailRow label="traceId" value={selectedEntry.traceId} copyable />
-                                    <DetailRow label="method" value={selectedEntry.method} />
-                                    <DetailRow label="path" value={(selectedEntry.path ?? selectedEntry.pathname) as string} />
-                                    <DetailRow label="url" value={selectedEntry.url} />
-                                    <DetailRow label="statusCode" value={selectedEntry.statusCode?.toString()} />
-                                    <DetailRow label="durationMs" value={selectedEntry.durationMs !== undefined ? `${Number(selectedEntry.durationMs).toFixed(2)}ms` : undefined} />
-                                    <DetailRow label="locale" value={selectedEntry.locale} />
-                                </DetailSection>
-
-                                <DetailSection title="Identity">
-                                    <DetailRow label="userId" value={selectedEntry.userId} />
-                                    <DetailRow label="sessionId" value={selectedEntry.sessionId} />
-                                    <DetailRow label="ip" value={selectedEntry.ip} />
-                                    <DetailRow label="userAgent" value={selectedEntry.userAgent} />
-                                    <DetailRow label="referer" value={selectedEntry.referer} />
-                                </DetailSection>
-
-                                <DetailSection title="System">
-                                    <DetailRow label="environment" value={selectedEntry.environment} />
-                                    <DetailRow label="runtime" value={selectedEntry.runtime} />
-                                    <DetailRow label="hostname" value={selectedEntry.hostname} />
-                                    <DetailRow label="pid" value={selectedEntry.pid?.toString()} />
-                                </DetailSection>
-
-                                {selectedEntry.error && (
-                                    <DetailSection title="Error">
-                                        <DetailRow label="name" value={selectedEntry.error.name} color="#EF4444" />
-                                        <DetailRow label="message" value={selectedEntry.error.message} />
-                                        <DetailRow label="code" value={selectedEntry.error.code} />
-                                        {selectedEntry.error.stack && (
-                                            <Pre label="Stack Trace" value={selectedEntry.error.stack} />
-                                        )}
-                                    </DetailSection>
-                                )}
-
-                                {selectedEntry.data && Object.keys(selectedEntry.data).length > 0 && (
-                                    <DetailSection title="Data">
-                                        <Pre value={JSON.stringify(selectedEntry.data, null, 2)} />
-                                    </DetailSection>
-                                )}
-
-                                {selectedEntry.context && Object.keys(selectedEntry.context).length > 0 && (
-                                    <DetailSection title="Context">
-                                        <Pre value={JSON.stringify(selectedEntry.context, null, 2)} />
-                                    </DetailSection>
-                                )}
-
-                                {selectedEntry.metadata && Object.keys(selectedEntry.metadata).length > 0 && (
-                                    <DetailSection title="Metadata">
-                                        <Pre value={JSON.stringify(selectedEntry.metadata, null, 2)} />
-                                    </DetailSection>
-                                )}
-
-                                <DetailSection title="Raw JSON">
-                                    <Pre value={JSON.stringify(selectedEntry, null, 2)} maxHeight="300px" />
-                                </DetailSection>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* ── File Inventory ────────────────────────────────────── */}
-                {stats && stats.files && stats.files.length > 0 && (
-                    <div style={{ marginTop: '24px' }}>
-                        <h3 style={{ fontSize: '13px', fontWeight: 600, color: '#71717a', marginBottom: '8px' }}>File Inventory</h3>
-                        <div style={{ background: '#18181b', border: '1px solid #27272a', borderRadius: '8px', overflow: 'hidden' }}>
-                            <table style={s.table}>
-                                <thead>
-                                    <tr>
-                                        <th style={s.th}>File</th>
-                                        <th style={s.th}>Channel</th>
-                                        <th style={s.th}>Date</th>
-                                        <th style={{ ...s.th, textAlign: 'right' }}>Size</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {stats.files.map((f) => (
-                                        <tr key={f.name}>
-                                            <td style={{ ...s.td, fontFamily: 'ui-monospace, monospace', fontSize: '11px', color: '#a1a1aa' }}>{f.name}</td>
-                                            <td style={s.td}>
-                                                <span style={{ color: CHANNEL_COLORS[f.channel] ?? '#71717a', fontWeight: 600, fontSize: '11px' }}>{f.channel}</span>
-                                            </td>
-                                            <td style={{ ...s.td, color: '#71717a', fontSize: '11px' }}>{f.date}</td>
-                                            <td style={{ ...s.td, textAlign: 'right', color: '#71717a', fontSize: '11px' }}>{fmtSize(f.sizeBytes)}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-    )
-}
-
-// ─── Sub-components ──────────────────────────────────────────────────────────
-
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
-    return (
-        <div style={{ marginBottom: '14px' }}>
-            <div style={{ fontSize: '10px', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: 700, marginBottom: '6px', borderBottom: '1px solid #27272a', paddingBottom: '4px' }}>
-                {title}
-            </div>
-            {children}
-        </div>
-    )
-}
-
-function DetailRow({ label, value, color, copyable }: { label: string; value?: string; color?: string; copyable?: boolean }) {
-    if (!value) return null
-    return (
-        <div style={{ display: 'flex', gap: '10px', padding: '2px 0', fontSize: '12px', alignItems: 'flex-start' }}>
-            <span style={{ color: '#52525b', minWidth: '90px', flexShrink: 0, fontWeight: 500 }}>{label}</span>
-            <span
-                style={{
-                    color: color ?? '#d4d4d8',
-                    wordBreak: 'break-all',
-                    cursor: copyable ? 'pointer' : 'default',
-                    fontFamily: 'ui-monospace, monospace',
-                    fontSize: '11px',
-                }}
-                title={copyable ? 'Click to copy' : undefined}
-                onClick={copyable ? () => navigator.clipboard.writeText(value).catch(() => { }) : undefined}
-            >
-                {value}
-                {copyable && <span style={{ marginLeft: '4px', color: '#3f3f46', fontSize: '10px' }}>copy</span>}
+  return (
+    <AdminPageShell
+      title='Log Explorer'
+      subtitle={
+        <div className='flex items-center gap-2 mt-1'>
+          <span className='inline-flex items-center gap-1 text-xs text-muted-foreground'>
+            <Terminal className='h-3 w-3' />
+            {stats?.logDir || '/logs'}
+          </span>
+          {stats && (
+            <span className='text-xs text-muted-foreground'>
+              &middot; {stats.totalFiles} fichiers &middot; {fmtSize(stats.totalSizeBytes)}
             </span>
+          )}
         </div>
-    )
+      }
+    >
+      {/* ── Summary Stats ─────────────────────────────────────── */}
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-6'>
+        <Card className='bg-card/50 shadow-sm border-muted/20'>
+          <CardHeader className='pb-2 pt-4 px-4'>
+            <CardTitle className='text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between'>
+              Total Match
+              <Activity className='h-3 w-3 text-primary opacity-50' />
+            </CardTitle>
+          </CardHeader>
+          <CardContent className='px-4 pb-4'>
+            <div className='text-2xl font-bold tracking-tight'>
+              {result?.total?.toLocaleString() ?? '—'}
+            </div>
+            <p className='text-[10px] text-muted-foreground mt-1'>Entrées filtrées</p>
+          </CardContent>
+        </Card>
+
+        {availableChannels.map((ch) => (
+          <Card key={ch} className='bg-card/50 shadow-sm border-muted/20'>
+            <CardHeader className='pb-2 pt-4 px-4'>
+              <CardTitle className='text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between'>
+                {ch} channel
+                <Layers className='h-3 w-3 opacity-50' />
+              </CardTitle>
+            </CardHeader>
+            <CardContent className='px-4 pb-4'>
+              <div className={cn("text-2xl font-bold tracking-tight", CHANNEL_COLORS[ch]?.split(' ')[0])}>
+                {stats?.channels[ch]?.files ?? 0}
+              </div>
+              <p className='text-[10px] text-muted-foreground mt-1 truncate'>
+                {fmtSize(stats?.channels[ch]?.sizeBytes ?? 0)} &middot; local
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* ── Filter Engine ─────────────────────────────────────── */}
+      <Card className='mb-6 border-muted/20 bg-card shadow-sm'>
+        <CardContent className='pt-6 space-y-6'>
+          {/* Channels Toggle */}
+          <div className='space-y-4'>
+            <div className='flex items-center gap-2'>
+              <Filter className='h-3 w-3 text-muted-foreground' />
+              <span className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>Canaux</span>
+            </div>
+            <div className='flex flex-wrap gap-2'>
+              <Button
+                variant={channels.length === 0 ? 'default' : 'outline'}
+                size='sm'
+                className='h-7 text-xs px-3 rounded-full'
+                onClick={() => setChannels([])}
+              >
+                TOUS
+              </Button>
+              {availableChannels.map((ch) => (
+                <Button
+                  key={ch}
+                  variant={channels.includes(ch) ? 'secondary' : 'outline'}
+                  size='sm'
+                  className={cn(
+                    'h-7 text-xs px-3 rounded-full transition-all capitalize',
+                    channels.includes(ch) && (CHANNEL_COLORS[ch] || 'bg-secondary')
+                  )}
+                  onClick={() => toggleChannel(ch)}
+                >
+                  {ch}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <Separator className='opacity-50' />
+
+          {/* Search Grid */}
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4'>
+            <div className='space-y-2'>
+              <label className='text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5'>
+                <Zap className='h-3 w-3' /> Niveau
+              </label>
+              <Select value={level} onValueChange={setLevel}>
+                <SelectTrigger className='h-9 text-xs bg-muted/20'>
+                  <SelectValue placeholder='Tous niveaux' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='all'>Tous niveaux</SelectItem>
+                  {Object.keys(LEVEL_CONFIG).map((l) => (
+                    <SelectItem key={l} value={l}>{l.toUpperCase()}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className='space-y-2 xl:col-span-2'>
+              <label className='text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5'>
+                <Search className='h-3 w-3' /> Recherche
+              </label>
+              <div className='relative'>
+                <Search className='absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground' />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder='Message, erreur, données...'
+                  className='pl-9 h-9 text-xs bg-muted/20'
+                />
+              </div>
+            </div>
+
+            <div className='space-y-2'>
+              <label className='text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5'>
+                <Calendar className='h-3 w-3' /> Date
+              </label>
+              <Select value={date} onValueChange={setDate}>
+                <SelectTrigger className='h-9 text-xs bg-muted/20'>
+                  <SelectValue placeholder='7 derniers jours' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='all'>Récents (7j)</SelectItem>
+                  {availableDates.map((d: string) => (
+                    <SelectItem key={d} value={d}>{d}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className='space-y-2'>
+              <label className='text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5'>
+                <FileText className='h-3 w-3' /> Path / Prefix
+              </label>
+              <Input
+                value={pathFilter || prefix}
+                onChange={(e) => {
+                  setPathFilter(e.target.value)
+                  setPrefix(e.target.value)
+                }}
+                placeholder='/api/...'
+                className='h-9 text-xs bg-muted/20'
+              />
+            </div>
+
+            <div className='flex items-end gap-2'>
+              <Button onClick={() => handleSubmit()} className='h-9 flex-1 shadow-sm' disabled={loading}>
+                {loading ? <RefreshCcw className='h-3.5 w-3.5 animate-spin' /> : 'Appliquer'}
+              </Button>
+              <Button
+                variant='outline'
+                size='icon'
+                className={cn('h-9 w-9 bg-muted/20', autoRefresh && 'text-primary border-primary bg-primary/5')}
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                title={autoRefresh ? 'Désactiver auto-refresh' : 'Activer auto-refresh (5s)'}
+              >
+                <RefreshCcw className={cn('h-3.5 w-3.5', autoRefresh && 'animate-spin')} />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Table Container ──────────────────────────────────── */}
+      {error && (
+        <div className='mb-6 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center gap-2'>
+          <AlertCircle className='h-4 w-4' />
+          <span>Une erreur est survenue lors de la récupération des logs: {error}</span>
+          <Button variant='ghost' size='sm' className='ml-auto' onClick={() => refetchLogs()}>Réessayer</Button>
+        </div>
+      )}
+
+      {result && (
+        <div className='mb-4 flex items-center justify-between px-1'>
+          <div className='flex items-center gap-4 text-[10px] uppercase font-bold tracking-widest text-muted-foreground'>
+            <span className='flex items-center gap-1.5'><Clock className='h-3 w-3' /> {result.linesParsed.toLocaleString()} lignes analysées</span>
+            {result.linesSkipped > 0 && <span className='text-amber-500 font-bold'>⚠️ {result.linesSkipped} corrompues</span>}
+          </div>
+          <div className='flex items-center gap-2'>
+            <span className='text-[11px] text-muted-foreground mr-2 font-medium'>
+              Page {result.page} sur {result.totalPages}
+            </span>
+            <div className='flex gap-1'>
+              <Button
+                variant='outline'
+                size='icon'
+                className='h-7 w-7'
+                disabled={page <= 1 || loading}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                <ChevronLeft className='h-3.5 w-3.5' />
+              </Button>
+              <Button
+                variant='outline'
+                size='icon'
+                className='h-7 w-7'
+                disabled={page >= result.totalPages || loading}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                <ChevronRight className='h-3.5 w-3.5' />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className='rounded-xl border bg-card shadow-sm overflow-hidden'>
+        <Table>
+          <TableHeader className='bg-muted/30'>
+            <TableRow className='hover:bg-transparent border-muted/20'>
+              <TableHead className='w-[100px] h-10 text-[10px] uppercase font-bold'>Temps</TableHead>
+              <TableHead className='w-[80px] h-10 text-[10px] uppercase font-bold'>Niveau</TableHead>
+              <TableHead className='w-[100px] h-10 text-[10px] uppercase font-bold text-center'>Canal</TableHead>
+              <TableHead className='h-10 text-[10px] uppercase font-bold'>Message</TableHead>
+              <TableHead className='w-[180px] h-10 text-[10px] uppercase font-bold'>Chemin</TableHead>
+              <TableHead className='w-[60px] h-10 text-[10px] uppercase font-bold text-right'>Durée</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading && !result ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <TableRow key={i} className='border-muted/10'>
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <TableCell key={j} className='py-3'>
+                      <div className='h-4 w-full animate-pulse rounded bg-muted/40' />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : result?.entries.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className='h-32 text-center text-muted-foreground'>
+                  <div className='flex flex-col items-center gap-2'>
+                    <Terminal className='h-8 w-8 opacity-20 mb-1' />
+                    <p className='font-medium'>Aucune entrée trouvée</p>
+                    <p className='text-xs opacity-70'>Vérifiez vos filtres ou lancez la recherche sur une autre date.</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              result?.entries.map((entry, i) => {
+                const lc = LEVEL_CONFIG[entry.level] || { variant: 'outline', color: 'text-zinc-500' }
+                const channel = (entry.channel || entry.stream || '') as string
+                return (
+                  <TableRow
+                    key={`${entry.timestamp}-${i}`}
+                    className='cursor-pointer group border-muted/10 hover:bg-muted/30 transition-colors'
+                    onClick={() => handleOpenEntry(entry)}
+                  >
+                    <TableCell className='py-2.5 font-mono text-[11px] text-muted-foreground whitespace-nowrap'>
+                      {fmtTime(entry.timestamp)}
+                    </TableCell>
+                    <TableCell className='py-2.5'>
+                      <Badge variant={lc.variant as any} className={cn("text-[8px] h-4.5 py-0 px-1.5 uppercase font-bold tracking-tight shadow-none ring-1 ring-inset border-none", lc.variant === 'success' && 'bg-emerald-500/10 text-emerald-500 ring-emerald-500/20')}>
+                        {entry.level}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className='py-2.5 text-center'>
+                      {channel && (
+                        <span className={cn(
+                          'inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold ring-1 ring-inset',
+                          CHANNEL_COLORS[channel] || 'text-zinc-500 bg-zinc-500/10 ring-zinc-500/20'
+                        )}>
+                          {channel}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className='py-2.5 max-w-[400px]'>
+                      <div className='flex flex-col gap-0.5'>
+                        <span className='text-[13px] font-medium leading-tight truncate group-hover:text-primary transition-colors'>
+                          {entry.message}
+                        </span>
+                        {entry.error && (
+                          <span className='text-[10px] text-red-500 font-mono font-medium flex items-center gap-1 mt-0.5'>
+                            <AlertCircle className='h-2.5 w-2.5' /> [{entry.error.name}] {entry.error.message.substring(0, 100)}...
+                          </span>
+                        )}
+                        {entry.prefix && (
+                          <span className='text-[10px] text-blue-500/80 font-mono'>via {entry.prefix}</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className='py-2.5 font-mono text-[10px] text-muted-foreground whitespace-nowrap truncate overflow-hidden'>
+                      {(entry.path || entry.pathname || '') as string}
+                      {entry.requestId && (
+                        <span className='block opacity-50 text-[9px] mt-0.5'>req:{entry.requestId.slice(0, 8)}</span>
+                      )}
+                    </TableCell>
+                    <TableCell className='py-2.5 text-right font-mono text-[10px] text-muted-foreground'>
+                      {entry.durationMs !== undefined && entry.durationMs !== null
+                        ? `${Math.round(entry.durationMs)}ms`
+                        : '—'}
+                    </TableCell>
+                  </TableRow>
+                )
+              })
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Detail Sheet */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent className='flex flex-col gap-0 p-0 sm:max-w-xl w-full'>
+          {selectedEntry && (
+            <>
+              <SheetHeader className='px-6 py-6 border-b bg-muted/10'>
+                <div className='flex flex-col gap-1'>
+                  <div className='flex items-center gap-2'>
+                    <Badge variant={LEVEL_CONFIG[selectedEntry.level]?.variant as any}>
+                      {selectedEntry.level.toUpperCase()}
+                    </Badge>
+                    {selectedEntry.channel && (
+                      <span className={cn('text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border', CHANNEL_COLORS[selectedEntry.channel])}>
+                        {selectedEntry.channel}
+                      </span>
+                    )}
+                  </div>
+                  <SheetTitle className='text-lg mt-3 font-semibold leading-relaxed'>{selectedEntry.message}</SheetTitle>
+                  <SheetDescription className='font-mono text-xs'>
+                    {selectedEntry.timestamp}
+                  </SheetDescription>
+                </div>
+              </SheetHeader>
+
+              <ScrollArea className='flex-1'>
+                <div className='p-6 space-y-8'>
+                  {/* Diagnostic Context */}
+                  <div className='grid grid-cols-2 gap-4'>
+                    <DetailItem label='Request ID' icon={Terminal} value={selectedEntry.requestId} mono />
+                    <DetailItem label='Trace ID' icon={Activity} value={selectedEntry.traceId} mono />
+                    <DetailItem label='Méthode' icon={Zap} value={selectedEntry.method} />
+                    <DetailItem label='Code Statut' icon={Info} value={selectedEntry.statusCode} />
+                    <DetailItem label='Utilisateur' icon={Layers} value={selectedEntry.userId || selectedEntry.sessionId} mono />
+                    <DetailItem label='Locale' icon={Globe} value={selectedEntry.locale || selectedEntry.language} />
+                  </div>
+
+                  <DetailItem label='URL / Chemin' icon={ExternalLink} value={(selectedEntry.url || selectedEntry.path || selectedEntry.pathname) as string} long />
+                  <DetailItem label='Agent Utilisateur' icon={Laptop} value={selectedEntry.userAgent} long />
+
+                  <Separator className='opacity-50' />
+
+                  {/* Error Stack */}
+                  {selectedEntry.error && (
+                    <div className='space-y-4'>
+                      <div className='flex items-center gap-2 text-red-500'>
+                        <AlertCircle className='h-4 w-4' />
+                        <h3 className='text-sm font-bold uppercase tracking-wider'>Informations d'erreur</h3>
+                      </div>
+                      <div className='bg-red-500/5 border border-red-500/10 rounded-lg p-4 space-y-3 font-mono'>
+                        <div className='flex items-center gap-2 text-xs'>
+                          <span className='font-bold'>{selectedEntry.error.name}:</span>
+                          <span>{selectedEntry.error.message}</span>
+                        </div>
+                        {selectedEntry.error.stack && (
+                          <div className='text-[10px] leading-relaxed text-red-700/80 whitespace-pre overflow-x-auto pb-2'>
+                            {selectedEntry.error.stack}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Metadata Explorer */}
+                  <div className='space-y-4 pb-4'>
+                    <div className='flex items-center gap-2'>
+                      <FileText className='h-4 w-4 text-primary' />
+                      <h3 className='text-sm font-bold uppercase tracking-wider'>Données & Contexte</h3>
+                    </div>
+                    <div className='rounded-lg bg-zinc-950 p-4 border border-zinc-900 shadow-inner group relative'>
+                      <div className='absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity'>
+                        <Button size='icon' variant='ghost' className='h-6 w-6' onClick={() => {
+                          navigator.clipboard.writeText(JSON.stringify(selectedEntry, null, 2))
+                        }}>
+                          <FileText className='h-3 w-3' />
+                        </Button>
+                      </div>
+                      <pre className='text-[11px] leading-relaxed font-mono text-emerald-500/90 overflow-x-auto'>
+                        {JSON.stringify(selectedEntry, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </ScrollArea>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+    </AdminPageShell>
+  )
 }
 
-function Pre({ value, label, maxHeight = '200px' }: { value: string; label?: string; maxHeight?: string }) {
-    return (
-        <div>
-            {label && <div style={{ fontSize: '10px', color: '#52525b', marginBottom: '4px' }}>{label}</div>}
-            <pre style={{
-                margin: 0, fontSize: '11px', color: '#a1a1aa', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
-                padding: '10px', background: '#09090b', borderRadius: '6px', maxHeight, overflow: 'auto',
-                border: '1px solid #27272a', fontFamily: 'ui-monospace, monospace',
-            }}>
-                {value}
-            </pre>
-        </div>
-    )
+function DetailItem({
+  label,
+  value,
+  icon: Icon,
+  mono = false,
+  long = false
+}: {
+  label: string,
+  value?: string | number | null,
+  icon: any,
+  mono?: boolean,
+  long?: boolean
+}) {
+  if (!value) return null
+  return (
+    <div className={cn('space-y-1', long && 'col-span-2')}>
+      <label className='text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5'>
+        <Icon className='h-3 w-3 opacity-50' /> {label}
+      </label>
+      <p className={cn(
+        'text-sm bg-muted/30 px-2 py-1.5 rounded border border-muted/20 break-all',
+        mono && 'font-mono text-xs',
+        long ? 'min-h-[2.5rem]' : 'truncate'
+      )}>
+        {value}
+      </p>
+    </div>
+  )
 }

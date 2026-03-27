@@ -26,12 +26,11 @@ export default function Features() {
             {blocks.map((item, index) => (
               <div
                 key={item.k}
-                className={`flex flex-col gap-4 p-9 sm:p-11 ${
-                  index % 3 !== 2 ? 'md:border-r md:border-[rgba(255,255,255,0.06)]' : ''
-                } ${index < 2 ? 'border-b border-[rgba(255,255,255,0.06)] md:border-b-0' : ''}`}
+                className={`flex flex-col gap-4 p-9 sm:p-11 ${index % 3 !== 2 ? 'md:border-r md:border-[rgba(255,255,255,0.06)]' : ''
+                  } ${index < 2 ? 'border-b border-[rgba(255,255,255,0.06)] md:border-b-0' : ''}`}
               >
                 <p
-                  className='text-[11px] font-semibold tabular-nums tracking-[-0.02em] text-[#2563eb]'
+                  className='text-[11px] font-semibold tabular-nums tracking-[-0.02em] text-[#adfa1b]'
                   style={{ fontFamily: 'var(--font-geist-mono)' }}
                 >
                   {item.k}

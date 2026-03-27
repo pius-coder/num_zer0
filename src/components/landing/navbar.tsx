@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 const LogoMark = () => (
   <div
     className='flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-sm font-bold tracking-tight text-white'
-    style={{ backgroundColor: '#2563eb' }}
+    style={{ backgroundColor: '#adfa1b' }}
     aria-hidden
   >
     N0
@@ -45,11 +45,17 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
           <Link href='/#hero' className={linkClass}>
             {t('home')}
           </Link>
-          <Link href='/#countries' className={linkClass}>
-            {t('countries')}
+          <Link href='/#credit-model' className={linkClass}>
+            {t('creditModel')}
+          </Link>
+          <Link href='/#how-it-works' className={linkClass}>
+            {t('howItWorks')}
           </Link>
           <Link href='/#pricing' className={linkClass}>
             {t('pricing')}
+          </Link>
+          <Link href='/#trust' className={linkClass}>
+            {t('trust')}
           </Link>
           <Link href='/#faq' className={linkClass}>
             {t('faq')}
@@ -67,7 +73,7 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
               locale='fr'
               className={cn(
                 'rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide',
-                locale === 'fr' ? 'bg-[#2563eb] text-white' : 'text-zinc-500 hover:text-zinc-300'
+                locale === 'fr' ? 'bg-[#adfa1b] text-black/80' : 'text-zinc-500 hover:text-zinc-300'
               )}
             >
               FR
@@ -77,7 +83,7 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
               locale='en'
               className={cn(
                 'rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide',
-                locale === 'en' ? 'bg-[#2563eb] text-white' : 'text-zinc-500 hover:text-zinc-300'
+                locale === 'en' ? 'bg-[#adfa1b] text-black/80' : 'text-zinc-500 hover:text-zinc-300'
               )}
             >
               EN
@@ -107,7 +113,7 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
               />
               <Button
                 className='hidden h-9 rounded-full border-transparent px-4 text-sm font-semibold text-white sm:inline-flex'
-                style={{ backgroundColor: '#2563eb' }}
+                style={{ backgroundColor: '#adfa1b' }}
                 render={(props) => (
                   <Link {...props} href='/register'>
                     {t('register')}
@@ -139,11 +145,18 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
               {t('home')}
             </Link>
             <Link
-              href='/#countries'
+              href='/#credit-model'
               className='block rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-100'
               onClick={toggleMenu}
             >
-              {t('countries')}
+              {t('creditModel')}
+            </Link>
+            <Link
+              href='/#how-it-works'
+              className='block rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-100'
+              onClick={toggleMenu}
+            >
+              {t('howItWorks')}
             </Link>
             <Link
               href='/#pricing'
@@ -151,6 +164,13 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
               onClick={toggleMenu}
             >
               {t('pricing')}
+            </Link>
+            <Link
+              href='/#trust'
+              className='block rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-100'
+              onClick={toggleMenu}
+            >
+              {t('trust')}
             </Link>
             <Link
               href='/#faq'
@@ -169,7 +189,7 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
                   locale='fr'
                   className={cn(
                     'rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase',
-                    locale === 'fr' ? 'bg-[#2563eb] text-white' : 'text-zinc-500'
+                    locale === 'fr' ? 'bg-[#adfa1b] text-black/80' : 'text-zinc-500'
                   )}
                 >
                   FR
@@ -179,7 +199,7 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
                   locale='en'
                   className={cn(
                     'rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase',
-                    locale === 'en' ? 'bg-[#2563eb] text-white' : 'text-zinc-500'
+                    locale === 'en' ? 'bg-[#adfa1b] text-black/80' : 'text-zinc-500'
                   )}
                 >
                   EN
@@ -209,7 +229,7 @@ export default function Navbar({ isAuthenticated }: { isAuthenticated: boolean }
                 />
                 <Button
                   className='w-full rounded-full border-transparent text-sm font-semibold text-white'
-                  style={{ backgroundColor: '#2563eb' }}
+                  style={{ backgroundColor: '#adfa1b' }}
                   render={(props) => (
                     <Link {...props} href='/register' onClick={toggleMenu}>
                       {t('register')}

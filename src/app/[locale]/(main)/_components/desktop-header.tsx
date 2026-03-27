@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Coins, Home, Smartphone, Wallet } from 'lucide-react'
 
 import { SearchBar } from './search-bar'
+import { RechargeTriggerButton } from '@/components/features/recharge'
 
 interface DesktopHeaderProps {
   locale: string
@@ -40,13 +41,11 @@ export function DesktopHeader({ locale }: DesktopHeaderProps) {
 
       <SearchBar className='ml-auto w-full max-w-md' placeholder='Search service, country...' />
 
-      <Link
-        href={`/${locale}/wallet`}
-        className='inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/20'
-      >
+      <div className='inline-flex shrink-0 items-center gap-2 rounded-full bg-primary/10 px-2 py-1 text-sm font-semibold text-primary'>
         <Coins className='h-4 w-4' />
-        5 Credits
-      </Link>
+        <span>5 Credits</span>
+        <RechargeTriggerButton credits={5} className='border-primary/40 p-1.5' />
+      </div>
     </header>
   )
 }

@@ -10,7 +10,7 @@ export default function CTA({ isAuthenticated }: { isAuthenticated: boolean }) {
   const t = useTranslations('landing.cta')
 
   return (
-    <section className='bg-[#080808] px-4 py-28 sm:px-6 md:py-32'>
+    <section id='start' className='bg-[#080808] px-4 py-28 sm:px-6 md:py-32'>
       <div className='mx-auto max-w-4xl'>
         <h2
           className='mb-12 text-center text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-600'
@@ -32,7 +32,7 @@ export default function CTA({ isAuthenticated }: { isAuthenticated: boolean }) {
         <div className='mx-auto flex items-center justify-center'>
           <Button
             className='h-11 rounded-full border-transparent px-8 text-sm font-semibold text-white'
-            style={{ backgroundColor: '#2563eb' }}
+            style={{ backgroundColor: '#adfa1b' }}
             render={(props) => (
               <Link {...props} href={isAuthenticated ? '/my-space' : '/register'}>
                 {isAuthenticated ? t('mySpace') : t('button')}

@@ -3,10 +3,15 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-pixel-square: var(--font-geist-pixel-square);
+  --font-pixel-grid: var(--font-geist-pixel-grid);
+  --font-pixel-circle: var(--font-geist-pixel-circle);
+  --font-pixel-triangle: var(--font-geist-pixel-triangle);
+  --font-pixel-line: var(--font-geist-pixel-line);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
   --font-bricolage-grotesque: var(--font-bricolage-grotesque);
   --animate-skeleton: skeleton 2s -1s infinite linear;
   --color-warning-foreground: var(--warning-foreground);
@@ -143,9 +148,10 @@
   --success-foreground: var(--color-emerald-700);
   --warning: var(--color-amber-500);
   --warning-foreground: var(--color-amber-700);
-  --brand-accent-hex: #2563eb;
+  --brand-accent-hex: #adfa1b;
   --brand-accent-hover-hex: #1d4ed8;
   --radius: 0.7rem;
+
 }
 
 :root {
@@ -158,7 +164,7 @@
   --popover: #0f0f0f;
   --popover-foreground: #f4f4f5;
 
-  --primary: #2563eb;
+  --primary: #adfa1b;
   --primary-foreground: #ffffff;
 
   --secondary: #141414;
@@ -185,7 +191,7 @@
 
   --sidebar: #0f0f0f;
   --sidebar-foreground: #f4f4f5;
-  --sidebar-primary: #2563eb;
+  --sidebar-primary: #adfa1b;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #141414;
   --sidebar-accent-foreground: #f4f4f5;
@@ -193,14 +199,14 @@
   --sidebar-ring: rgba(37, 99, 235, 0.45);
 
   --destructive-foreground: #fca5a5;
-  --info: #2563eb;
+  --info: #adfa1b;
   --info-foreground: #93c5fd;
   --success: #10b981;
   --success-foreground: #6ee7b7;
   --warning: #f59e0b;
   --warning-foreground: #fcd34d;
 
-  --brand-accent-hex: #2563eb;
+  --brand-accent-hex: #adfa1b;
   --brand-accent-hover-hex: #1d4ed8;
   --radius: 0.7rem;
 
@@ -255,7 +261,7 @@
     width: min(720px, 90vw);
     transform: translate(-50%, -50%);
     pointer-events: none;
-    background: #2563eb;
+    background: #adfa1b;
     box-shadow: 0 0 28px 2px rgb(37 99 235 / 35%);
   }
 }

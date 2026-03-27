@@ -90,15 +90,16 @@ import type { LogLevel } from './types'
 function createDefaultTransports() {
     const transports = [createConsoleTransport()]
 
-    const env = getEnvironment()
-    if (env === 'server') {
-        // Dynamically import file transport to avoid bundling fs in edge
+    // Use process.env.NEXT_RUNTIME to strictly gate Node-only code.
+    // This allows bundlers (Turbopack/Webpack) to tree-shake this branch in the browser.
+    if (process.env.NEXT_RUNTIME === 'nodejs') {
         try {
             // eslint-disable-next-line @typescript-eslint/no-require-imports
             const { createFileTransport } = require('./transports/file.server')
             transports.push(createFileTransport())
-        } catch {
-            // File transport not available (edge, browser, or build time)
+        } catch (err) {
+            // File transport not available or failed to load
+            console.warn('[logger] Failed to load file transport:', err)
         }
     }
 

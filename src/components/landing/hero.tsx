@@ -15,9 +15,9 @@ export default function Hero({ isAuthenticated }: { isAuthenticated: boolean }) 
     .filter(Boolean)
 
   const badgeIcons = [
-    <RiLockLine key='lock' className='mr-1.5 h-3.5 w-3.5 text-[#2563eb]' />,
-    <RiFlashlightLine key='flash' className='mr-1.5 h-3.5 w-3.5 text-[#2563eb]' />,
-    <RiGlobalLine key='global' className='mr-1.5 h-3.5 w-3.5 text-[#2563eb]' />,
+    <RiLockLine key='lock' className='mr-1.5 h-3.5 w-3.5 text-[#adfa1b]' />,
+    <RiFlashlightLine key='flash' className='mr-1.5 h-3.5 w-3.5 text-[#adfa1b]' />,
+    <RiGlobalLine key='global' className='mr-1.5 h-3.5 w-3.5 text-[#adfa1b]' />,
   ]
 
   return (
@@ -29,7 +29,7 @@ export default function Hero({ isAuthenticated }: { isAuthenticated: boolean }) 
         <div className='overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0f0f0f] shadow-elevation-dark'>
           <div className='mx-auto max-w-4xl px-6 py-16 text-center sm:px-12 sm:py-20'>
             <p
-              className='mb-8 text-[11px] font-medium uppercase tracking-[0.2em] text-[#2563eb]'
+              className='mb-8 text-[11px] font-medium uppercase tracking-[0.2em] text-[#adfa1b]'
               style={{ fontFamily: 'var(--font-geist-mono)' }}
             >
               {t('tagline')}
@@ -48,7 +48,7 @@ export default function Hero({ isAuthenticated }: { isAuthenticated: boolean }) 
             <div className='mx-auto mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4'>
               <Button
                 className='h-11 w-full min-w-[200px] border-transparent px-8 text-sm font-semibold text-white sm:w-auto'
-                style={{ backgroundColor: '#2563eb' }}
+                style={{ backgroundColor: '#adfa1b' }}
                 render={(props) => (
                   <LocalizedLink {...props} href={isAuthenticated ? '/my-space' : '/register'}>
                     {isAuthenticated ? t('mySpace') : t('ctaPrimary')}

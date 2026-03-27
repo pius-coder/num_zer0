@@ -12,7 +12,7 @@ export default function Stats() {
   ]
 
   return (
-    <section id='stats' className='bg-[#080808] py-28 md:py-32'>
+    <section id='trust' className='bg-[#080808] py-28 md:py-32'>
       <div className='mx-auto max-w-6xl px-4 sm:px-6'>
         <div className='overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0f0f0f] shadow-elevation-dark'>
           <div className='grid grid-cols-1 divide-y divide-[rgba(255,255,255,0.06)] md:grid-cols-3 md:divide-x md:divide-y-0'>
