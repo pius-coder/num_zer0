@@ -119,7 +119,7 @@ export class FapshiClient {
                     endpoint,
                     status: error.response.status,
                     error: error.response.data?.message || error.message,
-                    data: error.response.data,
+                    data: typeof error.response.data === 'object' ? JSON.stringify(error.response.data) : error.response.data,
                 })
                 throw new Error(error.response.data?.message || `Fapshi API error: ${error.response.status}`)
             } else if (error.request) {

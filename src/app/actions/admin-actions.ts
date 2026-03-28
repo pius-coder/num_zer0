@@ -302,3 +302,67 @@ export async function syncPurchaseWithFapshi(purchaseId: string) {
     return { success: true }
 }
 
+// --- DASHBOARD ---
+
+export async function getAdminDashboardStats() {
+    await requireAdminSession()
+
+    const { count, sum, and, eq, gte } = await import('drizzle-orm')
+
+    // 1. Total Users
+    const [userCount] = await db.select({ value: count() }).from(userTable)
+
+    // 2. Revenue (Successful purchases)
+    const [revenue] = await db.select({
+        value: sum(creditPurchase.priceXaf)
+    })
+        .from(creditPurchase)
+        .where(eq(creditPurchase.status, 'credited'))
+
+    // 3. Pending Purchases
+    const [pendingCount] = await db.select({ value: count() })
+        .from(creditPurchase)
+        .where(eq(creditPurchase.status, 'payment_pending'))
+
+    // 4. Unresolved Fraud
+    const [fraudCount] = await db.select({ value: count() })
+        .from(fraudEvent)
+        .where(eq(fraudEvent.isResolved, false))
+
+    // 5. Unread Messages
+    const { supportMessages } = await import('@/database/schema')
+    const [unreadMessages] = await db.select({ value: count() })
+        .from(supportMessages)
+        .where(and(eq(supportMessages.isRead, false), eq(supportMessages.direction, 'user_to_admin')))
+
+    return {
+        totalUsers: Number(userCount?.value || 0),
+        totalRevenue: Number(revenue?.value || 0),
+        pendingPurchases: Number(pendingCount?.value || 0),
+        unresolvedFraud: Number(fraudCount?.value || 0),
+        unreadMessages: Number(unreadMessages?.value || 0),
+    }
+}
+
+export async function getAdminRevenueChartData() {
+    await requireAdminSession()
+    const { sql, gte, and } = await import('drizzle-orm')
+
+    // Last 30 days
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    const stats = await db.select({
+        date: sql<string>`DATE(${creditPurchase.createdAt})`.as('date'),
+        credited: sql<number>`SUM(CASE WHEN ${creditPurchase.status} = 'credited' THEN ${creditPurchase.priceXaf} ELSE 0 END)`.as('credited'),
+        pending: sql<number>`SUM(CASE WHEN ${creditPurchase.status} = 'payment_pending' THEN ${creditPurchase.priceXaf} ELSE 0 END)`.as('pending'),
+        failed: sql<number>`SUM(CASE WHEN ${creditPurchase.status} = 'failed' THEN ${creditPurchase.priceXaf} ELSE 0 END)`.as('failed'),
+    })
+        .from(creditPurchase)
+        .where(gte(creditPurchase.createdAt, thirtyDaysAgo))
+        .groupBy(sql`DATE(${creditPurchase.createdAt})`)
+        .orderBy(sql`DATE(${creditPurchase.createdAt})`)
+
+    return stats
+}
+

@@ -73,7 +73,7 @@ export function AdminShell({ locale, children }: { locale: string; children: Rea
           <SidebarHeader className='px-3 py-4'>
             <Link href={`/${locale}/admin`} className='flex items-center gap-2 px-1'>
               <PixelHeading
-                as='span'
+                as='h2'
                 initialFont='line'
                 hoverFont='circle'
                 className='text-xl tracking-tight'

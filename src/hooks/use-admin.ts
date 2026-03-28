@@ -151,3 +151,52 @@ export function useAdminLogStats() {
     },
   })
 }
+
+export function useAdminMessages() {
+  const queryClient = useQueryClient()
+
+  const query = useQuery({
+    queryKey: ['admin-support-messages'],
+    queryFn: () => import('@/app/actions/support-actions').then((m) => m.getAllSupportMessages()),
+    refetchInterval: 10000, // Sync every 10s
+  })
+
+  const replyMutation = useMutation({
+    mutationFn: (data: { messageId: string; content: string }) =>
+      import('@/app/actions/support-actions').then((m) => m.replyToSupportMessage(data)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-support-messages'] })
+    },
+  })
+
+  const markReadMutation = useMutation({
+    mutationFn: (messageId: string) =>
+      import('@/app/actions/support-actions').then((m) => m.markAsRead(messageId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-support-messages'] })
+    },
+  })
+
+  return {
+    messages: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error,
+    reply: replyMutation,
+    markRead: markReadMutation,
+  }
+}
+
+export function useAdminDashboardStats() {
+  return useQuery({
+    queryKey: ['admin-dashboard-stats'],
+    queryFn: () => import('@/app/actions/admin-actions').then((m) => m.getAdminDashboardStats()),
+    refetchInterval: 30000, // Sync every 30s
+  })
+}
+
+export function useAdminRevenueChartData() {
+  return useQuery({
+    queryKey: ['admin-revenue-chart'],
+    queryFn: () => import('@/app/actions/admin-actions').then((m) => m.getAdminRevenueChartData()),
+  })
+}

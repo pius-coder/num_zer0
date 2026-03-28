@@ -9,7 +9,7 @@ import { setEconomicsConfigValue } from '@/lib/economics/config-service'
 
 const updateSchema = z.object({
   key: z.string().min(1),
-  valueType: z.enum(['string', 'number', 'boolean', 'json']),
+  valueType: z.enum(['string', 'number', 'boolean', 'json']).optional(),
   value: z.union([z.string(), z.number(), z.boolean(), z.array(z.any())]),
 })
 
@@ -32,12 +32,15 @@ export async function POST(request: Request) {
     const session = await requireAdminSession()
     const payload = updateSchema.parse(await request.json())
 
-    // Get existing value for audit log "before" data
+    // Get existing value for audit log "before" data and default valueType
+    const { eq } = await import('drizzle-orm')
     const existing = await db.query.platformConfig.findFirst({
       where: eq(platformConfig.key, payload.key),
     })
 
-    await setEconomicsConfigValue(payload.key, payload.value, payload.valueType, session.user.id)
+    const finalValueType = payload.valueType || (existing?.valueType as any) || 'string'
+
+    await setEconomicsConfigValue(payload.key, payload.value, finalValueType, session.user.id)
 
     // Record audit log
     const { recordAdminAction } = await import('@/lib/admin/audit-service')

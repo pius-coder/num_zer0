@@ -200,62 +200,6 @@ export const premiumPurchase = pgTable(
   (table) => [index('premium_purchase_stripe_sessionId_idx').on(table.stripeSessionId)]
 )
 
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  accounts: many(account),
-}))
-
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id],
-  }),
-}))
-
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id],
-  }),
-}))
-
-// Payment system relations
-export const customerRelations = relations(customer, ({ one, many }) => ({
-  user: one(user, {
-    fields: [customer.userId],
-    references: [user.id],
-  }),
-  subscriptions: many(subscription),
-  payments: many(payment),
-}))
-
-export const subscriptionRelations = relations(subscription, ({ one, many }) => ({
-  user: one(user, {
-    fields: [subscription.userId],
-    references: [user.id],
-  }),
-  customer: one(customer, {
-    fields: [subscription.customerId],
-    references: [customer.id],
-  }),
-  payments: many(payment),
-}))
-
-export const paymentRelations = relations(payment, ({ one }) => ({
-  user: one(user, {
-    fields: [payment.userId],
-    references: [user.id],
-  }),
-  customer: one(customer, {
-    fields: [payment.customerId],
-    references: [customer.id],
-  }),
-  subscription: one(subscription, {
-    fields: [payment.subscriptionId],
-    references: [subscription.id],
-  }),
-}))
-
 // ============================================================
 // ECONOMICS SYSTEM TABLES
 // ============================================================
@@ -312,6 +256,8 @@ export const paymentMethodEnum = pgEnum('economics_payment_method', [
   'crypto',
   'free',
 ])
+
+export const supportDirectionEnum = pgEnum('support_direction', ['user_to_admin', 'admin_to_user'])
 
 export const creditPackage = pgTable(
   'credit_package',
@@ -757,3 +703,173 @@ export const creditAdjustmentApproval = pgTable(
   },
   (table) => [index('credit_adjustment_status_idx').on(table.status), index('credit_adjustment_created_idx').on(table.createdAt)]
 )
+
+export const supportMessages = pgTable(
+  'support_messages',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    adminId: text('admin_id').references(() => user.id),
+    direction: supportDirectionEnum('direction').notNull(),
+    subject: text('subject'),
+    content: text('content').notNull(),
+    isRead: boolean('is_read').default(false).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [index('support_messages_userId_idx').on(table.userId)]
+)
+
+
+// Relations moved to bottom to avoid initialization errors
+export const userRelations = relations(user, ({ many }) => ({
+  sessions: many(session),
+  accounts: many(account),
+  supportMessages: many(supportMessages, { relationName: 'support_messages_user' }),
+  adminSupportMessages: many(supportMessages, { relationName: 'support_messages_admin' }),
+  creditPurchases: many(creditPurchase),
+  smsActivations: many(smsActivation),
+  creditTransactions: many(creditTransaction),
+  referrals: many(referral),
+  fraudEvents: many(fraudEvent, { relationName: 'fraud_events_user' }),
+  resolvedFraudEvents: many(fraudEvent, { relationName: 'fraud_events_resolver' }),
+  auditLogs: many(adminAuditLog),
+}))
+
+export const sessionRelations = relations(session, ({ one }) => ({
+  user: one(user, {
+    fields: [session.userId],
+    references: [user.id],
+  }),
+}))
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id],
+  }),
+}))
+
+// Payment system relations
+export const customerRelations = relations(customer, ({ one, many }) => ({
+  user: one(user, {
+    fields: [customer.userId],
+    references: [user.id],
+  }),
+  subscriptions: many(subscription),
+  payments: many(payment),
+}))
+
+export const subscriptionRelations = relations(subscription, ({ one, many }) => ({
+  user: one(user, {
+    fields: [subscription.userId],
+    references: [user.id],
+  }),
+  customer: one(customer, {
+    fields: [subscription.customerId],
+    references: [customer.id],
+  }),
+  payments: many(payment),
+}))
+
+export const paymentRelations = relations(payment, ({ one }) => ({
+  user: one(user, {
+    fields: [payment.userId],
+    references: [user.id],
+  }),
+  customer: one(customer, {
+    fields: [payment.customerId],
+    references: [customer.id],
+  }),
+  subscription: one(subscription, {
+    fields: [payment.subscriptionId],
+    references: [subscription.id],
+  }),
+}))
+
+export const supportMessagesRelations = relations(supportMessages, ({ one }) => ({
+  user: one(user, {
+    fields: [supportMessages.userId],
+    references: [user.id],
+    relationName: 'support_messages_user',
+  }),
+  admin: one(user, {
+    fields: [supportMessages.adminId],
+    references: [user.id],
+    relationName: 'support_messages_admin',
+  }),
+}))
+
+export const creditPurchaseRelations = relations(creditPurchase, ({ one }) => ({
+  user: one(user, {
+    fields: [creditPurchase.userId],
+    references: [user.id],
+  }),
+  package: one(creditPackage, {
+    fields: [creditPurchase.packageId],
+    references: [creditPackage.id],
+  }),
+  payment: one(payment, {
+    fields: [creditPurchase.linkedPaymentId],
+    references: [payment.id],
+  }),
+}))
+
+export const smsActivationRelations = relations(smsActivation, ({ one }) => ({
+  user: one(user, {
+    fields: [smsActivation.userId],
+    references: [user.id],
+  }),
+  service: one(service, {
+    fields: [smsActivation.serviceId],
+    references: [service.id],
+  }),
+  provider: one(provider, {
+    fields: [smsActivation.providerId],
+    references: [provider.id],
+  }),
+}))
+
+export const creditTransactionRelations = relations(creditTransaction, ({ one }) => ({
+  user: one(user, {
+    fields: [creditTransaction.userId],
+    references: [user.id],
+  }),
+  wallet: one(creditWallet, {
+    fields: [creditTransaction.walletId],
+    references: [creditWallet.id],
+  }),
+  service: one(service, {
+    fields: [creditTransaction.serviceId],
+    references: [service.id],
+  }),
+  activation: one(smsActivation, {
+    fields: [creditTransaction.activationId],
+    references: [smsActivation.id],
+  }),
+  purchase: one(creditPurchase, {
+    fields: [creditTransaction.purchaseId],
+    references: [creditPurchase.id],
+  }),
+}))
+
+export const fraudEventRelations = relations(fraudEvent, ({ one }) => ({
+  user: one(user, {
+    fields: [fraudEvent.userId],
+    references: [user.id],
+    relationName: 'fraud_events_user',
+  }),
+  resolver: one(user, {
+    fields: [fraudEvent.resolvedBy],
+    references: [user.id],
+    relationName: 'fraud_events_resolver',
+  }),
+}))
+
+export const adminAuditLogRelations = relations(adminAuditLog, ({ one }) => ({
+  admin: one(user, {
+    fields: [adminAuditLog.adminId],
+    references: [user.id],
+  }),
+}))

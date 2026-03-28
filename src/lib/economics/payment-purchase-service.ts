@@ -117,9 +117,9 @@ export class PaymentPurchaseService {
 
     // Get the actual reference for Fapshi API
     const paymentRef = purchase.paymentRef
-    if (!paymentRef) {
-      log.error('payment_ref_missing_for_verification', { purchaseId: purchase.id })
-      throw new Error('payment_ref_missing')
+    if (!paymentRef || paymentRef === purchase.id) {
+      log.warn('fapshi_sync_skipped_internal_id_only', { purchaseId: purchase.id })
+      throw new Error('payment_not_yet_initiated_on_gateway')
     }
 
     // BANKING LEVEL: Verify status with Fapshi API before crediting
