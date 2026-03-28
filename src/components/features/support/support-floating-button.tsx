@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from "motion/react"
 
 const SupportFloatingButton = memo(function SupportFloatingButton() {
     const [open, setOpen] = useState(false)
+    const [isFamilyExpanded, setIsFamilyExpanded] = useState(false)
     const [formState, setFormState] = useState<"idle" | "loading" | "success">("idle")
     const [message, setMessage] = useState("")
 
@@ -67,6 +68,7 @@ const SupportFloatingButton = memo(function SupportFloatingButton() {
                     href={`https://wa.me/${config.whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => setIsFamilyExpanded(false)}
                     className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/10 hover:bg-emerald-500/10 transition-all group"
                 >
                     <div className="flex items-center gap-2.5">
@@ -84,6 +86,7 @@ const SupportFloatingButton = memo(function SupportFloatingButton() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     href={`mailto:${config.email}`}
+                    onClick={() => setIsFamilyExpanded(false)}
                     className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-blue-500/5 border border-blue-500/10 hover:bg-blue-500/10 transition-all group"
                 >
                     <div className="flex items-center gap-2.5">
@@ -99,7 +102,10 @@ const SupportFloatingButton = memo(function SupportFloatingButton() {
             <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                    setOpen(true)
+                    setIsFamilyExpanded(false)
+                }}
                 className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-[#adfa1b]/5 border border-[#adfa1b]/10 hover:bg-[#adfa1b]/10 transition-all group"
             >
                 <div className="flex items-center gap-2.5">
@@ -115,7 +121,11 @@ const SupportFloatingButton = memo(function SupportFloatingButton() {
 
     return (
         <div className="fixed top-4 right-4 z-[100] md:top-6 md:right-6">
-            <FamilyButton icon={Headset}>
+            <FamilyButton
+                icon={Headset}
+                isExpanded={isFamilyExpanded}
+                onToggle={() => setIsFamilyExpanded(!isFamilyExpanded)}
+            >
                 <div className="flex flex-col items-center gap-2 p-4 text-white w-full">
                     <div className="flex flex-col items-center gap-1 mb-1">
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#adfa1b]">Besoin d'aide ?</h3>

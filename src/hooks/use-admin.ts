@@ -158,7 +158,6 @@ export function useAdminMessages() {
   const query = useQuery({
     queryKey: ['admin-support-messages'],
     queryFn: () => import('@/app/actions/support-actions').then((m) => m.getAllSupportMessages()),
-    refetchInterval: 10000, // Sync every 10s
   })
 
   const replyMutation = useMutation({

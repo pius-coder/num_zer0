@@ -32,12 +32,19 @@ import {
   FileSearch,
   CreditCard,
   Shield,
+  MessageCircle,
 } from 'lucide-react'
 
 const NAV_SECTIONS = [
   {
     label: 'Overview',
     items: [{ href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard }],
+  },
+  {
+    label: 'Communication',
+    items: [
+      { href: '/admin/messages', label: 'Messages', icon: MessageCircle },
+    ],
   },
   {
     label: 'Management',
