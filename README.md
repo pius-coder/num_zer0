@@ -1,5 +1,5 @@
 <div align="center">
-  <h1 align="center">📱 num_zero - Prepaid SMS Activation Platform</h1>
+  <h1 align="center">📱 Num_zer0 - Prepaid SMS Activation Platform</h1>
   <p align="center">
     <strong>A robust, scalable platform for purchasing virtual numbers and receiving SMS activations globally.</strong>
   </p>
