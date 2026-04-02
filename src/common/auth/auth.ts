@@ -28,18 +28,6 @@ function getTrustedOrigins(): string[] {
   return origins
 }
 
-function getCookieDomain(): string | undefined {
-  const url = env.BETTER_AUTH_URL ?? 'http://localhost:3000'
-  try {
-    const hostname = new URL(url).hostname
-    if (hostname === 'localhost') return undefined
-    // Return dot-prefixed domain for subdomain support
-    return `.${hostname}`
-  } catch {
-    return undefined
-  }
-}
-
 export const auth = betterAuth({
   baseURL: getBaseUrl(),
   trustedOrigins: getTrustedOrigins(),

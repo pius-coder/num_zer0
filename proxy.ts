@@ -1,67 +1,67 @@
-import createIntlMiddleware from "next-intl/middleware";
-import { type NextRequest, NextResponse } from "next/server";
-import { routing, locales } from "@/i18n/routing";
+import createIntlMiddleware from 'next-intl/middleware'
+import { type NextRequest, NextResponse } from 'next/server'
+import { routing, locales } from '@/i18n/routing'
+import { getSessionCookie } from 'better-auth/cookies'
 
-const handleI18n = createIntlMiddleware(routing);
+const handleI18n = createIntlMiddleware(routing)
 
-const protectedPrefixes = ["/my-space", "/dashboard", "/account"];
-const validLocales = locales as readonly string[];
+const protectedPrefixes = ['/my-space', '/dashboard', '/account']
+const validLocales = locales as readonly string[]
 
 function isProtectedPath(pathname: string): boolean {
-  const path = pathname.replace(/^\/[a-z]{2}(\/|$)/, "/");
+  const path = pathname.replace(/^\/[a-z]{2}(\/|$)/, '/')
   return protectedPrefixes.some((prefix) => {
-    if (path === prefix) return true;
-    if (path.startsWith(`${prefix}/`)) return true;
-    return false;
-  });
+    if (path === prefix) return true
+    if (path.startsWith(`${prefix}/`)) return true
+    return false
+  })
 }
 
 function getLocaleFromPath(pathname: string): string {
-  const segment = pathname.split("/")[1];
-  if (segment && validLocales.includes(segment)) return segment;
-  return "fr";
+  const segment = pathname.split('/')[1]
+  if (segment && validLocales.includes(segment)) return segment
+  return 'fr'
 }
 
 export async function proxy(request: NextRequest) {
-  const start = performance.now();
-  const { pathname } = request.nextUrl;
-  const requestId = crypto.randomUUID().slice(0, 8);
+  const start = performance.now()
+  const { pathname } = request.nextUrl
+  const requestId = crypto.randomUUID().slice(0, 8)
 
   // ─── Guard: redirect non-localized paths to localized ─────────────────
   // Paths like /my-space must become /fr/my-space before any auth check
-  const firstSegment = pathname.split("/")[1];
+  const firstSegment = pathname.split('/')[1]
   if (
-    pathname !== "/" &&
+    pathname !== '/' &&
     firstSegment &&
     !validLocales.includes(firstSegment) &&
-    !pathname.startsWith("/api") &&
-    !pathname.startsWith("/_next")
+    !pathname.startsWith('/api') &&
+    !pathname.startsWith('/_next')
   ) {
-    const url = new URL(`/fr${pathname}`, request.url);
-    return NextResponse.redirect(url);
+    const url = new URL(`/fr${pathname}`, request.url)
+    return NextResponse.redirect(url)
   }
 
   // ─── Auth check for protected page routes ─────────────────────────────
   // API routes are NOT matched by this middleware (see matcher config below)
   if (isProtectedPath(pathname)) {
-    const cookieName = "app.session_token";
-    const hasSession = request.cookies.has(cookieName);
+    const sessionCookie = getSessionCookie(request, { cookiePrefix: 'app' })
 
-    if (!hasSession) {
-      const locale = getLocaleFromPath(pathname);
-      const loginUrl = new URL(`/${locale}/login`, request.url);
-      loginUrl.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(loginUrl);
+    if (!sessionCookie) {
+      const locale = getLocaleFromPath(pathname)
+      const loginUrl = new URL(`/${locale}/login`, request.url)
+      loginUrl.searchParams.set('callbackUrl', pathname)
+      return NextResponse.redirect(loginUrl)
     }
   }
 
   // ─── i18n routing ─────────────────────────────────────────────────────
-  const response = handleI18n(request);
+  const response = handleI18n(request)
 
   // ─── Inject request ID ────────────────────────────────────────────────
-  response.headers.set("x-request-id", requestId);
+  response.headers.set('x-request-id', requestId)
 
-  return response;
+  return response
 }
 
 export const config = {
@@ -74,6 +74,6 @@ export const config = {
      * - _vercel (Vercel internals)
      * - Files with extensions (.ico, .png, .jpg, etc.)
      */
-    "/((?!api|_next/static|_next/image|_vercel|.*\\..*).*)",
+    '/((?!api|_next/static|_next/image|_vercel|.*\\..*).*)',
   ],
-};
+}
