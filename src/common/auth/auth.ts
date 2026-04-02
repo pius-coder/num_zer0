@@ -47,10 +47,6 @@ export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
 
   advanced: {
-    crossSubDomainCookies: {
-      enabled: process.env.NODE_ENV === 'production',
-      ...(process.env.NODE_ENV === 'production' && { domain: getCookieDomain() }),
-    },
     cookiePrefix: 'app',
   },
 
