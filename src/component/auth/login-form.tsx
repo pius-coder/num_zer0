@@ -148,11 +148,8 @@ export function LoginForm({
         {
           onError: (ctx: AuthErrorContext) => {
             if (ctx.error?.code?.includes('EMAIL_NOT_VERIFIED')) {
-              if (typeof window !== 'undefined') {
-                sessionStorage.setItem('verificationEmail', syntheticEmail)
-                sessionStorage.setItem('verificationPhone', data.phoneNumber)
-              }
-              router.push('/verify')
+              // Phone verification disabled — proceed to callback URL
+              router.push(safeCallbackUrl)
               return
             }
             if (

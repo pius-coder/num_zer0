@@ -109,12 +109,8 @@ export function RegisterForm({
         }
       )
 
-      // Redirect to verify page after registration for email/phone verification
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('verificationEmail', syntheticEmail)
-        sessionStorage.setItem('verificationPhone', data.phoneNumber)
-      }
-      router.push('/verify')
+      // Redirect directly to my-space (phone verification disabled)
+      router.push(callbackUrl)
     } catch {
       setServerError('An unexpected error occurred.')
     } finally {
