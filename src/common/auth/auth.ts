@@ -12,13 +12,25 @@ const log = createLogger({ prefix: 'auth-otp' })
 
 function getBaseUrl(): string {
   if (typeof window !== 'undefined') return ''
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return env.BETTER_AUTH_URL ?? 'http://localhost:3000'
+  return (
+    env.BETTER_AUTH_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  )
+}
+
+function getTrustedOrigins(): string[] {
+  const base = env.BETTER_AUTH_URL ?? 'http://localhost:3000'
+  const origins = [base]
+  if (process.env.VERCEL_URL) {
+    const deploymentUrl = `https://${process.env.VERCEL_URL}`
+    if (deploymentUrl !== base) origins.push(deploymentUrl)
+  }
+  return origins
 }
 
 export const auth = betterAuth({
   baseURL: getBaseUrl(),
-  trustedOrigins: [getBaseUrl()],
+  trustedOrigins: getTrustedOrigins(),
   database: drizzleAdapter(db, { provider: 'pg', schema }),
   secret: env.BETTER_AUTH_SECRET,
 
