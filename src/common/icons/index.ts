@@ -1,4 +1,4 @@
-import { Ok, Err, type Result } from '@/lib/result'
+import { Ok, Err, type Result } from '@/common/result'
 
 export type ServiceIconResult = {
   iconName: string

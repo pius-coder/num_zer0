@@ -9,6 +9,13 @@ import { ServiceSkeleton } from './service-skeleton'
 import { HOT_SERVICES, type FilterMode } from './category-constants'
 import { useInfiniteServices } from '@/hooks/use-numbers'
 import type { ServiceItem } from '@/type/service'
+import type { InfiniteData } from '@tanstack/react-query'
+
+interface ServicesPage {
+  items: ServiceItem[]
+  total: number
+  nextCursor: string | null
+}
 
 interface ServiceExplorerProps {
   initialData?: ServiceItem[]
@@ -32,17 +39,18 @@ export function ServiceExplorer({ initialData = [], onServiceSelect }: ServiceEx
     category: selectedCategory !== 'all' ? selectedCategory : undefined,
   })
 
-  const apiTotal = services.data?.pages?.[0]?.total ?? 0
+  const pages = (services.data as InfiniteData<ServicesPage> | undefined)?.pages
+  const apiTotal = pages?.[0]?.total ?? 0
 
   const allServices = useMemo(() => {
-    const fetched = services.data?.pages.flatMap((p) => p.items) ?? []
+    const fetched = pages?.flatMap((p: ServicesPage) => p.items) ?? []
     const merged = [...initialData]
     const fetchedSlugs = new Set(merged.map((s) => s.slug))
     for (const s of fetched) {
       if (!fetchedSlugs.has(s.slug)) merged.push(s)
     }
     return merged
-  }, [initialData, services.data?.pages])
+  }, [initialData, pages])
 
   const filtered = useMemo(() => {
     let result = allServices
@@ -63,7 +71,7 @@ export function ServiceExplorer({ initialData = [], onServiceSelect }: ServiceEx
       if (observerRef.current) observerRef.current.disconnect()
       observerRef.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && services.hasNextPage) {
+          if (entries[0]?.isIntersecting && services.hasNextPage) {
             services.fetchNextPage()
           }
         },

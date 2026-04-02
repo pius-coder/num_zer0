@@ -4,10 +4,16 @@ import { memo } from 'react'
 import { type Clock, CheckCircle2, XCircle, Copy } from 'lucide-react'
 import { cn } from '@/common/css'
 
-const STATE_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
+const STATE_CONFIG = {
   completed: { label: 'Complété', color: 'text-success', icon: CheckCircle2 },
   cancelled: { label: 'Annulé', color: 'text-muted-foreground', icon: XCircle },
   expired: { label: 'Expiré', color: 'text-destructive', icon: XCircle },
+} as const
+
+const DEFAULT_STATE = {
+  label: 'Annulé',
+  color: 'text-muted-foreground',
+  icon: XCircle,
 }
 
 interface ActivationData {
@@ -28,7 +34,10 @@ export const CompletedActivationRow = memo(function CompletedActivationRow({
   activation,
   onCopy,
 }: CompletedActivationRowProps) {
-  const stateConf = STATE_CONFIG[activation.state] || STATE_CONFIG.cancelled
+  const stateConf =
+    (STATE_CONFIG as Record<string, (typeof STATE_CONFIG)[keyof typeof STATE_CONFIG]>)[
+      activation.state
+    ] || STATE_CONFIG.cancelled
   const StateIcon = stateConf.icon
 
   return (

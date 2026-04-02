@@ -194,7 +194,7 @@ export abstract class BaseService {
 
   // ─── Error Helpers ──────────────────────────────────────────────────────
 
-  protected error(
+  public error(
     code: string,
     message: string,
     context?: Record<string, unknown>,
@@ -205,7 +205,7 @@ export abstract class BaseService {
     return err
   }
 
-  protected assert(
+  public assert(
     condition: unknown,
     code: string,
     message: string,
@@ -218,7 +218,7 @@ export abstract class BaseService {
 
   // ─── Retry ──────────────────────────────────────────────────────────────
 
-  protected async withRetry<T>(fn: () => Promise<T>, label = 'operation'): Promise<T> {
+  public async withRetry<T>(fn: () => Promise<T>, label = 'operation'): Promise<T> {
     const { maxAttempts, baseDelayMs, maxDelayMs, retryOn } = this.retryPolicy
 
     let lastError: unknown
@@ -339,7 +339,7 @@ export abstract class BaseService {
   }
 
   /** Fetch raw text without JSON parsing (for GrizzlySMS plain-text endpoints) */
-  protected async httpGetText(
+  public async httpGetText(
     path: string,
     options?: Omit<HttpRequestOptions, 'body'>
   ): Promise<string> {
@@ -400,7 +400,7 @@ export abstract class BaseService {
     }
   }
 
-  protected httpGet<T>(path: string, options?: Omit<HttpRequestOptions, 'body'>): Promise<T> {
+  public httpGet<T>(path: string, options?: Omit<HttpRequestOptions, 'body'>): Promise<T> {
     return this.httpRequest<T>('GET', path, options)
   }
 

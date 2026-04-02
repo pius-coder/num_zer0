@@ -1,68 +1,80 @@
-'use client'
+"use client";
 
-import { useCallback, useState, useMemo } from 'react'
-import { ServiceExplorer } from './service-explorer'
-import { CountryDrawer } from './country-drawer'
-import { ConfirmDialog } from './confirm-dialog'
-import { ActivationsList } from './activations-list'
-import { useInfiniteCountries, useActivationsList } from '@/hooks/use-numbers'
-import { getCountryByIso } from '@/common/catalog'
-import type { ServiceItem, CountryItem, SubProviderDetail } from '@/type/service'
+import { useCallback, useState, useMemo } from "react";
+import { ServiceExplorer } from "./service-explorer";
+import { CountryDrawer } from "./country-drawer";
+import { ConfirmDialog } from "./confirm-dialog";
+import { ActivationsList } from "./activations-list";
+import { useInfiniteCountries, useActivationsList } from "@/hooks/use-numbers";
+import { getCountryByIso } from "@/common/catalog";
+import type {
+  ServiceItem,
+  CountryItem,
+  SubProviderDetail,
+} from "@/type/service";
 
-export type MySpaceTab = 'services' | 'numbers'
+export type MySpaceTab = "services" | "numbers";
 
 export function MySpaceOrchestrator({
   initialServices,
   tab,
 }: {
-  initialServices: ServiceItem[]
-  tab: MySpaceTab
+  initialServices: ServiceItem[];
+  tab: MySpaceTab;
 }) {
-  const [selectedService, setSelectedService] = useState<ServiceItem | null>(null)
-  const [selectedCountry, setSelectedCountry] = useState<CountryItem | null>(null)
-  const [selectedSubProvider, setSelectedSubProvider] = useState<SubProviderDetail | null>(null)
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [selectedService, setSelectedService] = useState<ServiceItem | null>(
+    null,
+  );
+  const [selectedCountry, setSelectedCountry] = useState<CountryItem | null>(
+    null,
+  );
+  const [selectedSubProvider, setSelectedSubProvider] =
+    useState<SubProviderDetail | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const countries = useInfiniteCountries(selectedService?.slug ?? '')
-  const activations = useActivationsList()
+  const countries = useInfiniteCountries(selectedService?.slug ?? "");
+  const activations = useActivationsList();
 
   const handleServiceSelect = useCallback((service: ServiceItem) => {
-    setSelectedService(service)
-    setDrawerOpen(true)
-  }, [])
+    setSelectedService(service);
+    setDrawerOpen(true);
+  }, []);
 
   const handleCountryBuy = useCallback((country: CountryItem) => {
-    setSelectedCountry(country)
-    setSelectedSubProvider(null)
-  }, [])
+    setSelectedCountry(country);
+    setSelectedSubProvider(null);
+  }, []);
 
-  const handleSubProviderBuy = useCallback((country: CountryItem, sub: SubProviderDetail) => {
-    setSelectedCountry(country)
-    setSelectedSubProvider(sub)
-  }, [])
+  const handleSubProviderBuy = useCallback(
+    (country: CountryItem, sub: SubProviderDetail) => {
+      setSelectedCountry(country);
+      setSelectedSubProvider(sub);
+    },
+    [],
+  );
 
   const handleActivationClose = useCallback(() => {
-    setSelectedService(null)
-    setSelectedCountry(null)
-    setSelectedSubProvider(null)
-    setDrawerOpen(false)
-  }, [])
+    setSelectedService(null);
+    setSelectedCountry(null);
+    setSelectedSubProvider(null);
+    setDrawerOpen(false);
+  }, []);
 
   const handleCountryDrawerClose = useCallback(() => {
-    setDrawerOpen(false)
-    setSelectedService(null)
-    setSelectedCountry(null)
-    setSelectedSubProvider(null)
-  }, [])
+    setDrawerOpen(false);
+    setSelectedService(null);
+    setSelectedCountry(null);
+    setSelectedSubProvider(null);
+  }, []);
 
   const handleConfirmDialogClose = useCallback(() => {
-    setSelectedCountry(null)
-    setSelectedSubProvider(null)
-  }, [])
+    setSelectedCountry(null);
+    setSelectedSubProvider(null);
+  }, []);
 
   const handleActivationsRefetch = useCallback(() => {
-    activations.refetch()
-  }, [activations])
+    activations.refetch();
+  }, [activations]);
 
   const serviceMeta = useMemo(
     () =>
@@ -70,33 +82,46 @@ export function MySpaceOrchestrator({
         ? {
             slug: selectedService.slug,
             name: selectedService.name,
-            icon: selectedService.icon ?? '/assets/services/ot.webp',
+            icon: selectedService.icon ?? "/assets/services/ot.webp",
           }
         : null,
-    [selectedService]
-  )
+    [selectedService],
+  );
 
   const countryName = useMemo(
     () =>
       selectedCountry
-        ? (getCountryByIso(selectedCountry.countryIso)?.name ?? selectedCountry.countryIso)
-        : '',
-    [selectedCountry]
-  )
+        ? (getCountryByIso(selectedCountry.countryIso)?.name ??
+          selectedCountry.countryIso)
+        : "",
+    [selectedCountry],
+  );
 
   const allCountries = useMemo(
-    () => countries.data?.pages.flatMap((p) => p.items) ?? [],
-    [countries.data?.pages]
-  )
+    () =>
+      (
+        countries.data as { pages: { items: CountryItem[] }[] } | undefined
+      )?.pages.flatMap((p) => p.items) ?? [],
+    [countries.data],
+  );
 
   return (
     <>
-      {tab === 'services' && (
+      {tab === "services" && (
         <>
-          <ServiceExplorer initialData={initialServices} onServiceSelect={handleServiceSelect} />
+          <ServiceExplorer
+            initialData={initialServices}
+            onServiceSelect={handleServiceSelect}
+          />
 
           <CountryDrawer
-            service={serviceMeta ?? { slug: '', name: '', icon: '/assets/services/ot.webp' }}
+            service={
+              serviceMeta ?? {
+                slug: "",
+                name: "",
+                icon: "/assets/services/ot.webp",
+              }
+            }
             countries={allCountries}
             isLoading={countries.isLoading}
             hasNextPage={!!countries.hasNextPage}
@@ -121,7 +146,7 @@ export function MySpaceOrchestrator({
         </>
       )}
 
-      {tab === 'numbers' && (
+      {tab === "numbers" && (
         <ActivationsList
           activations={activations.data?.items ?? []}
           isLoading={activations.isLoading}
@@ -129,5 +154,5 @@ export function MySpaceOrchestrator({
         />
       )}
     </>
-  )
+  );
 }

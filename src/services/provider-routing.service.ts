@@ -70,7 +70,7 @@ export class ProviderRoutingService extends BaseService {
       countryCode,
     })
 
-    const winner = candidates[0]
+    const winner = candidates[0]!
 
     // Fetch live balance from Grizzly
     const liveBalance = await this.fetchLiveBalance(winner.providerId)

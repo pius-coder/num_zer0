@@ -105,10 +105,16 @@ export class ReportService extends BaseService {
       `),
     ])
 
-    const u = usersResult.rows[0] as Record<string, unknown>
-    const a = activationsResult.rows[0] as Record<string, unknown>
-    const r = revenueResult.rows[0] as Record<string, unknown>
-    const p = providersResult.rows[0] as Record<string, unknown>
+    const u = (usersResult as unknown as Record<string, unknown>[])[0] as Record<string, unknown>
+    const a = (activationsResult as unknown as Record<string, unknown>[])[0] as Record<
+      string,
+      unknown
+    >
+    const r = (revenueResult as unknown as Record<string, unknown>[])[0] as Record<string, unknown>
+    const p = (providersResult as unknown as Record<string, unknown>[])[0] as Record<
+      string,
+      unknown
+    >
 
     return {
       totalUsers: Number(u.total_users),
@@ -144,7 +150,7 @@ export class ReportService extends BaseService {
       ORDER BY day
     `)
 
-    return (result.rows as Array<Record<string, unknown>>).map((row) => ({
+    return (result as unknown as Array<Record<string, unknown>>).map((row) => ({
       date: String(row.day),
       revenueXaf: Number(row.revenue),
     }))

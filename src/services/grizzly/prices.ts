@@ -18,10 +18,7 @@ export async function getRawPricesV3(
   service?: string,
   country?: string
 ): Promise<PricesRaw> {
-  return (client as unknown as { getRawPricesV3: typeof getRawPricesV3 }).getRawPricesV3(
-    service,
-    country
-  )
+  return client.getRawPricesV3(service, country)
 }
 
 export function searchPricesV3(

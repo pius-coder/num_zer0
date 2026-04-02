@@ -83,7 +83,6 @@ export class EconomicsConfigService extends BaseService {
         .where(eq(platformConfig.key, key))
     } else {
       await this.db.insert(platformConfig).values({
-        id: this.generateId('cfg'),
         key,
         value: valueString,
         valueType,
