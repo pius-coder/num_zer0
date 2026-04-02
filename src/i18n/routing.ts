@@ -1,6 +1,6 @@
 import { defineRouting } from 'next-intl/routing'
 
-const baseLocales = ['en', 'fr', 'de'] as const
+const baseLocales = ['en', 'es', 'fr'] as const
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 /**

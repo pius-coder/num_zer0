@@ -2,200 +2,175 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
+// ── Query Key Factory ────────────────────────────────────────────────────────
+
 export const adminKeys = {
   all: ['admin'] as const,
-  users: (params: any) => [...adminKeys.all, 'users', params] as const,
-  purchases: (params: any) => [...adminKeys.all, 'purchases', params] as const,
-  activations: (params: any) => [...adminKeys.all, 'activations', params] as const,
-  stats: () => [...adminKeys.all, 'stats'] as const,
+  dashboard: () => [...adminKeys.all, 'dashboard'] as const,
+  users: (params?: object) => [...adminKeys.all, 'users', params ?? {}] as const,
+  user: (id: string) => [...adminKeys.all, 'users', id] as const,
+  services: (params?: object) => [...adminKeys.all, 'services', params ?? {}] as const,
+  priceRules: (params?: object) => [...adminKeys.all, 'price-rules', params ?? {}] as const,
+  providers: () => [...adminKeys.all, 'providers'] as const,
   config: () => [...adminKeys.all, 'config'] as const,
-  audit: (params: any) => [...adminKeys.all, 'audit', params] as const,
-  fraud: (params: any) => [...adminKeys.all, 'fraud', params] as const,
-  logs: (params: any) => [...adminKeys.all, 'logs', params] as const,
-  logStats: () => [...adminKeys.all, 'log-stats'] as const,
+  fraud: (params?: object) => [...adminKeys.all, 'fraud', params ?? {}] as const,
+  audit: (params?: object) => [...adminKeys.all, 'audit', params ?? {}] as const,
   packages: () => [...adminKeys.all, 'packages'] as const,
+  activations: (params?: object) => [...adminKeys.all, 'activations', params ?? {}] as const,
+  purchases: (params?: object) => [...adminKeys.all, 'purchases', params ?? {}] as const,
 }
 
-export function useAdminPackages() {
+type FetchParams = Record<string, string | number | undefined>
+
+async function adminFetch<T>(path: string, params?: FetchParams): Promise<T> {
+  const url = new URL(`/api/admin${path}`, window.location.origin)
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined) url.searchParams.set(k, String(v))
+    }
+  }
+  const res = await fetch(url.toString())
+  if (!res.ok) throw new Error(`Admin API error: ${res.status}`)
+  return res.json() as Promise<T>
+}
+
+// ── Dashboard ────────────────────────────────────────────────────────────────
+
+export function useAdminDashboardStats() {
   return useQuery({
-    queryKey: adminKeys.packages(),
-    queryFn: async () => {
-      const res = await fetch('/api/admin/credits/packages')
-      if (!res.ok) throw new Error('Failed to fetch packages')
-      return res.json()
-    },
+    queryKey: adminKeys.dashboard(),
+    queryFn: () => adminFetch('/dashboard'),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
   })
 }
 
-export function useAdminUsers(page = 1, limit = 25, q = '') {
+// ── Users ────────────────────────────────────────────────────────────────────
+
+export function useAdminUsers(params?: { page?: number; search?: string; limit?: number }) {
   return useQuery({
-    queryKey: adminKeys.users({ page, limit, q }),
-    queryFn: async () => {
-      const params = new URLSearchParams({ page: String(page), limit: String(limit) })
-      if (q) params.set('q', q)
-      const res = await fetch(`/api/admin/users?${params}`)
-      if (!res.ok) throw new Error('Failed to fetch users')
-      return res.json()
-    },
+    queryKey: adminKeys.users(params),
+    queryFn: () => adminFetch('/users', params),
+    staleTime: 15_000,
   })
 }
 
-export function useAdminPurchases(page = 1, limit = 25) {
+export function useAdminUser(id: string) {
   return useQuery({
-    queryKey: adminKeys.purchases({ page, limit }),
-    queryFn: async () => {
-      const res = await fetch(`/api/admin/purchases?page=${page}&limit=${limit}`)
-      if (!res.ok) throw new Error('Failed to fetch purchases')
-      return res.json()
-    },
+    queryKey: adminKeys.user(id),
+    queryFn: () => adminFetch(`/users/${id}`),
+    enabled: !!id,
+    staleTime: 10_000,
   })
 }
 
-export function useAdminActivations(page = 1, limit = 25) {
+// ── Services ─────────────────────────────────────────────────────────────────
+
+export function useAdminServices(params?: { page?: number; search?: string }) {
   return useQuery({
-    queryKey: adminKeys.activations({ page, limit }),
-    queryFn: async () => {
-      const res = await fetch(`/api/admin/activations?page=${page}&limit=${limit}`)
-      if (!res.ok) throw new Error('Failed to fetch activations')
-      return res.json()
-    },
+    queryKey: adminKeys.services(params),
+    queryFn: () => adminFetch('/services', params),
+    staleTime: 60_000,
   })
 }
 
-export function useAdminStats() {
+// ── Price Rules ──────────────────────────────────────────────────────────────
+
+export function useAdminPriceRules(params?: {
+  page?: number
+  serviceSlug?: string
+  countryIso?: string
+}) {
   return useQuery({
-    queryKey: adminKeys.stats(),
-    queryFn: async () => {
-      const res = await fetch('/api/admin/dashboard/overview')
-      if (!res.ok) throw new Error('Failed to fetch stats')
-      return res.json()
-    },
+    queryKey: adminKeys.priceRules(params),
+    queryFn: () => adminFetch('/price-rules', params),
+    staleTime: 30_000,
   })
 }
+
+// ── Providers ────────────────────────────────────────────────────────────────
+
+export function useAdminProviders() {
+  return useQuery({
+    queryKey: adminKeys.providers(),
+    queryFn: () => adminFetch('/providers'),
+    staleTime: 30_000,
+    refetchInterval: 120_000,
+  })
+}
+
+// ── Config ───────────────────────────────────────────────────────────────────
 
 export function useAdminConfig() {
   return useQuery({
     queryKey: adminKeys.config(),
-    queryFn: async () => {
-      const res = await fetch('/api/admin/config/settings')
-      if (!res.ok) throw new Error('Failed to fetch config')
-      return res.json()
-    },
+    queryFn: () => adminFetch('/config'),
+    staleTime: 60_000,
   })
 }
 
-export function useAdminUpdateConfig() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async ({ key, value }: { key: string; value: any }) => {
-      const res = await fetch('/api/admin/config/settings', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ key, value }),
-      })
-      if (!res.ok) throw new Error('Failed to update config')
-      return res.json()
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminKeys.config() })
-    },
-  })
-}
+// ── Fraud ────────────────────────────────────────────────────────────────────
 
-export function useAdminFraud() {
+export function useAdminFraudEvents(params?: { page?: number; resolved?: boolean }) {
   return useQuery({
-    queryKey: adminKeys.fraud({}),
-    queryFn: async () => {
-      const res = await fetch('/api/admin/fraud/events')
-      if (!res.ok) throw new Error('Failed to fetch fraud events')
-      return res.json()
-    },
+    queryKey: adminKeys.fraud(params),
+    queryFn: () =>
+      adminFetch('/fraud/events', {
+        ...params,
+        resolved: params?.resolved !== undefined ? Number(params.resolved) : undefined,
+      }),
+    staleTime: 10_000,
   })
 }
 
-export function useAdminAudit(page = 1, limit = 25, q = '') {
+// ── Audit Logs ───────────────────────────────────────────────────────────────
+
+export function useAdminAuditLogs(params?: { page?: number; userId?: string; action?: string }) {
   return useQuery({
-    queryKey: adminKeys.audit({ page, limit, q }),
-    queryFn: async () => {
-      const params = new URLSearchParams({ page: String(page), limit: String(limit) })
-      if (q) params.set('q', q)
-      const res = await fetch(`/api/admin/audit/logs?${params}`)
-      if (!res.ok) throw new Error('Failed to fetch audit logs')
-      return res.json()
-    },
+    queryKey: adminKeys.audit(params),
+    queryFn: () => adminFetch('/audit/logs', params),
+    staleTime: 10_000,
   })
 }
 
-export function useAdminLogs(params: Record<string, string>) {
-  const qs = new URLSearchParams(params).toString()
+// ── Credit Packages ──────────────────────────────────────────────────────────
+
+export function useAdminPackages() {
   return useQuery({
-    queryKey: adminKeys.logs(params),
-    queryFn: async () => {
-      const res = await fetch(`/api/internal/logs?${qs}`)
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.error || body.detail || `HTTP ${res.status}`)
-      }
-      return res.json()
-    },
+    queryKey: adminKeys.packages(),
+    queryFn: () => adminFetch('/credits/packages'),
+    staleTime: 60_000,
   })
 }
 
-export function useAdminLogStats() {
+// ── Activations ──────────────────────────────────────────────────────────────
+
+export function useAdminActivations(params?: { page?: number; userId?: string; status?: string }) {
   return useQuery({
-    queryKey: adminKeys.logStats(),
-    queryFn: async () => {
-      const res = await fetch('/api/internal/logs?action=stats')
-      if (!res.ok) throw new Error('Failed to fetch log stats')
-      return res.json()
-    },
+    queryKey: adminKeys.activations(params),
+    queryFn: () => adminFetch('/activations', params),
+    staleTime: 10_000,
   })
 }
 
-export function useAdminMessages() {
-  const queryClient = useQueryClient()
+// ── Purchases ────────────────────────────────────────────────────────────────
 
-  const query = useQuery({
-    queryKey: ['admin-support-messages'],
-    queryFn: () => import('@/app/actions/support-actions').then((m) => m.getAllSupportMessages()),
+export function useAdminPurchases(params?: { page?: number; userId?: string; status?: string }) {
+  return useQuery({
+    queryKey: adminKeys.purchases(params),
+    queryFn: () => adminFetch('/purchases', params),
+    staleTime: 10_000,
   })
+}
 
-  const replyMutation = useMutation({
-    mutationFn: (data: { messageId: string; content: string }) =>
-      import('@/app/actions/support-actions').then((m) => m.replyToSupportMessage(data)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-support-messages'] })
-    },
-  })
+// ── Invalidation helper ──────────────────────────────────────────────────────
 
-  const markReadMutation = useMutation({
-    mutationFn: (messageId: string) =>
-      import('@/app/actions/support-actions').then((m) => m.markAsRead(messageId)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-support-messages'] })
-    },
-  })
-
+export function useInvalidateAdminQueries() {
+  const qc = useQueryClient()
   return {
-    messages: query.data ?? [],
-    isLoading: query.isLoading,
-    error: query.error,
-    reply: replyMutation,
-    markRead: markReadMutation,
+    invalidateAll: () => qc.invalidateQueries({ queryKey: adminKeys.all }),
+    invalidateUsers: () => qc.invalidateQueries({ queryKey: adminKeys.users() }),
+    invalidateConfig: () => qc.invalidateQueries({ queryKey: adminKeys.config() }),
+    invalidatePriceRules: () => qc.invalidateQueries({ queryKey: adminKeys.priceRules() }),
   }
-}
-
-export function useAdminDashboardStats() {
-  return useQuery({
-    queryKey: ['admin-dashboard-stats'],
-    queryFn: () => import('@/app/actions/admin-actions').then((m) => m.getAdminDashboardStats()),
-    refetchInterval: 30000, // Sync every 30s
-  })
-}
-
-export function useAdminRevenueChartData() {
-  return useQuery({
-    queryKey: ['admin-revenue-chart'],
-    queryFn: () => import('@/app/actions/admin-actions').then((m) => m.getAdminRevenueChartData()),
-  })
 }

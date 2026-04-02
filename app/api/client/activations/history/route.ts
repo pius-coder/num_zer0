@@ -1,0 +1,61 @@
+import { NextResponse } from 'next/server'
+import { desc, eq } from 'drizzle-orm'
+import { handleError } from '@/middleware/error-handler'
+import { extractRequestContext, withUser, toAuditEntry } from '@/middleware/request-context'
+import { createLogger } from '@/common/logger'
+import { rateLimit, getClientKey } from '@/middleware/rate-limit'
+import { requireSession } from '@/common/auth/api-auth.server'
+import { db } from '@/database'
+import { smsActivation } from '@/database/schema'
+
+const log = createLogger({ prefix: 'api-activations-history' })
+
+export async function GET(req: Request) {
+  const ctx = extractRequestContext(req)
+
+  try {
+    const session = await requireSession()
+    const authed = withUser(ctx, session.user.id)
+    const key = getClientKey(session.user.id, req)
+    const { allowed, retryAfterMs } = rateLimit(key)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'rate_limited', message: 'Too many requests' },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(Math.ceil(retryAfterMs / 1000)) },
+        }
+      )
+    }
+
+    const activations = await db
+      .select({
+        id: smsActivation.id,
+        serviceSlug: smsActivation.serviceSlug,
+        countryCode: smsActivation.countryCode,
+        phoneNumber: smsActivation.phoneNumber,
+        smsCode: smsActivation.smsCode,
+        state: smsActivation.state,
+        creditsCharged: smsActivation.creditsCharged,
+        createdAt: smsActivation.createdAt,
+        completedAt: smsActivation.completedAt,
+        cancelledAt: smsActivation.cancelledAt,
+      })
+      .from(smsActivation)
+      .where(eq(smsActivation.userId, session.user.id))
+      .orderBy(desc(smsActivation.createdAt))
+      .limit(50)
+
+    log.info('activations_history_listed', {
+      ...toAuditEntry(authed, 'list', 'activations', 'success'),
+      count: activations.length,
+    })
+
+    return NextResponse.json(
+      { items: activations, nextCursor: null, total: activations.length },
+      { headers: { 'Cache-Control': 'private, max-age=5' } }
+    )
+  } catch (err) {
+    return handleError(err, ctx.requestId)
+  }
+}

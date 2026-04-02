@@ -1309,9 +1309,7 @@
       },
       "4": {
         "title": "4. Finalités du traitement des données",
-        "paragraphe": [
-          "Les données collectées sont utilisées pour les finalités suivantes :"
-        ],
+        "paragraphe": ["Les données collectées sont utilisées pour les finalités suivantes :"],
         "list": [
           "Créer et gérer les comptes utilisateurs",
           "Permettre la publication et la consultation des services proposés par les vendeurs",
@@ -1347,9 +1345,7 @@
       },
       "7": {
         "title": "7. Partage et destinataires des données",
-        "paragraphe": [
-          "Les données peuvent être partagées uniquement avec :"
-        ],
+        "paragraphe": ["Les données peuvent être partagées uniquement avec :"],
         "list": [
           "Les autres membres de la plateforme (dans la limite des informations nécessaires à la mise en relation).",
           "Les prestataires techniques assurant l'hébergement, la maintenance, la sécurité ou l'envoi d'e-mails.",
@@ -1384,9 +1380,7 @@
       },
       "10": {
         "title": "10. Cookies",
-        "paragraphe": [
-          "Des cookies sont utilisés pour :"
-        ],
+        "paragraphe": ["Des cookies sont utilisés pour :"],
         "list": [
           "Garantir le bon fonctionnement du site",
           "Améliorer la navigation",
@@ -1601,5 +1595,132 @@
       "q6": "NumZero est il conforme au cadre local ?",
       "a6": "NumZero applique des politiques de transparence, KYC sur seuils eleves et journalisation des operations pour soutenir la conformite Cameroun/CEMAC."
     }
+  },
+  "licenses": {
+    "title": "Licences tierces",
+    "description": "Cette page liste tous les logiciels tiers et licences utilises dans NumZero.",
+    "openSource": {
+      "title": "Logiciels Open Source",
+      "intro": "NumZero est construit sur de nombreux excellents projets open source. Nous remercions la communaute open source pour ses contributions."
+    },
+    "fonts": {
+      "title": "Polices",
+      "intro": "Les polices suivantes sont utilisees dans cette application :"
+    },
+    "icons": {
+      "title": "Icones",
+      "intro": "Les icones utilisees dans cette application proviennent de :"
+    },
+    "attribution": {
+      "title": "Attribution",
+      "content": "Toutes les marques commerciales et deposees sont la propriete de leurs proprietaires respectifs."
+    },
+    "lastUpdated": "Derniere mise a jour"
+  },
+  "privacy": {
+    "title": "Politique de confidentialite",
+    "description": "Votre vie privee est importante pour nous. Cette politique explique comment nous collectons, utilisons et protegeons vos donnees.",
+    "intro": {
+      "title": "Introduction",
+      "content": "NumZero ('nous', 'notre' ou 'nos') s'engage a proteger votre vie privee. Cette politique de confidentialite explique comment nous collectons, utilisons, divulguons et protegeons vos informations lorsque vous utilisez nos services d'activation SMS."
+    },
+    "dataCollection": {
+      "title": "Donnees collectees",
+      "intro": "Nous collectons les informations que vous nous fournissez directement et les informations collectees automatiquement :",
+      "account": {
+        "title": "Informations de compte",
+        "content": "Email, numero de telephone, nom d'utilisateur et identifiants d'authentification."
+      },
+      "usage": {
+        "title": "Donnees d'utilisation",
+        "content": "Activations de service, SMS recus et historique des transactions."
+      },
+      "payment": {
+        "title": "Informations de paiement",
+        "content": "IDs de transaction et identifiants de methode de paiement (pas les numeros de carte complets)."
+      },
+      "device": {
+        "title": "Informations de l'appareil",
+        "content": "Adresse IP, type d'appareil, type de navigateur et systeme d'exploitation."
+      }
+    },
+    "dataUsage": {
+      "title": "Comment nous utilisons vos donnees",
+      "intro": "Nous utilisons les informations collectees pour :",
+      "service": "Fournir et maintenir nos services d'activation SMS",
+      "communication": "Vous envoyer des mises a jour de service et des messages de support",
+      "security": "Detecter et prevenire la fraude et les abus",
+      "improvement": "Ameliorer nos services et l'experience utilisateur"
+    },
+    "dataSharing": {
+      "title": "Partage des donnees",
+      "intro": "Nous pouvons partager vos informations avec :",
+      "providers": {
+        "title": "Fournisseurs de services",
+        "content": "Fournisseurs SMS et processeurs de paiement qui nous aident a fournir nos services."
+      },
+      "legal": {
+        "title": "Exigences legales",
+        "content": "Lorsque la loi l'exige ou pour proteger nos droits et securite."
+      },
+      "business": {
+        "title": "Transferts commerciaux",
+        "content": "Dans le cadre d'une fusion, acquisition ou vente d'actifs."
+      }
+    },
+    "cookies": {
+      "title": "Cookies et suivi",
+      "intro": "Nous utilisons des cookies et technologies similaires pour :",
+      "essential": {
+        "title": "Cookies essentiels",
+        "content": "Necessaires pour l'authentification et la fonctionnalite principale."
+      },
+      "functional": {
+        "title": "Cookies fonctionnels",
+        "content": "Memoriser vos preferences et parametres."
+      },
+      "analytics": {
+        "title": "Cookies analytiques",
+        "content": "Nous aider a comprendre comment vous utilisez notre service."
+      }
+    },
+    "rights": {
+      "title": "Vos droits",
+      "intro": "Selon les lois applicables sur la protection des donnees, vous avez le droit de :",
+      "access": "Acceder a vos donnees personnelles",
+      "rectification": "Corriger les donnees inexactes",
+      "erasure": "Demander la suppression de vos donnees",
+      "portability": "Recevoir vos donnees dans un format portable",
+      "objection": "S'opposer a certaines activites de traitement"
+    },
+    "security": {
+      "title": "Securite des donnees",
+      "content": "Nous mettons en oeuvre des mesures techniques et organisationnelles appropriees pour proteger vos donnees personnelles contre tout acces, modification, divulgation ou destruction non autorises."
+    },
+    "retention": {
+      "title": "Conservation des donnees",
+      "content": "Nous conservons vos donnees personnelles aussi longtemps que necessaire pour fournir nos services et respecter nos obligations legales. Les registres de transactions sont conserves pendant 7 ans a des fins comptables et juridiques."
+    },
+    "children": {
+      "title": "Confidentialite des mineurs",
+      "content": "Nos services ne sont pas destines aux enfants de moins de 18 ans. Nous ne collectons pas sciemment de donnees personnelles aupres d'enfants."
+    },
+    "international": {
+      "title": "Transferts internationaux de donnees",
+      "content": "Vos donnees peuvent etre transferees et traitees dans des pays autres que votre pays de residence. Nous nous assurons que des garanties appropriees sont en place."
+    },
+    "changes": {
+      "title": "Modifications de cette politique",
+      "content": "Nous pouvons mettre a jour cette politique de confidentialite de temps a autre. Nous vous informerons de tout changement en publiant la nouvelle politique sur cette page et en mettant a jour la date de 'Derniere mise a jour'."
+    },
+    "contact": {
+      "title": "Nous contacter",
+      "content": "Si vous avez des questions concernant cette politique de confidentialite, veuillez nous contacter :"
+    },
+    "lastUpdated": "Derniere mise a jour",
+    "version": "Version"
+  },
+  "terms": {
+    "title": "Conditions d'utilisation"
   }
 }

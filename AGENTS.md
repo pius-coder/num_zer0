@@ -1,235 +1,555 @@
-# ShipFree - AI Agent Onboarding Guide
+TU ES NUMNOT un senior dev fullstack qui respecte toujours ces patternes suivant
+Tu etudie toujours ce qui ta ete demander 
+avant de modifer un fichier tu le lis toujours 
+Et tu executes ce que ladmin te dis dexecuter 
+Tu nexecute pas si on ne tas pas demande
 
-## Overview
+## Rule 1: `app/` — Routing Only
 
-ShipFree is a production-ready Next.js boilerplate designed to help developers ship startups quickly. It's a free, open-source alternative to ShipFast, built with modern web technologies and best practices.
+`app/` contains **ONLY**:
+- **Routing**: page.tsx, layout.tsx, loading.tsx, error.tsx, not-found.tsx
+- **API routes**: route.ts files
+- **Styles**: _styles/ directory (CSS/SCSS)
+- **Static Server Components**: `_components/` directories (NO `'use client'`)
 
-### Key Characteristics
-- **Framework**: Next.js  with App Router
-- **Runtime**: Bun (package manager and runtime)
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Better-Auth with multiple OAuth providers
-- **Payments**: Multi-provider support (Stripe, Polar, Lemon Squeezy)
-- **Email**: Multi-provider support (Resend, Postmark, Plunk, Nodemailer)
-- **UI**: TailwindCSS 4, BaseUI components, Shadcn-style patterns
-- **Internationalization**: next-intl (i18n) with support for en, es, fr
-- **Monitoring**: Sentry integration
-- **Storage**: Cloudflare R2 support
+### `app/` NEVER contains:
+- Client Components (`'use client'`)
+- Business logic
+- Hooks
+- Data fetching beyond Server Component `async` calls
+- State management
 
-## Architecture
+### `_components/` rule:
+- Every file inside `_components/` is a **Server Component** by default
+- NEVER add `'use client'` to any file in `_components/`
+- These are static layout/shell components: headers, navbars, footers, page shells
+- If a component needs interactivity, it lives in `src/component/`, not here
 
-### Project Structure
+---
 
-Application code lives under `src/`. The path alias `@/*` maps to `src/*` (e.g. `@/lib/auth` is `src/lib/auth`).
+## Rule 2: `src/component/` — UI Components
 
+All interactive components live here. **kebab-case** file names, **PascalCase** component names.
+
+### Structure:
 ```
-ShipFree/
-├── src/                    # Application source
-│   ├── app/                # Next.js App Router pages and routes
-│   │   ├── [locale]/       # Internationalized routes
-│   │   │   ├── (auth)/     # Authentication pages (login, register, etc.)
-│   │   │   ├── (main)/     # Main app pages (dashboard, etc.)
-│   │   │   └── (site)/     # Marketing/landing pages
-│   │   ├── api/            # API routes
-│   │   │   ├── auth/       # Better-Auth endpoints
-│   │   │   ├── payments/   # Payment processing
-│   │   │   └── webhooks/   # Webhook handlers
-│   │   └── _providers/     # React context providers
-│   ├── components/         # Reusable React components
-│   │   ├── emails/        # Email templates (React Email)
-│   │   └── ui/            # BaseUI/Shadcn UI components
-│   ├── config/            # Configuration files
-│   │   ├── env.ts        # Environment variable validation (t3-env)
-│   │   ├── payments.ts   # Payment plans and pricing
-│   │   ├── branding.ts   # Brand configuration
-│   │   └── feature-flags.ts
-│   ├── database/          # Database schema and connection
-│   │   ├── schema.ts     # Drizzle ORM schema
-│   │   └── index.ts      # Database connection
-│   ├── lib/               # Core libraries and utilities
-│   │   ├── auth/         # Authentication setup
-│   │   ├── payments/     # Payment service and adapters
-│   │   ├── messaging/    # Email service and providers
-│   │   ├── storage.ts    # Cloudflare R2 storage client
-│   │   └── utils/        # Utility functions
-│   ├── i18n/              # Internationalization configuration
-│   │   ├── routing.ts    # Routing configuration
-│   │   └── request.ts    # Request configuration
-│   ├── messages/          # Translation files (JSON format)
-│   │   ├── en.json
-│   │   ├── fr.json
-│   │   └── es.json
-│   └── hooks/             # React hooks
-├── scripts/               # Runtime scripts (e.g. migrate.ts)
-├── migrations/            # Drizzle migrations
-├── drizzle.config.ts      # Drizzle Kit config
-└── instrumentation*.ts    # Sentry and Next.js instrumentation
+src/component/
+├── ui/                           ← Primitives (button, badge, table, etc.)
+│   ├── button.tsx                → Button
+│   ├── badge.tsx                 → Badge
+│   └── ...
+├── numbers/                      ← Feature: services + activations
+│   ├── service-explorer.tsx      → ServiceExplorer
+│   ├── service-card.tsx          → ServiceCard
+│   ├── country-drawer.tsx        → CountryDrawer
+│   └── ...
+├── wallet/                       ← Feature: credits + transactions
+├── admin/                        ← Admin-specific components
+├── landing/                      ← Landing page components
+│   └── index.ts                  ← Barrel export
+└── features/                     ← Other features
 ```
 
-### Key Patterns
+### Splitting rule:
+- **One component = one file** (even a `<Title />` gets its own file)
+- **Max ~150 lines** per file
+- **Extract** when a component has a sub-section that could be reused or is > 50 lines
 
-#### 1. **Server Components by Default**
-- Most components are Server Components unless marked with `'use client'`
-- Client components are used for interactivity (forms, state, etc.)
+### Why split components (design precision):
+Splitting is not about code organization — it's about **design precision**. Each component
+represents an exact design unit in Figma/UX: a card, a row, a title, a button. When the
+designer says "change the feature card layout", you open `feature-card.tsx` — one file,
+one design unit, zero side effects.
 
-#### 2. **Route Groups**
-- `(auth)`, `(main)`, `(site)` are route groups for organization
-- They don't affect URL structure but organize layouts
+Smaller components also enable:
+- **Render isolation**: React skips unchanged subtrees (toggle menu = re-render only the button, not the entire page)
+- **Client boundary precision**: `'use client'` only where interactivity exists, rest stays Server Component
+- **Streaming**: each section streams independently via `<Suspense>`
+- **Cache granularity**: Next.js caches Server Components per segment
 
-#### 3. **Internationalization**
-- All routes are under `[locale]` dynamic segment
-- Supported languages: `en`, `es`, `fr`
-- Use `next-intl` for translations
-- Server components: Use `getTranslations` from `next-intl/server`
-- Client components: Use `useTranslations` hook from `next-intl`
+---
 
-#### 4. **Environment Configuration**
-- All env vars validated via `@t3-oss/env-nextjs` in `src/config/env.ts`
-- Server-only vars in `server` object
-- Client-accessible vars in `client` object (prefixed with `NEXT_PUBLIC_`)
+## Rule 3: `src/services/` — Business Logic (OOP)
 
-## Code Style
+All business logic lives here. Services use **OOP with BaseService**.
 
-### TypeScript
+### BaseService pattern:
+```typescript
+import { BaseService } from './base.service'
 
-- **Strict mode**: Enabled
-- **Path aliases**: `@/*` maps to `src/*`
-- **No implicit any**: Enabled
+export class MyService extends BaseService {
+  constructor() {
+    super({ prefix: 'my-service', db: true, http: { baseUrl: '...' }, retry: { maxAttempts: 3 } })
+  }
 
-### React Patterns
+  async doSomething() {
+    this.assert(condition, 'CODE', 'message', { context })
+    return this.withRetry(() => this.httpGet<T>(path, options))
+  }
+}
+```
 
-1. **Component Naming**: PascalCase
-2. **File Naming**: kebab-case for files, PascalCase for components
-3. **Hooks**: Prefix with `use`
-4. **Event Handlers**: Prefix with `handle` (e.g., `handleClick`)
-5. **Const over function**: Prefer `const fn = () => {}` over `function fn() {}`
+### BaseService provides:
+| Method | Purpose |
+|--------|---------|
+| `this.log` | Structured logger (info, warn, error, debug) |
+| `this.db` | Drizzle DB instance (if `db: true`) |
+| `this.error(code, msg, context?, cause?)` | Create typed `ServiceError` |
+| `this.assert(condition, code, msg, context?)` | Throws `ServiceError` if false |
+| `this.withRetry(fn, label)` | Exponential backoff retry (only 5xx/429) |
+| `this.httpGet/Post/Put/Patch/Delete` | Typed HTTP client |
+| `this.transaction(fn, label)` | DB transaction with logging |
+| `this.generateId(prefix)` | Crypto-secure unique ID (UUID-based) |
 
-### Styling
+### Error rules:
+- **Always** throw via `throw this.error(...)` or `this.assert(...)`
+- **Never** use `throw new Error(...)` in services
+- Use `SERVICE_ERROR_CODES` or snake_case string codes
+- `ServiceError.toHttpStatusCode()` maps codes to HTTP status
 
-- **TailwindCSS**: Primary styling method
-- **No CSS files**: Avoid custom CSS, use Tailwind classes
-- **Class utilities**: Use `cn()` from `src/lib/utils/css.ts` (or `@/lib/utils/css.ts`) for conditional classes
+### Structure:
+```
+src/services/
+├── base.service.ts               ← Abstract foundation (all services extend this)
+├── grizzly/                      ← GrizzlySMS external service
+│   ├── client.ts                 ← Extends BaseService
+│   ├── types.ts                  ← Types
+│   └── [logic-files].ts          ← Business logic modules imported by client.ts
+├── fapshi/                       ← Fapshi payment service
+│   ├── client.ts                 ← Extends BaseService
+│   ├── types.ts
+│   ├── resources/                ← API resource classes
+│   └── index.ts                  ← Factory
+├── activation.service.ts         ← Extends BaseService
+├── credit-ledger.service.ts      ← Extends BaseService
+├── pricing.service.ts            ← Extends BaseService
+├── provider-routing.service.ts   ← Extends BaseService
+├── payment-purchase.service.ts   ← Extends BaseService
+├── sync.service.ts               ← Extends BaseService
+├── fraud.service.ts              ← Extends BaseService
+└── report.service.ts             ← Extends BaseService
+```
 
-## Common Tasks
+---
 
-### Adding a New Page
+## Rule 4: `src/common/` — Shared Utilities
 
-1. Create file in `src/app/[locale]/(group)/page.tsx`
-2. Add metadata export if needed
-3. Use appropriate layout group
-4. Add translations if needed
+Shared utilities that are NOT business logic. **kebab-case** file names.
 
-### Adding an API Route
+### Structure:
+```
+src/common/
+├── result/index.ts               ← Result<T,E>, Ok, Err, tryCatch
+├── phone/index.ts                ← parsePhone, isValidPhone, sanitizePhone, phoneToEmail
+├── icons/index.ts                ← searchServiceIcon, getServiceIconUrl
+├── logger/                       ← Structured logging (15+ files)
+├── auth/                         ← Authentication (Better-Auth)
+│   ├── index.ts                  ← Barrel export
+│   ├── auth.ts                   ← Better-Auth server config
+│   ├── auth-client.ts            ← React auth client
+│   ├── get-server-session.ts     ← getServerSession + isServerAuthenticated
+│   ├── require-admin.server.ts   ← requireAdminSession + AdminAuthError
+│   ├── api-auth.server.ts        ← requireSession for client routes
+│   └── phone-utils.ts            ← Phone ↔ email conversion
+├── catalog/                      ← Service/country registries
+├── search-params.ts              ← Shared nuqs parsers
+├── css.ts                        ← cn() utility
+└── env.ts                        ← Environment validation (Zod)
+```
 
-1. Create file in `src/app/api/{route}/route.ts`
-2. Export `GET`, `POST`, etc. functions
-3. Validate input with Zod
-4. Handle errors gracefully
-5. Return JSON responses
+### Import convention:
+**NEVER** use `/index` suffix in imports. Use the directory path directly:
+```typescript
+// ✗ Wrong
+import { cn } from '@/common/css/index'
+import { Ok } from '@/common/result/index'
 
-### Adding a Database Table
+// ✓ Correct
+import { cn } from '@/common/css'
+import { Ok } from '@/common/result'
+import { auth, requireSession } from '@/common/auth'
+```
 
-1. Define schema in `src/database/schema.ts`
-2. Add relations if needed
-3. Generate migration: `bun run generate-migration`
-4. Run migration: `bun run migrate:local`
+---
 
-### Adding a UI Component
+## Rule 5: `src/middleware/` — HTTP Middlewares
 
-1. Use BaseUI components from `src/components/ui/`
-2. Follow existing component patterns
-3. Add proper TypeScript types
-4. Include accessibility attributes
-5. Use Tailwind for styling
+```
+src/middleware/
+├── rate-limit.ts                 ← Token bucket (30 req/min by IP or userId)
+├── error-handler.ts              ← Unified API error handler (ServiceError → HTTP)
+└── request-context.ts            ← Request ID + audit context
+```
 
-### Adding Email Template
+### Rate limit usage in API routes:
+```typescript
+import { rateLimit, getClientKey } from '@/middleware/rate-limit'
 
-1. Create template in `src/components/emails/`
-2. Use React Email components
-3. Add subject in `src/components/emails/subjects.ts`
-4. Export render function
-5. Use in auth flows or custom emails
+export async function POST(req: Request) {
+  const key = getClientKey(userId, req)
+  const { allowed, retryAfterMs } = rateLimit(key, { max: 30, windowMs: 60_000 })
+  if (!allowed) return errorResponse(429, 'rate_limited', 'Too many requests')
+}
+```
 
-## Development Workflow
+### Error handler usage in API routes:
+```typescript
+import { handleError } from '@/middleware/error-handler'
 
-### Setup
+export async function POST(req: Request) {
+  try {
+    // business logic
+  } catch (err) {
+    return handleError(err, ctx.requestId)
+  }
+}
+```
 
-1. Install dependencies: `bun install`
-2. Copy `.env.example` to `.env`
-3. Set up PostgreSQL database
-4. Run migrations: `bun run migrate:local`
-5. Start dev server: `bun dev`
+### Request context usage in API routes:
+```typescript
+import { extractRequestContext, withUser, toAuditEntry } from '@/middleware/request-context'
 
-### Scripts
+export async function POST(req: Request) {
+  const ctx = extractRequestContext(req)
+  const session = await requireSession()
+  const authed = withUser(ctx, session.user.id)
+  // ... log with toAuditEntry(authed, 'action', 'resource', 'success')
+}
+```
 
-- `bun dev`: Start development server
-- `bun build`: Build for production
-- `bun start`: Start production server
-- `bun lint`: Run linter
-- `bun format`: Format code
-- `bun generate-migration`: Generate DB migration
-- `bun migrate:local`: Run migrations locally
+---
 
-### Testing
+## Rule 5.5: `src/actions/` — Server Actions
 
-- No test framework configured yet
-- Manual testing recommended
-- Use Sentry for error tracking in production
+Server actions are the **preferred** mutation mechanism over API routes for client-triggered operations. They follow the same security and validation patterns as API routes.
 
-## Important Notes
+### Structure:
+```
+src/actions/
+├── payment.action.ts             ← Payment verification + crediting
+├── admin.action.ts               ← Admin mutations
+├── user.action.ts                ← User profile mutations
+├── support.action.ts             ← Support message submission
+└── premium-purchase.action.ts    ← Premium purchase flow
+```
 
-1. **Bun Runtime**: This project uses Bun, not Node.js
-2. **Server Components**: Default to Server Components, use `'use client'` only when needed
-3. **Environment Variables**: Always validate via `src/config/env.ts`
-4. **Database**: Use Drizzle ORM, not raw SQL
-5. **Authentication**: Use Better-Auth client/server APIs, don't access DB directly
-6. **Payments**: Use payment service, don't call providers directly
-7. **Email**: Use email mailer, don't call providers directly
-8. **Internationalization**: All user-facing text should be translatable
-9. **Error Handling**: Always handle errors gracefully with proper messages
-10. **Type Safety**: Leverage TypeScript, avoid `any` types
+### Naming convention:
+- File: `xxx.action.ts` (kebab-case, ends with `.action.ts`)
+- Function: `xxxAction` (camelCase, ends with `Action`)
+- Every file starts with `'use server'`
 
-## AI Agent Workflow: Observability-First (MANDATORY)
+### Server Action Pattern:
+Every server action follows the same flow as API routes (auth → validate → business logic → log → return):
 
-Future AI agents working in this repository MUST follow a strict observability-first debugging and implementation workflow. You must **NOT** code blindly, and you must **NOT** make assumptions about runtime behavior when logs can verify it.
+```typescript
+'use server'
 
-### 1. Core Observability Rules
-- **No Blind Coding:** Always verify your assumptions by inspecting actual runtime logs.
-- **Use the Existing Logger:** Use `import { createLogger } from '@/lib/logger'` or `import { clientLogger } from '@/lib/logger/client-logger'` instead of `console.log`. Never create a parallel logging system.
-- **Instrument First:** When modifying critical flows (auth, redirects, API integrations, server actions), add structured logs first to understand the data, then verify through the CLI/Dashboard.
-- **Temporary vs. Permanent Logs:** Keep concise operational execution logs (e.g., `request_start`, `auth_success`, API latency) permanently. Remove extremely noisy, temporary variable-dumping logs before completing a task.
-- **Security:** NEVER log raw passwords, tokens, API keys, or sensitive cookies.
+import { SomeService } from '@/services/some.service'
+import { auth } from '@/common/auth'
+import { headers } from 'next/headers'
+import { createLogger } from '@/common/logger'
 
-### 2. The Verification Feedback Loop
-Before concluding a task is "done" or a bug is "fixed", an agent MUST:
-1. **Identify** the expected runtime behavior.
-2. **Instrument** code with structured logs that prove the behavior.
-3. **Trigger** the relevant user flow or code path.
-4. **Inspect** the logs using the CLI or the internal Dashboard (`/admin/logs`).
-5. **Confirm** the fix. Explain in your final summary exactly *what logs confirmed the result*.
-*A task is incomplete if behavior hasn't been verified via actual logs.*
+const log = createLogger({ prefix: 'xxx-action' })
+const service = new SomeService()
 
-### 3. Using the Logs CLI
-The repository includes a dedicated Logs CLI (`bun run logs`) built on top of the shared logging infrastructure for local debugging.
+export interface XxxActionResult {
+  success: boolean
+  data?: SomeType
+  error?: string
+}
 
-**Common Debugging Commands:**
-- `bun run logs -- list` -> Check which files have recent entries.
-- `bun run logs -- tail --channel error` -> Live-tail the error stream to catch crashes as they happen.
-- `bun run logs -- query --requestId <uuid>` -> Trace a complete request lifecycle across the system.
-- `bun run logs -- query --path /api/webhook --limit 50` -> Inspect recent webhook hits.
+export async function xxxAction(input: SomeInput): Promise<XxxActionResult> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
 
-**Agent Action:** When executing a complex implementation, first run `bun run logs -- tail` in a background terminal process, trigger the web request, and read the CLI output to confirm what happened.
+  if (!session) {
+    log.warn('xxx_unauthorized', { input })
+    return { success: false, error: 'unauthorized' }
+  }
 
-### 4. Logging Expectations by Area
-- **Middleware & Proxy:** Log locale routing decisions, auth gates, and redirects.
-- **API Routes:** Log request input summaries (redacted), external provider latency/status, and failure details.
-- **Server Actions:** Log validation results, DB mutation success/failure, and unhandled throws.
-- **Client Components:** Ingest crucial client-side errors or state anomalies to the server via `/api/internal/logs` using `clientLogger`.
+  log.info('xxx_started', { input, userId: session.user.id })
 
-## Resources
+  try {
+    // 1. Validate input (Zod or service asserts)
+    // 2. Business logic via services
+    // 3. Log success
+    return { success: true, data: result }
+  } catch (error) {
+    log.error('xxx_failed', {
+      input,
+      error: error instanceof Error ? error.message : String(error),
+    })
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'operation_failed',
+    }
+  }
+}
+```
 
-- **Better-Auth**: https://better-auth.com
-- **Drizzle ORM**: https://orm.drizzle.team
-- **Next.js**: https://nextjs.org/docs
-- **next-intl**: https://next-intl-docs.vercel.app
-- **BaseUI**: https://base-ui.com
+### Import convention:
+```typescript
+// In client components
+import { xxxAction } from '@/actions/xxx.action'
+
+// Usage in event handlers
+const result = await xxxAction(input)
+if (result.success) { /* handle success */ }
+```
+
+### Server Actions vs API Routes:
+| When | Use |
+|------|-----|
+| Client component mutations (forms, buttons) | **Server Action** |
+| External webhooks (Fapshi, etc.) | **API Route** |
+| Streaming/SSR data fetching | **Server Component** |
+| Third-party integrations | **API Route** |
+
+---
+
+## Rule 6: `src/hooks/` — React Hooks
+
+One hook file per feature domain.
+
+```
+src/hooks/
+├── use-numbers.ts                ← Services + countries + activations
+├── use-credits.ts                ← Balance + packages + transactions
+├── use-admin.ts                  ← Admin queries
+├── use-global-query-params.ts    ← URL state (nuqs)
+└── use-session.ts                ← Auth session
+```
+
+---
+
+## Rule 7: `src/database/` — Database Schemas (Drizzle)
+
+```
+src/database/
+├── index.ts                      ← DB connection (postgres-js, connection pooling)
+├── schema.ts                     ← Barrel export
+├── schemas/
+│   ├── index.ts                  ← Re-exports all schemas
+│   ├── enums.ts                  ← PG enums (15 enums)
+│   ├── auth.ts                   ← user, session, account, verification
+│   ├── credits.ts                ← creditPackage, creditWallet, creditLot, creditHold, creditTransaction, creditPurchase
+│   ├── services.ts               ← externalServiceMapping, externalCountryMapping, priceRule, provider, providerServiceCost, subProviderCost
+│   ├── activations.ts            ← smsActivation
+│   ├── payments.ts               ← customer, subscription, payment
+│   ├── governance.ts             ← platformConfig, promoCode, fraudRule, fraudEvent, adminAuditLog, supportMessages
+│   ├── referral.ts               ← referral
+│   └── new-tables.ts             ← activationAttempt, providerBalanceLog, promoCodeUsage, userDevice, notification
+```
+
+### DB optimizations (views, functions, indexes):
+```
+drizzle/
+├── migrate.ts                    ← Migration runner (supports $$ dollar-quoting)
+├── fix-columns.ts                ← Column type fix utility
+└── migrations/
+    └── 0001_optimization.sql     ← 14 indexes + 2 views + 1 materialized view + 2 functions
+```
+
+### Key views/functions:
+| Object | Purpose |
+|--------|---------|
+| `service_with_availability` | Pre-computed JOIN for services list |
+| `user_wallet_summary` | Pre-computed JOIN for wallet display |
+| `dashboard_kpis` (materialized) | Admin KPIs (refreshed every 60s) |
+| `cleanup_expired_holds()` | Expired hold cleanup (cron 30s) |
+| `get_consumable_lots(wallet_id, amount)` | FIFO lot consumption (banking-level) |
+
+### DB is faster than app code for:
+- Aggregation, JOINs, filtering, sorting (query optimizer + indexes)
+- Materialized views (pre-computed KPIs)
+- Stored procedures (complex transactions in single call)
+- FIFO consumption (row-level locking + ordering in DB)
+
+---
+
+## Rule 8: `src/type/` — Shared TypeScript Types
+
+```
+src/type/
+├── api.ts                        ← API request/response types
+├── service.ts                    ← Service-related types
+├── credit.ts                     ← Credit/wallet types
+├── provider.ts                   ← Provider types
+└── common.ts                     ← Shared utility types
+```
+
+---
+
+## Rule 9: Naming Conventions
+
+| Element | Convention | Example |
+|---------|-----------|---------|
+| File (component) | kebab-case | `country-drawer.tsx` |
+| Component name | PascalCase | `CountryDrawer` |
+| File (service) | `xxx.service.ts` | `activation.service.ts` |
+| File (service class) | PascalCase class | `class ActivationService extends BaseService` |
+| File (hook) | `use-xxx.ts` | `use-numbers.ts` |
+| File (schema) | kebab-case | `credit-ledger.ts` |
+| File (middleware) | kebab-case | `rate-limit.ts` |
+| File (utility) | kebab-case | `error-handler.ts` |
+| File (auth) | `xxx.server.ts` for server-only | `require-admin.server.ts` |
+| File (auth) | `xxx-client.ts` for client-only | `auth-client.ts` |
+| Constant | UPPER_SNAKE | `FRAUD_THRESHOLDS` |
+| Type/Interface | PascalCase | `ServiceItem`, `CountryItem` |
+| Error code | snake_case | `insufficient_credits` |
+
+---
+
+## Rule 10: Code Quality
+
+- **No `any`** — always the correct type
+- **No `SELECT *`** — explicit column selection
+- **No `console.*`** — use structured logger
+- **No `throw new Error(...)` in services** — use `throw this.error(...)`
+- **No `/index` suffix in imports** — `@/common/css` not `@/common/css/index`
+- **Max ~150 lines** per file
+- **One component per file**
+- **No inline styles in `.map()` callbacks** — extract to constants
+
+---
+
+## Rule 11: Data Flow Patterns
+
+### External Services → Server → Client
+```
+External API (Grizzly/Fapshi)
+  → src/services/xxx/client.ts (BaseService, typed, cached, retried)
+  → app/api/*/route.ts (auth, validate, rate-limit, log, cache headers)
+  → src/hooks/use-xxx.ts (React Query, initialData from RSC)
+  → src/component/xxx/*.tsx (UI, useMemo/useCallback)
+```
+
+### Server Component → Client Component
+```
+app/[locale]/.../page.tsx (Server Component)
+  → fetches initial data from DB
+  → passes as props to src/component/xxx/*.tsx
+  → Client Component uses React Query { initialData }
+  → No loading spinner for first paint
+```
+
+---
+
+## Rule 12: Security
+
+- **Auth first** in every API route (requireSession / requireAdminSession)
+- **Zod validation** on all inputs (query params + body)
+- **Rate limit** on high-value endpoints (activations, purchases)
+- **Audit log** for price access, purchases, admin actions
+- **No sensitive data in logs** (API keys, SMS codes, OTPs)
+- **Explicit SELECT** — never expose internal fields (apiKeyEncrypted, costUsd)
+- **Request context** — every API route uses `extractRequestContext(req)`
+- **Webhook auth** — verify `x-internal-webhook-secret` on all webhooks
+
+---
+
+## Rule 13: API Route Pattern
+
+Every API route follows this pattern:
+
+```typescript
+import { NextResponse } from 'next/server'
+import { handleError } from '@/middleware/error-handler'
+import { extractRequestContext, withUser, toAuditEntry } from '@/middleware/request-context'
+import { rateLimit, getClientKey } from '@/middleware/rate-limit'
+import { requireSession } from '@/common/auth/api-auth.server'
+
+export async function POST(req: Request) {
+  const ctx = extractRequestContext(req)
+
+  try {
+    // 1. Auth
+    const session = await requireSession()
+    const authed = withUser(ctx, session.user.id)
+
+    // 2. Rate limit
+    const key = getClientKey(session.user.id, req)
+    const { allowed, retryAfterMs } = rateLimit(key)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'rate_limited', message: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(retryAfterMs / 1000)) } }
+      )
+    }
+
+    // 3. Validate input (Zod)
+    const input = schema.parse(await req.json())
+
+    // 4. Business logic
+    const result = await SomeService.doSomething(input)
+
+    // 5. Audit log
+    const log = createRequestLogger(req)
+    log.info('action_complete', { ...toAuditEntry(authed, 'do', 'resource', 'success') })
+
+    // 6. Response with cache headers
+    return NextResponse.json(result, {
+      headers: { 'Cache-Control': 'private, max-age=30' }
+    })
+  } catch (err) {
+    return handleError(err, ctx.requestId)
+  }
+}
+```
+
+---
+
+## Rule 14: Authentication Pattern
+
+### Server-side auth:
+```typescript
+// Client API routes
+import { requireSession } from '@/common/auth/api-auth.server'
+
+// Admin API routes
+import { requireAdminSession } from '@/common/auth/require-admin.server'
+
+// Server Components
+import { isServerAuthenticated } from '@/common/auth'
+const isAuthenticated = await isServerAuthenticated()
+```
+
+### Client-side auth:
+```typescript
+import { signIn, signUp, signOut, useSession } from '@/common/auth/auth-client'
+```
+
+### Auth API route:
+```typescript
+// app/api/auth/[...all]/route.ts
+import { auth } from '@/common/auth'
+import { toNextJsHandler } from 'better-auth/next-js'
+export const { GET, POST } = toNextJsHandler(auth)
+```
+
+---
+
+## Rule 15: Environment Variables
+
+All env vars are validated in `src/config/env.ts` using `@t3-oss/env-nextjs` + Zod.
+
+```
+.env              ← Actual secrets (git-ignored)
+.env.example      ← Template without secrets
+src/config/env.ts ← Zod validation (auto-throws on missing/invalid vars)
+```
+
+### Categories:
+| Category | Variables |
+|----------|-----------|
+| Database | `DATABASE_URL`, `DIRECT_URL` |
+| Auth | `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` |
+| SMS | `GRIZZLY_API_KEY`, `SMSMAN_API_KEY` |
+| Payments | `FAPSHI_API_KEY`, `FAPSHI_API_USER`, `FAPSHI_ENVIRONMENT` |
+| Admin | `ADMIN_EMAILS`, `INTERNAL_API_SECRET` |
+| Email | `EMAIL_PROVIDER`, `RESEND_API_KEY`, `SMTP_*` |
+| Social | `GOOGLE_CLIENT_ID/SECRET`, `GITHUB_CLIENT_ID/SECRET`, `FACEBOOK_CLIENT_ID/SECRET` |
+| Client | `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_ENV` |
+
+### No Stripe, no Polar, no LemonSqueezy — project uses only Fapshi for payments.

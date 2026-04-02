@@ -1,0 +1,85 @@
+{
+  "provider": "grizzlysms",
+  "extractedAt": "2026-03-28T21:16:05.944Z",
+  "totals": {
+    "countries": 199,
+    "services": 2067
+  },
+  "validation": {
+    "countryIssuesCount": 0,
+    "serviceIssuesCount": 4,
+    "countryIssues": [],
+    "serviceIssues": [
+      {
+        "type": "service_missing_icon",
+        "item": {
+          "provider": "grizzlysms",
+          "type": "service",
+          "externalId": "wig",
+          "slug": "wingo",
+          "name": "WinGo",
+          "grizzlyId": 2566,
+          "iconId": 0,
+          "iconRemoteUrl": null,
+          "iconLocalPath": "/assets/services/wig.webp"
+        }
+      },
+      {
+        "type": "service_missing_icon",
+        "item": {
+          "provider": "grizzlysms",
+          "type": "service",
+          "externalId": "daf",
+          "slug": "dafapay",
+          "name": "Dafapay",
+          "grizzlyId": 2580,
+          "iconId": 0,
+          "iconRemoteUrl": null,
+          "iconLocalPath": "/assets/services/daf.webp"
+        }
+      },
+      {
+        "type": "service_missing_icon",
+        "item": {
+          "provider": "grizzlysms",
+          "type": "service",
+          "externalId": "ekr",
+          "slug": "ekremabi-link",
+          "name": "Ekremabi Link",
+          "grizzlyId": 2579,
+          "iconId": 0,
+          "iconRemoteUrl": null,
+          "iconLocalPath": "/assets/services/ekr.webp"
+        }
+      },
+      {
+        "type": "service_missing_icon",
+        "item": {
+          "provider": "grizzlysms",
+          "type": "service",
+          "externalId": "wim",
+          "slug": "winmate",
+          "name": "Winmate",
+          "grizzlyId": 2578,
+          "iconId": 0,
+          "iconRemoteUrl": null,
+          "iconLocalPath": "/assets/services/wim.webp"
+        }
+      }
+    ]
+  },
+  "downloads": {
+    "countries": {
+      "total": 199,
+      "success": 199,
+      "skipped": 0,
+      "failed": 0
+    },
+    "services": {
+      "total": 2067,
+      "success": 2063,
+      "skipped": 0,
+      "failed": 4
+    }
+  }
+}

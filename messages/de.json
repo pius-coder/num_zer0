@@ -1327,9 +1327,7 @@
       },
       "4": {
         "title": "4. Zwecke der Datenverarbeitung",
-        "paragraphe": [
-          "Die erhobenen Daten werden für folgende Zwecke verwendet:"
-        ],
+        "paragraphe": ["Die erhobenen Daten werden für folgende Zwecke verwendet:"],
         "list": [
           "Erstellung und Verwaltung von Benutzerkonten",
           "Ermöglichung der Veröffentlichung und Einsicht der von den Verkäufern angebotenen Dienstleistungen",
@@ -1365,9 +1363,7 @@
       },
       "7": {
         "title": "7. Weitergabe und Empfänger der Daten",
-        "paragraphe": [
-          "Die Daten können nur an folgende Personen weitergegeben werden:"
-        ],
+        "paragraphe": ["Die Daten können nur an folgende Personen weitergegeben werden:"],
         "list": [
           "Die anderen Mitglieder der Plattform (im Rahmen der für die Vernetzung erforderlichen Informationen).",
           "Technische Dienstleister, die das Hosting, die Wartung, die Sicherheit oder den E-Mail-Versand gewährleisten.",
@@ -1402,9 +1398,7 @@
       },
       "10": {
         "title": "10. Cookies",
-        "paragraphe": [
-          "Cookies werden verwendet für:"
-        ],
+        "paragraphe": ["Cookies werden verwendet für:"],
         "list": [
           "Gewährleistung des ordnungsgemäßen Betriebs der Website",
           "Verbesserung der Navigation",

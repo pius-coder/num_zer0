@@ -1309,9 +1309,7 @@
       },
       "4": {
         "title": "4. Purposes of Data Processing",
-        "paragraphe": [
-          "The collected data is used for the following purposes:"
-        ],
+        "paragraphe": ["The collected data is used for the following purposes:"],
         "list": [
           "Create and manage user accounts",
           "Enable the publication and viewing of services offered by sellers",
@@ -1347,9 +1345,7 @@
       },
       "7": {
         "title": "7. Data Sharing and Recipients",
-        "paragraphe": [
-          "Data may only be shared with:"
-        ],
+        "paragraphe": ["Data may only be shared with:"],
         "list": [
           "Other platform members (limited to information necessary for connecting users).",
           "Technical service providers ensuring hosting, maintenance, security, or email delivery.",
@@ -1384,9 +1380,7 @@
       },
       "10": {
         "title": "10. Cookies",
-        "paragraphe": [
-          "Cookies are used to:"
-        ],
+        "paragraphe": ["Cookies are used to:"],
         "list": [
           "Ensure the proper functioning of the site",
           "Improve navigation",
@@ -1601,5 +1595,132 @@
       "q6": "Is NumZero aligned with local regulations?",
       "a6": "NumZero applies transparent terms, KYC at higher thresholds, and operation logs to support Cameroon/CEMAC compliance expectations."
     }
+  },
+  "licenses": {
+    "title": "Third-Party Licenses",
+    "description": "This page lists all third-party software and licenses used in NumZero.",
+    "openSource": {
+      "title": "Open Source Software",
+      "intro": "NumZero is built on top of many excellent open source projects. We thank the open source community for their contributions."
+    },
+    "fonts": {
+      "title": "Fonts",
+      "intro": "The following fonts are used in this application:"
+    },
+    "icons": {
+      "title": "Icons",
+      "intro": "Icons used in this application are from:"
+    },
+    "attribution": {
+      "title": "Attribution",
+      "content": "All trademarks and registered trademarks are the property of their respective owners."
+    },
+    "lastUpdated": "Last updated"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "description": "Your privacy is important to us. This policy explains how we collect, use, and protect your data.",
+    "intro": {
+      "title": "Introduction",
+      "content": "NumZero ('we', 'us', or 'our') is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our SMS activation services."
+    },
+    "dataCollection": {
+      "title": "Data We Collect",
+      "intro": "We collect information that you provide directly to us and information that is collected automatically:",
+      "account": {
+        "title": "Account Information",
+        "content": "Email, phone number, username, and authentication credentials."
+      },
+      "usage": {
+        "title": "Usage Data",
+        "content": "Service activations, SMS received, and transaction history."
+      },
+      "payment": {
+        "title": "Payment Information",
+        "content": "Transaction IDs and payment method identifiers (not full card numbers)."
+      },
+      "device": {
+        "title": "Device Information",
+        "content": "IP address, device type, browser type, and operating system."
+      }
+    },
+    "dataUsage": {
+      "title": "How We Use Your Data",
+      "intro": "We use the information we collect to:",
+      "service": "Provide and maintain our SMS activation services",
+      "communication": "Send you service updates and support messages",
+      "security": "Detect and prevent fraud and abuse",
+      "improvement": "Improve our services and user experience"
+    },
+    "dataSharing": {
+      "title": "Data Sharing",
+      "intro": "We may share your information with:",
+      "providers": {
+        "title": "Service Providers",
+        "content": "SMS providers and payment processors who help us deliver our services."
+      },
+      "legal": {
+        "title": "Legal Requirements",
+        "content": "When required by law or to protect our rights and safety."
+      },
+      "business": {
+        "title": "Business Transfers",
+        "content": "In connection with a merger, acquisition, or sale of assets."
+      }
+    },
+    "cookies": {
+      "title": "Cookies and Tracking",
+      "intro": "We use cookies and similar technologies for:",
+      "essential": {
+        "title": "Essential Cookies",
+        "content": "Required for authentication and core functionality."
+      },
+      "functional": {
+        "title": "Functional Cookies",
+        "content": "Remember your preferences and settings."
+      },
+      "analytics": {
+        "title": "Analytics Cookies",
+        "content": "Help us understand how you use our service."
+      }
+    },
+    "rights": {
+      "title": "Your Rights",
+      "intro": "Under applicable data protection laws, you have the right to:",
+      "access": "Access your personal data",
+      "rectification": "Correct inaccurate data",
+      "erasure": "Request deletion of your data",
+      "portability": "Receive your data in a portable format",
+      "objection": "Object to certain processing activities"
+    },
+    "security": {
+      "title": "Data Security",
+      "content": "We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction."
+    },
+    "retention": {
+      "title": "Data Retention",
+      "content": "We retain your personal data for as long as necessary to provide our services and comply with legal obligations. Transaction records are retained for 7 years for accounting and legal purposes."
+    },
+    "children": {
+      "title": "Children's Privacy",
+      "content": "Our services are not intended for children under 18. We do not knowingly collect personal data from children."
+    },
+    "international": {
+      "title": "International Data Transfers",
+      "content": "Your data may be transferred to and processed in countries other than your country of residence. We ensure appropriate safeguards are in place."
+    },
+    "changes": {
+      "title": "Changes to This Policy",
+      "content": "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the 'Last updated' date."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "If you have questions about this Privacy Policy, please contact us:"
+    },
+    "lastUpdated": "Last updated",
+    "version": "Version"
+  },
+  "terms": {
+    "title": "Terms of Service"
   }
 }
