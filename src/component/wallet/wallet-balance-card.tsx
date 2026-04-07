@@ -61,7 +61,7 @@ export const WalletBalanceCard = memo(function WalletBalanceCard({
                     onClick={handleSync}
                     disabled={syncing}
                     className='rounded-full bg-muted hover:bg-accent border border-border p-2 transition-colors'
-                    title='Synchroniser le solde et l\'historique'
+                    title="Synchroniser solde et historique"
                   >
                     <RefreshCw className={`h-4 w-4 text-muted-foreground ${syncing ? 'animate-spin' : ''}`} />
                   </button>
