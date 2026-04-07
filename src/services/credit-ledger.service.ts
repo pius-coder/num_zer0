@@ -59,61 +59,71 @@ export class CreditLedgerService extends BaseService {
 
   /**
    * Uses the `user_wallet_summary` DB view (Rule 7).
-   * Pre-computed JOIN — no app-side aggregation needed.
+   * Fallback: computes balance directly from tables if the view is missing.
+   * Safety: returns zero balance if all DB access fails (prevents 500 crash).
    */
   async getBalance(userId: string): Promise<WalletBalance> {
-    const [row] = await this.db.execute<{
-      base_balance: number;
-      bonus_balance: number;
-      promo_balance: number;
-      held_balance: number;
-      available_balance: number;
-      total_purchased: number;
-      total_consumed: number;
-      total_refunded: number;
-      total_expired: number;
-      total_bonus_received: number;
-      active_holds_count: number;
-    }>(
-      sql`SELECT base_balance, bonus_balance, promo_balance, held_balance,
-                 available_balance, total_purchased, total_consumed,
-                 total_refunded, total_expired, total_bonus_received,
-                 active_holds_count
-          FROM user_wallet_summary
-          WHERE user_id = ${userId}`,
-    );
+    const zeroBalance: WalletBalance = {
+      base: 0, bonus: 0, promotional: 0, held: 0, available: 0,
+      totalPurchased: 0, totalConsumed: 0, totalRefunded: 0,
+      totalExpired: 0, totalBonusReceived: 0, activeHoldsCount: 0,
+    };
 
-    if (row) {
-      return {
-        base: row.base_balance,
-        bonus: row.bonus_balance,
-        promotional: row.promo_balance,
-        held: row.held_balance,
-        available: row.available_balance,
-        totalPurchased: row.total_purchased,
-        totalConsumed: row.total_consumed,
-        totalRefunded: row.total_refunded,
-        totalExpired: row.total_expired,
-        totalBonusReceived: row.total_bonus_received,
-        activeHoldsCount: row.active_holds_count,
-      };
+    // 1. Attempt to use the optimized SQL view
+    try {
+      const [row] = await this.db.execute<{
+        base_balance: number; bonus_balance: number; promo_balance: number; held_balance: number;
+        available_balance: number; total_purchased: number; total_consumed: number;
+        total_refunded: number; total_expired: number; total_bonus_received: number; active_holds_count: number;
+      }>(
+        sql`SELECT base_balance, bonus_balance, promo_balance, held_balance,
+                   available_balance, total_purchased, total_consumed,
+                   total_refunded, total_expired, total_bonus_received,
+                   active_holds_count
+            FROM user_wallet_summary
+            WHERE user_id = ${userId}`,
+      );
+
+      if (row) {
+        return {
+          base: row.base_balance, bonus: row.bonus_balance, promotional: row.promo_balance,
+          held: row.held_balance, available: row.available_balance,
+          totalPurchased: row.total_purchased, totalConsumed: row.total_consumed,
+          totalRefunded: row.total_refunded, totalExpired: row.total_expired,
+          totalBonusReceived: row.total_bonus_received, activeHoldsCount: row.active_holds_count,
+        };
+      }
+    } catch (err) {
+      this.log.warn('wallet_view_fallback', { msg: 'View failed, trying direct table query' });
     }
 
-    // Fallback: wallet doesn't exist yet — create it
-    await this.getOrCreateWallet(userId);
-    return {
-      base: 0,
-      bonus: 0,
-      promotional: 0,
-      held: 0,
-      available: 0,
-      totalPurchased: 0,
-      totalConsumed: 0,
-      totalRefunded: 0,
-      totalExpired: 0,
-      totalBonusReceived: 0,
-      activeHoldsCount: 0,
-    };
+    // 2. Fallback: Calculate balance manually from creditWallet table
+    try {
+      const wallet = await this.db.query.creditWallet.findFirst({
+        where: eq(creditWallet.userId, userId),
+      });
+
+      if (wallet) {
+        return {
+          base: wallet.baseBalance, bonus: wallet.bonusBalance, promotional: wallet.promoBalance,
+          held: wallet.heldBalance,
+          available: wallet.baseBalance + wallet.bonusBalance + wallet.promoBalance - wallet.heldBalance,
+          totalPurchased: wallet.totalPurchased, totalConsumed: wallet.totalConsumed,
+          totalRefunded: wallet.totalRefunded, totalExpired: wallet.totalExpired,
+          totalBonusReceived: wallet.totalBonusReceived, activeHoldsCount: 0,
+        };
+      }
+    } catch (err) {
+      this.log.warn('wallet_table_fallback', { msg: 'Direct table query failed' });
+    }
+
+    // 3. Ultimate Safety: If DB is totally broken, return 0 to keep app running
+    this.log.warn('wallet_balance_final_fallback', { userId });
+    
+    // Try to create wallet silently in background so it might exist next time
+    try { await this.getOrCreateWallet(userId); } catch {}
+    
+    return zeroBalance;
   }
 
   /**
