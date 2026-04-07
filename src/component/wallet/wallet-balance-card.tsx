@@ -1,6 +1,6 @@
 'use client'
 
-import { Wallet } from 'lucide-react'
+import { Wallet, RefreshCw } from 'lucide-react'
 import { memo, useEffect, useState } from 'react'
 
 interface WalletBalanceCardProps {
@@ -12,20 +12,29 @@ interface WalletBalanceCardProps {
   } | null
   loading?: boolean
   onRecharge?: () => void
+  onSync?: () => void
 }
 
 export const WalletBalanceCard = memo(function WalletBalanceCard({
   balance,
   loading,
   onRecharge,
+  onSync,
 }: WalletBalanceCardProps) {
   const [mounted, setMounted] = useState(false)
+  const [syncing, setSyncing] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
   const showLoading = !mounted || loading
+
+  const handleSync = async () => {
+    setSyncing(true)
+    await onSync?.()
+    setSyncing(false)
+  }
 
   return (
     <div className='space-y-3'>
@@ -45,15 +54,28 @@ export const WalletBalanceCard = memo(function WalletBalanceCard({
                 </p>
                 <p className='text-xs text-muted-foreground'>credits disponibles</p>
               </div>
-              {onRecharge && (
-                <button
-                  type='button'
-                  onClick={onRecharge}
-                  className='rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors'
-                >
-                  + Recharger
-                </button>
-              )}
+              <div className='flex items-center gap-2'>
+                {onSync && (
+                  <button
+                    type='button'
+                    onClick={handleSync}
+                    disabled={syncing}
+                    className='rounded-full bg-muted hover:bg-accent border border-border p-2 transition-colors'
+                    title='Synchroniser le solde et l\'historique'
+                  >
+                    <RefreshCw className={`h-4 w-4 text-muted-foreground ${syncing ? 'animate-spin' : ''}`} />
+                  </button>
+                )}
+                {onRecharge && (
+                  <button
+                    type='button'
+                    onClick={onRecharge}
+                    className='rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors'
+                  >
+                    + Recharger
+                  </button>
+                )}
+              </div>
             </div>
             <div className='grid grid-cols-3 gap-2 text-xs'>
               <div className='rounded-lg px-2 py-1.5'>

@@ -171,6 +171,7 @@ export function WalletPageShell() {
           balance={balance ?? null}
           loading={isLoading}
           onRecharge={openRecharge}
+          onSync={reloadBalance}
         />
       </div>
 
