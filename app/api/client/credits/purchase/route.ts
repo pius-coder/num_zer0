@@ -43,39 +43,84 @@ export async function POST(req: Request) {
         {
           status: 429,
           headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) },
-        },
+        }
       );
     }
 
-    const body = purchaseSchema.parse(await req.json());
+    // Safe parsing to capture malformed bodies
+    let rawBody: any;
+    try {
+      rawBody = await req.json();
+    } catch {
+      log.error("invalid_json_body", { slug: "fapshi-purchase-error" });
+      return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+    }
+
+    log.info("purchase_request_received", {
+      slug: "fapshi-purchase-debug",
+      body: rawBody,
+    });
+
+    const body = purchaseSchema.safeParse(rawBody);
+    if (!body.success) {
+      log.error("purchase_validation_failed", {
+        slug: "fapshi-purchase-error",
+        errors: body.error.flatten(),
+        body: rawBody,
+      });
+      return NextResponse.json(
+        { error: "invalid_input", details: body.error.flatten() },
+        { status: 400 }
+      );
+    }
 
     const service = new PaymentPurchaseService();
     const purchase = await service.createPendingPurchase({
       userId: session.user.id,
-      ...body,
+      ...body.data,
     });
 
     if (!purchase) {
+      log.error("purchase_creation_failed", { slug: "fapshi-purchase-error" });
       return NextResponse.json(
         { error: "failed_to_create_purchase" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
-    const payment = await service.initiateFapshiPayment(purchase.id);
+    // Try to initiate payment
+    try {
+      const payment = await service.initiateFapshiPayment(purchase.id);
 
-    log.info("purchase_initiated", {
-      ...toAuditEntry(authed, "create", "purchase", "success"),
-      purchaseId: purchase.id,
-      packageId: body.packageId,
-      paymentMethod: body.paymentMethod,
-    });
+      log.info("purchase_initiated", {
+        slug: "fapshi-purchase-success",
+        ...toAuditEntry(authed, "create", "purchase", "success"),
+        purchaseId: purchase.id,
+        packageId: body.data.packageId,
+        paymentMethod: body.data.paymentMethod,
+        fapshiTransId: payment.transId,
+      });
 
-    return NextResponse.json(
-      { purchase, payment },
-      { headers: { "Cache-Control": "no-store" } },
-    );
+      return NextResponse.json(
+        { purchase, payment },
+        { headers: { "Cache-Control": "no-store" } }
+      );
+    } catch (fapshiError) {
+      log.error("fapshi_payment_init_failed", {
+        slug: "fapshi-purchase-error",
+        message:
+          fapshiError instanceof Error ? fapshiError.message : String(fapshiError),
+        purchaseId: purchase.id,
+        amount: purchase.priceXaf,
+        details: fapshiError instanceof Error ? fapshiError.cause : undefined,
+      });
+      throw fapshiError;
+    }
   } catch (err) {
+    log.error("purchase_crash_global", {
+      slug: "fapshi-purchase-error",
+      error: err instanceof Error ? err.message : String(err),
+    });
     return handleError(err, ctx.requestId);
   }
 }
