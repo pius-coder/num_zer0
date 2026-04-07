@@ -51,8 +51,12 @@ export class PricingResolverService extends BaseService {
       this.log.warn('price_override_table_missing', { serviceSlug, countryIso })
     }
 
+    // CRITICAL FIX: Map slug to Grizzly external code (e.g. "whatsapp" → "wa")
+    const serviceMeta = getServiceBySlug(serviceSlug)
+    const grizzlyServiceCode = serviceMeta?.externalId ?? serviceSlug
+
     // 2. Fetch from Grizzly with promise coalescing
-    const entry = await this.fetchWithCoalescing(countryIso, serviceSlug)
+    const entry = await this.fetchWithCoalescing(countryIso, grizzlyServiceCode)
 
     if (!entry) {
       throw this.error(

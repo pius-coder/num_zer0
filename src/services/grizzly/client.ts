@@ -88,10 +88,12 @@ export class GrizzlyClient extends BaseService {
     const cached = this.cache.get<GrizzlyServiceItem[]>(key)
     if (cached) return cached
     return this.withRetry(async () => {
-      const ObjectRes = await this.httpGet<{ services: GrizzlyServiceItem[] }>('', {
+      // Use httpGetText to be safer with Grizzly text errors
+      const rawText = await this.httpGetText('', {
         params: this.buildParams('getServicesList'),
       })
-      this.checkError(ObjectRes)
+      this.checkError(rawText)
+      const ObjectRes = JSON.parse(rawText) as { services: GrizzlyServiceItem[] }
       const services = ObjectRes.services ?? []
       this.cache.set(key, services)
       return services
@@ -103,11 +105,15 @@ export class GrizzlyClient extends BaseService {
     const cached = this.cache.get<GrizzlyCountryItem[]>(key)
     if (cached) return cached
     return this.withRetry(async () => {
-      const raw = await this.httpGet<GrizzlyCountryItem[] | Record<string, GrizzlyCountryItem>>('', {
+      // Use httpGetText to be safer
+      const rawText = await this.httpGetText('', {
         params: this.buildParams('getCountries'),
       })
-      this.checkError(raw)
-      const countries = Array.isArray(raw) ? raw : Object.values(raw)
+      this.checkError(rawText)
+      // Grizzly can return Array or Object
+      let parsed: any
+      try { parsed = JSON.parse(rawText) } catch { parsed = rawText }
+      const countries = Array.isArray(parsed) ? parsed : Object.values(parsed)
       this.cache.set(key, countries)
       return countries
     }, 'getCountries')
@@ -118,12 +124,19 @@ export class GrizzlyClient extends BaseService {
     const cached = this.cache.get<PricesV3Raw>(key)
     if (cached) return cached
     return this.withRetry(async () => {
-      const raw = await this.httpGet<PricesV3Raw>('', {
+      // Use httpGetText to safely catch Grizzly text errors (like BAD_ACTION/BAD_KEY)
+      const rawText = await this.httpGetText('', {
         params: this.buildParams('getPricesV3', { service, country }),
       })
-      this.checkError(raw)
-      this.cache.set(key, raw)
-      return raw
+      this.checkError(rawText)
+      try {
+        const parsed = JSON.parse(rawText) as PricesV3Raw
+        this.cache.set(key, parsed)
+        return parsed
+      } catch (e) {
+        this.log.error('grizzly_json_parse_failed', { text: rawText.slice(0, 100) })
+        throw this.error('grizzly_parse_error', `Unexpected response format: ${rawText.slice(0, 50)}`)
+      }
     }, 'getRawPricesV3')
   }
 
