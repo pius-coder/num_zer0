@@ -68,12 +68,13 @@ export class PaymentPurchaseService extends BaseService {
 
     const fapshi = getFapshiClient()
     
-    // Safety fallbacks to prevent 400 Bad Request on Vercel
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://num-zero.vercel.app'
-    const email = process.env.FAPSHI_DEFAULT_EMAIL || 'numzero@gmail.com'
+    // Fapshi requires integer amounts and valid URLs
+    // CRITICAL FIX: .trim() to remove hidden newlines from env vars which cause 400 errors
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://num-zero.vercel.app').trim()
+    const email = (process.env.FAPSHI_DEFAULT_EMAIL || 'numzero@gmail.com').trim()
 
     const payload = {
-      amount: purchase.priceXaf,
+      amount: Math.floor(Number(purchase.priceXaf) || 100),
       email,
       userId: purchase.userId ?? purchaseId,
       externalId: purchase.idempotencyKey ?? purchaseId,
