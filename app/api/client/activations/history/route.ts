@@ -28,23 +28,28 @@ export async function GET(req: Request) {
       )
     }
 
-    const activations = await db
-      .select({
-        id: smsActivation.id,
-        serviceSlug: smsActivation.serviceSlug,
-        countryCode: smsActivation.countryCode,
-        phoneNumber: smsActivation.phoneNumber,
-        smsCode: smsActivation.smsCode,
-        state: smsActivation.state,
-        creditsCharged: smsActivation.creditsCharged,
-        createdAt: smsActivation.createdAt,
-        completedAt: smsActivation.completedAt,
-        cancelledAt: smsActivation.cancelledAt,
+    let activations: any[] = []
+    try {
+      activations = await db.query.smsActivation.findMany({
+        where: (t, { eq }) => eq(t.userId, session.user.id),
+        orderBy: (t, { desc }) => [desc(t.createdAt)],
+        limit: 50,
+        columns: {
+          id: true,
+          serviceSlug: true,
+          countryCode: true,
+          phoneNumber: true,
+          smsCode: true,
+          state: true,
+          creditsCharged: true,
+          createdAt: true,
+          completedAt: true,
+          cancelledAt: true,
+        },
       })
-      .from(smsActivation)
-      .where(eq(smsActivation.userId, session.user.id))
-      .orderBy(desc(smsActivation.createdAt))
-      .limit(50)
+    } catch {
+      log.warn('sms_activation_table_missing', { msg: 'Table not found' })
+    }
 
     log.info('activations_history_listed', {
       ...toAuditEntry(authed, 'list', 'activations', 'success'),

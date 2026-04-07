@@ -97,8 +97,19 @@ export async function requestActivationAction(
     const errorMessage = error instanceof Error ? error.message : String(error)
     const isGrizzlyNoBalance = errorMessage.includes('grizzly_no_balance')
     const isAllProvidersFailed = errorMessage.includes('all_providers_failed')
+    const isProviderInsufficient = errorMessage.includes('provider_insufficient')
+    const isOutOfStock = errorMessage.includes('out_of_stock')
 
-    if (isGrizzlyNoBalance || isAllProvidersFailed) {
+    // New shadow-pricing errors: show specific messages to the user
+    if (isOutOfStock) {
+      return {
+        success: false,
+        error: 'Ce service est actuellement en rupture de stock pour ce pays. Veuillez réessayer dans quelques instants.',
+        errorCode: 'OUT_OF_STOCK',
+      }
+    }
+
+    if (isProviderInsufficient || isGrizzlyNoBalance || isAllProvidersFailed) {
       const errorCode = generateErrorCode(
         isGrizzlyNoBalance ? 'NO_BALANCE' : 'ALL_FAILED',
         input.serviceCode
@@ -143,6 +154,8 @@ export async function requestActivationAction(
 export interface CancelActivationResult {
   success: boolean
   activationId?: string
+  state?: string
+  wasRefunded?: boolean
   error?: string
 }
 
@@ -179,14 +192,22 @@ export async function cancelActivationAction(
 
     const activation = await activationService.cancelActivation(activationId)
 
+    // Determine if user got refunded based on final state
+    const wasRefunded = activation.state === 'cancelled'
+    const noRefund = activation.state === 'cancelled_no_refund'
+
     log.info('cancel_activation_complete', {
       activationId,
       userId: session.user.id,
+      state: activation.state,
+      wasRefunded,
     })
 
     return {
       success: true,
-      activationId: activation?.id,
+      activationId: activation.id,
+      state: activation.state,
+      wasRefunded,
     }
   } catch (error) {
     log.error('cancel_activation_failed', {
@@ -243,6 +264,15 @@ export async function retryActivationAction(
     const errorMessage = error instanceof Error ? error.message : String(error)
     const isGrizzlyNoBalance = errorMessage.includes('grizzly_no_balance')
     const isAllProvidersFailed = errorMessage.includes('all_providers_failed')
+    const isOutOfStock = errorMessage.includes('out_of_stock')
+
+    if (isOutOfStock) {
+      return {
+        success: false,
+        error: 'Ce service est actuellement en rupture de stock pour ce pays. Veuillez réessayer dans quelques instants.',
+        errorCode: 'OUT_OF_STOCK',
+      }
+    }
 
     if (isGrizzlyNoBalance || isAllProvidersFailed) {
       const errorCode = generateErrorCode(

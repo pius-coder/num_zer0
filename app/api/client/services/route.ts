@@ -10,7 +10,7 @@ import { rateLimit, getClientKey } from "@/middleware/rate-limit";
 import { requireSession } from "@/common/auth/api-auth.server";
 import { createLogger } from "@/common/logger";
 import { db } from "@/database";
-import { priceRule } from "@/database/schema";
+import { priceOverride } from "@/database/schema";
 import {
   getServiceBySlug,
   getAllServices,
@@ -62,28 +62,30 @@ export async function GET(req: Request) {
       ),
     );
 
-    const rulesMap = await db
-      .select({
-        slug: priceRule.serviceSlug,
-        hasPrices: sql<boolean>`bool_or(${priceRule.isActive})`,
-        countryCount: sql<number>`count(distinct ${priceRule.countryIso})`,
-      })
-      .from(priceRule)
-      .where(eq(priceRule.isActive, true))
-      .groupBy(priceRule.serviceSlug)
-      .then((rows) => {
-        const map = new Map<
-          string,
-          { hasPrices: boolean; countryCount: number }
-        >();
-        for (const row of rows) {
-          map.set(row.slug, {
-            hasPrices: row.hasPrices,
-            countryCount: Number(row.countryCount),
-          });
-        }
-        return map;
-      });
+    // Shadow pricing: count overrides per service instead of price_rule
+    let rulesMap: Map<string, { hasPrices: boolean; countryCount: number }> = new Map();
+    try {
+      rulesMap = await db
+        .select({
+          slug: priceOverride.serviceSlug,
+          countryCount: sql<number>`count(distinct ${priceOverride.countryIso})`,
+        })
+        .from(priceOverride)
+        .groupBy(priceOverride.serviceSlug)
+        .then((rows) => {
+          const map = new Map<string, { hasPrices: boolean; countryCount: number }>();
+          for (const row of rows) {
+            map.set(row.slug, {
+              hasPrices: true,
+              countryCount: Number(row.countryCount),
+            });
+          }
+          return map;
+        });
+    } catch {
+      // Table doesn't exist yet (migration not run)
+      log.warn('price_override_table_missing', {});
+    }
 
     let services = getAllServices();
 

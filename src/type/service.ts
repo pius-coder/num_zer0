@@ -18,12 +18,15 @@ export interface SubProviderDetail {
   priceCredits: number
 }
 
+export type PriceSource = 'override' | 'computed'
+
 export interface CountryItem {
   countryIso: string
   name: string
   icon: string | null
   priceCredits: number
   availability: number
+  source: PriceSource
   providerCount: number
   subProviders: SubProviderDetail[]
 }

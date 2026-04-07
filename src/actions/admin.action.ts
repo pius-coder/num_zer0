@@ -145,8 +145,7 @@ export async function updatePlatformConfigAction(
 
 const SyncProviderSchema = z.object({
   providerId: z.string(),
-  scope: z.enum(["mappings", "prices", "balance", "all"]),
-  serviceCode: z.string().optional(),
+  scope: z.enum(["mappings", "balance", "all"]),
 });
 
 export async function syncProviderDataAction(
@@ -172,13 +171,6 @@ export async function syncProviderDataAction(
       results.mappings = await syncService.syncExternalMappings(
         parsed.providerId,
       );
-    }
-    if (parsed.scope === "prices" || parsed.scope === "all") {
-      results.prices = await syncService.syncPricesFromProvider(
-        parsed.providerId,
-        parsed.serviceCode,
-      );
-      results.priceRules = await syncService.recalculatePriceRules();
     }
     if (parsed.scope === "balance" || parsed.scope === "all") {
       results.balance = await syncService.syncProviderBalance(

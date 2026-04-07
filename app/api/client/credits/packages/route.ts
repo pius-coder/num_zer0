@@ -29,23 +29,32 @@ export async function GET(req: Request) {
       )
     }
 
-    const packages = await db
-      .select({
-        id: creditPackage.id,
-        slug: creditPackage.slug,
-        name: creditPackage.nameFr,
-        credits: creditPackage.credits,
-        priceXaf: creditPackage.priceXaf,
-        bonusPct: creditPackage.bonusPct,
-        label: creditPackage.label,
-        sortOrder: creditPackage.sortOrder,
-      })
-      .from(creditPackage)
-      .where(eq(creditPackage.isActive, true))
+    let packages: any[] = []
+    try {
+      packages = await db
+        .select({
+          id: creditPackage.id,
+          slug: creditPackage.slug,
+          name: creditPackage.nameFr,
+          credits: creditPackage.credits,
+          priceXaf: creditPackage.priceXaf,
+          bonusPct: creditPackage.bonusPct,
+          label: creditPackage.label,
+          sortOrder: creditPackage.sortOrder,
+        })
+        .from(creditPackage)
+        .where(eq(creditPackage.isActive, true))
+    } catch {
+      log.warn('credit_package_table_missing', { msg: 'Table not found or migration not applied' })
+    }
 
     log.info('packages_listed', {
       ...toAuditEntry(authed, 'list', 'packages', 'success'),
       count: packages.length,
+    })
+
+    return NextResponse.json(packages, {
+      headers: { 'Cache-Control': 'private, max-age=60' },
     })
 
     return NextResponse.json(packages, {

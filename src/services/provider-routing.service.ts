@@ -1,7 +1,7 @@
-import { asc, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 import { BaseService, isServiceError } from './base.service'
-import { provider, providerBalanceLog, providerServiceCost } from '@/database/schema'
+import { provider, providerBalanceLog } from '@/database/schema'
 import { getGrizzlyClient } from './grizzly'
 
 export interface ProviderCandidate {
@@ -11,7 +11,6 @@ export interface ProviderCandidate {
   countryCode: string
   costUsd: number
   availability: number
-  successRate30d: number
   currentBalanceUsd: number | null
   balanceLastCheckedAt: Date | null
   score: number
@@ -22,109 +21,71 @@ export class ProviderRoutingService extends BaseService {
     super({ prefix: 'provider-routing', db: true })
   }
 
-  async listCandidates(serviceCode: string, countryCode: string): Promise<ProviderCandidate[]> {
-    const rows = await this.db
-      .select({
-        providerId: providerServiceCost.providerId,
-        providerCode: provider.code,
-        serviceCode: providerServiceCost.serviceCode,
-        countryCode: providerServiceCost.countryCode,
-        costUsd: providerServiceCost.costUsd,
-        availability: providerServiceCost.availability,
-        successRate30d: providerServiceCost.successRate30d,
-        reliabilityPenaltyMultiplier: provider.reliabilityPenaltyMultiplier,
-        currentBalanceUsd: provider.currentBalanceUsd,
-        balanceLastCheckedAt: provider.balanceLastCheckedAt,
-      })
-      .from(providerServiceCost)
-      .innerJoin(provider, eq(provider.id, providerServiceCost.providerId))
-      .where(eq(providerServiceCost.serviceCode, serviceCode))
-      .orderBy(asc(provider.priority))
-
-    return rows
-      .map((row) => {
-        const cost = Number(row.costUsd)
-        const rate = Number(row.successRate30d)
-        const multiplier = Number(row.reliabilityPenaltyMultiplier)
-        const balance = row.currentBalanceUsd ? Number(row.currentBalanceUsd) : null
-        return {
-          providerId: row.providerId,
-          providerCode: row.providerCode,
-          serviceCode: row.serviceCode,
-          countryCode: row.countryCode,
-          costUsd: cost,
-          availability: row.availability,
-          successRate30d: rate,
-          currentBalanceUsd: balance,
-          balanceLastCheckedAt: row.balanceLastCheckedAt,
-          score: cost + (1 - rate) * cost * multiplier,
-        }
-      })
-      .sort((a, b) => a.score - b.score)
-  }
-
   async selectBestProvider(serviceCode: string, countryCode: string): Promise<ProviderCandidate> {
-    const candidates = await this.listCandidates(serviceCode, countryCode)
-    this.assert(candidates.length > 0, 'no_provider_candidate', 'No provider available', {
+    // With shadow pricing, we use Grizzly directly for cost/availability
+    const grizzly = getGrizzlyClient()
+    const price = await grizzly.getPricesV3(countryCode, serviceCode)
+
+    this.assert(price !== null, 'no_provider_candidate', 'No provider available', {
       serviceCode,
       countryCode,
     })
 
-    const winner = candidates[0]!
+    // Fetch the single active provider (Grizzly)
+    const [activeProvider] = await this.db
+      .select({
+        id: provider.id,
+        code: provider.code,
+        currentBalanceUsd: provider.currentBalanceUsd,
+        balanceLastCheckedAt: provider.balanceLastCheckedAt,
+      })
+      .from(provider)
+      .where(eq(provider.isActive, true))
+      .limit(1)
 
-    // Fetch live balance from Grizzly
-    const liveBalance = await this.fetchLiveBalance(winner.providerId)
+    this.assert(!!activeProvider, 'no_active_provider', 'No active provider found')
 
-    // Update DB with fresh balance (only if fetch succeeded)
-    await this.updateProviderBalanceInDb(winner.providerId, liveBalance)
+    // Fetch live balance
+    const liveBalance = await this.fetchLiveBalance(activeProvider.id)
+    await this.updateProviderBalanceInDb(activeProvider.id, liveBalance)
 
-    // Only check balance if we got a real value (null = fetch failed, let it pass)
-    if (liveBalance !== null && liveBalance < winner.costUsd) {
+    const costUsd = price!.price
+
+    if (liveBalance !== null && liveBalance < costUsd) {
       this.assert(
         false,
         'provider_insufficient_funds',
-        `Provider ${winner.providerCode} has insufficient funds (live: $${liveBalance.toFixed(4)}, required: $${winner.costUsd.toFixed(4)})`,
+        `Provider ${activeProvider.code} has insufficient funds (live: $${liveBalance.toFixed(4)}, required: $${costUsd.toFixed(4)})`,
         {
-          providerCode: winner.providerCode,
-          providerId: winner.providerId,
+          providerCode: activeProvider.code,
+          providerId: activeProvider.id,
           liveBalanceUsd: liveBalance,
-          requiredUsd: winner.costUsd,
+          requiredUsd: costUsd,
         }
       )
+    }
+
+    const candidate: ProviderCandidate = {
+      providerId: activeProvider.id,
+      providerCode: activeProvider.code,
+      serviceCode,
+      countryCode,
+      costUsd,
+      availability: price!.count,
+      currentBalanceUsd: liveBalance,
+      balanceLastCheckedAt: new Date(),
+      score: costUsd,
     }
 
     this.log.info('provider_selected', {
       serviceCode,
       countryCode,
-      providerCode: winner.providerCode,
-      score: winner.score,
+      providerCode: activeProvider.code,
+      score: candidate.score,
       liveBalanceUsd: liveBalance,
     })
-    return winner
-  }
 
-  async listCandidatesWithBalance(
-    serviceCode: string,
-    countryCode: string,
-    excludeProviderIds: string[] = []
-  ): Promise<ProviderCandidate[]> {
-    const all = await this.listCandidates(serviceCode, countryCode)
-    const filtered =
-      excludeProviderIds.length > 0
-        ? all.filter((c) => !excludeProviderIds.includes(c.providerId))
-        : all
-
-    // Fetch live balance for each candidate (propagates grizzly_no_balance)
-    for (const candidate of filtered) {
-      const liveBalance = await this.fetchLiveBalance(candidate.providerId)
-      if (liveBalance !== null) {
-        candidate.currentBalanceUsd = liveBalance
-        candidate.balanceLastCheckedAt = new Date()
-        await this.updateProviderBalanceInDb(candidate.providerId, liveBalance)
-      }
-    }
-
-    return filtered
+    return candidate
   }
 
   private async fetchLiveBalance(providerId: string): Promise<number | null> {

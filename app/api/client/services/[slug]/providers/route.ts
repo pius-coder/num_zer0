@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server'
-import { and, asc, eq } from 'drizzle-orm'
 import { handleError } from '@/middleware/error-handler'
 import { extractRequestContext, withUser, toAuditEntry } from '@/middleware/request-context'
 import { rateLimit, getClientKey } from '@/middleware/rate-limit'
 import { requireSession } from '@/common/auth/api-auth.server'
 import { createLogger } from '@/common/logger'
-import { db } from '@/database'
-import { priceRule, providerServiceCost, provider } from '@/database/schema'
+import { PricingResolverService } from '@/services/pricing-resolver.service'
 
 const log = createLogger({ prefix: 'api-service-providers' })
 
@@ -34,66 +32,43 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     const url = new URL(req.url)
     const countryIso = url.searchParams.get('country')
 
-    // Get price rules for this service (optionally filtered by country)
-    const rulesQuery = db
-      .select({
-        countryIso: priceRule.countryIso,
-        priceCredits: priceRule.priceCredits,
-        floorCredits: priceRule.floorCredits,
-        availability: priceRule.cachedAvailability,
-      })
-      .from(priceRule)
-      .where(
-        and(
-          eq(priceRule.serviceSlug, slug),
-          eq(priceRule.isActive, true),
-          ...(countryIso ? [eq(priceRule.countryIso, countryIso)] : [])
-        )
-      )
-      .orderBy(asc(priceRule.priceCredits))
-
-    const rules = await rulesQuery
-
-    if (rules.length === 0) {
-      return NextResponse.json(
-        { items: [], total: 0 },
-        { headers: { 'Cache-Control': 'private, max-age=30' } }
-      )
-    }
-
-    // Enrich with provider cost breakdown if a specific country is requested
-    let providerBreakdown: Array<{
-      providerId: string
-      providerName: string
-      costUsd: string
-      availability: number
-    }> = []
+    const resolver = new PricingResolverService()
 
     if (countryIso) {
-      const costs = await db
-        .select({
-          providerId: providerServiceCost.providerId,
-          providerName: provider.name,
-          costUsd: providerServiceCost.costUsd,
-          availability: providerServiceCost.availability,
+      // Single country price lookup
+      try {
+        const price = await resolver.resolvePrice(slug, countryIso)
+        log.info('service_providers_listed', {
+          ...toAuditEntry(authed, 'list', 'providers', 'success'),
+          serviceSlug: slug,
+          countryIso,
+          count: 1,
         })
-        .from(providerServiceCost)
-        .innerJoin(provider, eq(providerServiceCost.providerId, provider.id))
-        .where(and(eq(providerServiceCost.countryCode, countryIso), eq(provider.isActive, true)))
-        .orderBy(asc(providerServiceCost.costUsd))
-
-      providerBreakdown = costs
+        return NextResponse.json(
+          { items: [price], total: 1 },
+          { headers: { 'Cache-Control': 'private, max-age=30' } }
+        )
+      } catch {
+        return NextResponse.json(
+          { items: [], total: 0 },
+          { headers: { 'Cache-Control': 'private, max-age=30' } }
+        )
+      }
     }
+
+    // All countries for this service
+    const prices = await resolver.resolvePricesForService(slug)
+    prices.sort((a, b) => a.priceCredits - b.priceCredits)
 
     log.info('service_providers_listed', {
       ...toAuditEntry(authed, 'list', 'providers', 'success'),
       serviceSlug: slug,
-      countryIso: countryIso ?? 'all',
-      count: rules.length,
+      countryIso: 'all',
+      count: prices.length,
     })
 
     return NextResponse.json(
-      { items: rules, providers: providerBreakdown, total: rules.length },
+      { items: prices, total: prices.length },
       { headers: { 'Cache-Control': 'private, max-age=30' } }
     )
   } catch (err) {

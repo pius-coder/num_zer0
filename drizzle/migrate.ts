@@ -1,24 +1,17 @@
 import postgres from "postgres";
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync } from "fs";
 import { resolve } from "path";
 import { env } from "../src/config/env";
 
-async function main() {
-  const client = postgres(env.DATABASE_URL, { max: 1 });
-
-  console.log("Running migrations...");
-
-  const sqlFile = readFileSync(
-    resolve(__dirname, "migrations/0001_optimization.sql"),
-    "utf-8",
-  );
+async function runMigrationFile(client: postgres.Sql, filePath: string): Promise<void> {
+  const fileName = filePath.split("/").pop();
+  const sqlFile = readFileSync(filePath, "utf-8");
 
   const statements: string[] = [];
   let current = "";
   let dollarTag = "";
 
   for (let i = 0; i < sqlFile.length; i++) {
-    // Detect $$ or $tag$ opening
     if (dollarTag === "" && sqlFile[i] === "$") {
       let j = i + 1;
       while (j < sqlFile.length && sqlFile[j] !== "$") j++;
@@ -30,7 +23,6 @@ async function main() {
       }
     }
 
-    // Detect closing $$ or $tag$
     if (dollarTag !== "" && sqlFile[i] === "$") {
       let j = i + 1;
       while (j < sqlFile.length && sqlFile[j] !== "$") j++;
@@ -45,7 +37,6 @@ async function main() {
       }
     }
 
-    // Statement separator
     if (sqlFile[i] === ";" && dollarTag === "") {
       const trimmed = current.trim();
       if (trimmed.length > 0) {
@@ -58,29 +49,48 @@ async function main() {
   }
 
   const trimmed = current.trim();
-  if (trimmed.length > 0) {
-    statements.push(trimmed);
-  }
+  if (trimmed.length > 0) statements.push(trimmed);
 
-  console.log(`Found ${statements.length} statements`);
+  if (statements.length === 0) return;
+
+  console.log(`\n📄 ${fileName} — ${statements.length} statements`);
 
   for (const stmt of statements) {
-    const preview = (stmt.split("\n")[0] || "").slice(0, 80);
+    const preview = (stmt.split("\n")[0] || "").slice(0, 70);
     try {
       await client.unsafe(stmt);
       console.log("  ✓", preview);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("already exists")) {
-        console.log("  ⏭", preview, "(already exists)");
+    } catch (err: any) {
+      const msg = err?.message ?? String(err);
+      if (
+        msg.includes("already exists") ||
+        msg.includes("does not exist, skipping")
+      ) {
+        console.log("  ⏭", preview, "(skip)");
       } else {
         console.error("  ✗", preview);
         console.error("    ", msg);
       }
     }
   }
+}
 
-  console.log("Migrations complete.");
+async function main() {
+  const client = postgres(env.DATABASE_URL, { max: 1 });
+
+  // Discover all migration files in order
+  const migrationsDir = resolve(__dirname, "migrations");
+  const files = readdirSync(migrationsDir)
+    .filter((f) => f.endsWith(".sql"))
+    .sort();
+
+  console.log(`Running ${files.length} migration(s)...`);
+
+  for (const file of files) {
+    await runMigrationFile(client, resolve(migrationsDir, file));
+  }
+
+  console.log("\n✅ Migrations complete.");
   await client.end();
 }
 

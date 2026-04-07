@@ -85,8 +85,8 @@ export function useInfiniteCountries(
     getNextPageParam: (last: CountriesPage) => last.nextCursor,
     initialPageParam: null as string | null,
     enabled: serviceSlug.length > 0,
-    staleTime: 10 * 60 * 1000,
-    gcTime: 15 * 60 * 1000,
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
     placeholderData: (prev) => prev,
   })
 }
@@ -105,7 +105,7 @@ export function usePrefetchCountries() {
           return res.json()
         },
         initialPageParam: null as string | null,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 1 * 60_000,
       })
     }
   }

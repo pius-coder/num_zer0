@@ -21,4 +21,8 @@ export type {
   GrizzlyServiceItem,
   GrizzlySetStatusCode,
   GrizzlySetStatusResponse,
+  PricesV3Raw,
+  PriceV3Entry,
+  FlatPriceV3Row,
+  PriceV3FilterOptions,
 } from './types'

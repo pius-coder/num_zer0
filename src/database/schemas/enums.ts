@@ -37,6 +37,7 @@ export const activationStateEnum = pgEnum('sms_activation_state', [
   'completed',
   'expired',
   'cancelled',
+  'cancelled_no_refund',
   'failed',
   'refunded',
 ])

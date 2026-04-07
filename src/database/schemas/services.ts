@@ -82,6 +82,28 @@ export const priceRule = pgTable(
   ]
 )
 
+export const priceOverride = pgTable(
+  'price_override',
+  {
+    id: text('id').primaryKey(),
+    serviceSlug: text('service_slug').notNull(),
+    countryIso: text('country_iso').notNull(),
+    priceCredits: integer('price_credits').notNull(),
+    floorCredits: integer('floor_credits'),
+    note: text('note'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('price_override_unique').on(table.serviceSlug, table.countryIso),
+    index('price_override_slug_idx').on(table.serviceSlug),
+    index('price_override_iso_idx').on(table.countryIso),
+  ]
+)
+
 export const provider = pgTable(
   'provider',
   {
@@ -118,29 +140,6 @@ export const provider = pgTable(
   ]
 )
 
-export const providerServiceCost = pgTable(
-  'provider_service_cost',
-  {
-    id: text('id').primaryKey(),
-    providerId: text('provider_id')
-      .notNull()
-      .references(() => provider.id, { onDelete: 'cascade' }),
-    serviceCode: text('service_code').notNull(),
-    countryCode: text('country_code').notNull(),
-    costUsd: numeric('cost_usd', { precision: 10, scale: 4 }).notNull(),
-    availability: integer('availability').default(0).notNull(),
-    successRate30d: numeric('success_rate_30d', { precision: 5, scale: 4 }).default('1'),
-    lastCheckedAt: timestamp('last_checked_at').defaultNow().notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-  },
-  (table) => [
-    uniqueIndex('provider_service_cost_unique').on(
-      table.providerId,
-      table.serviceCode,
-      table.countryCode
-    ),
-  ]
-)
 
 export const externalServiceMappingRelations = relations(externalServiceMapping, ({ one }) => ({
   provider: one(provider, {
@@ -157,43 +156,6 @@ export const externalCountryMappingRelations = relations(externalCountryMapping,
 }))
 
 export const providerRelations = relations(provider, ({ many }) => ({
-  serviceCosts: many(providerServiceCost),
   serviceMappings: many(externalServiceMapping),
   countryMappings: many(externalCountryMapping),
 }))
-
-export const providerServiceCostRelations = relations(providerServiceCost, ({ one }) => ({
-  provider: one(provider, {
-    fields: [providerServiceCost.providerId],
-    references: [provider.id],
-  }),
-}))
-
-export const subProviderCost = pgTable(
-  'sub_provider_cost',
-  {
-    id: text('id').primaryKey(),
-    providerId: text('provider_id')
-      .notNull()
-      .references(() => provider.id, { onDelete: 'cascade' }),
-    serviceCode: text('service_code').notNull(),
-    countryCode: text('country_code').notNull(),
-    subProviderId: text('sub_provider_id').notNull(),
-    minPriceUsd: numeric('min_price_usd', { precision: 10, scale: 4 }).notNull(),
-    maxPriceUsd: numeric('max_price_usd', { precision: 10, scale: 4 }).notNull(),
-    priceCount: integer('price_count').default(1).notNull(),
-    availability: integer('availability').default(0).notNull(),
-    lastCheckedAt: timestamp('last_checked_at').defaultNow().notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-  },
-  (table) => [
-    uniqueIndex('spc_unique').on(
-      table.providerId,
-      table.serviceCode,
-      table.countryCode,
-      table.subProviderId
-    ),
-    index('spc_provider_idx').on(table.providerId),
-    index('spc_service_country_idx').on(table.serviceCode, table.countryCode),
-  ]
-)
