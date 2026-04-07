@@ -62,43 +62,39 @@ export class ActivationService extends BaseService {
       serviceCode: input.serviceCode,
     })
 
-    // ── PHASE 1: PRE-FLIGHT CHECK ──
-    const quoteResult = await this.quotePrice(input.serviceCode, input.countryCode)
+    const grizzly = getGrizzlyClient()
+    let grizzlyResult: any
 
-    // Check availability (out of stock guard)
-    if (quoteResult.source === 'computed' && (quoteResult.availability ?? 0) <= 0) {
-      throw this.error(
-        'out_of_stock',
-        'Ce service est actuellement en rupture de stock pour ce pays.',
-        { serviceCode: input.serviceCode, countryCode: input.countryCode }
-      )
-    }
-
-    const quotedCredits = quoteResult.priceCredits
-
-    // Get best provider (with live balance check + availability guard)
-    const candidate = await this.providerRouting.selectBestProvider(
-      serviceMeta.externalId,
-      input.countryCode
-    )
-
-    // ── PHASE 2: FINANCIAL COMMITMENT ──
-    const hold = await this.creditLedger.holdCredits({
-      userId: input.userId,
-      amount: quotedCredits,
-      holdTimeMinutes: input.holdTimeMinutes,
-      idempotencyKey: input.idempotencyKey,
-    })
-
-    // ── PHASE 3: THE PURCHASE ──
     try {
-      const grizzly = getGrizzlyClient()
-      const grizzlyResult = await grizzly.getNumberV2({
+      // DIRECT CALL TO GRIZZLY (Single source of truth)
+      grizzlyResult = await grizzly.getNumberV2({
         service: serviceMeta.externalId,
         country: input.countryCode,
       })
+    } catch (err) {
+      // Log exact error for Vercel debugging
+      this.log.error('activation_grizzly_failed', {
+        slug: 'activation-failure-detail',
+        error: err instanceof Error ? err.message : String(err),
+        serviceCode: input.serviceCode,
+        countryCode: input.countryCode,
+      })
+      throw err
+    }
 
-      // Success — insert activation
+    // If Grizzly success, we calculate price and hold credits afterwards
+    const priceResult = await this.quotePrice(input.serviceCode, input.countryCode)
+    const quotedCredits = priceResult.priceCredits
+
+    try {
+      const hold = await this.creditLedger.holdCredits({
+        userId: input.userId,
+        amount: quotedCredits,
+        holdTimeMinutes: input.holdTimeMinutes,
+        idempotencyKey: input.idempotencyKey,
+      })
+
+      // Save to DB
       const activationId = this.generateId('act')
       const [activation] = await this.db
         .insert(smsActivation)
@@ -107,11 +103,11 @@ export class ActivationService extends BaseService {
           userId: input.userId,
           serviceSlug: input.serviceCode,
           countryCode: input.countryCode,
-          providerId: candidate.providerId,
+          providerId: 'grizzly',
           providerActivationId: String(grizzlyResult.activationId),
           state: 'waiting',
           creditsCharged: quotedCredits,
-          wholesaleCostUsd: String(candidate.costUsd),
+          wholesaleCostUsd: String(grizzlyResult.activationCost),
           timerExpiresAt: hold?.expiresAt ?? null,
           numberAssignedAt: new Date(),
           phoneNumber: grizzlyResult.phoneNumber,
@@ -119,20 +115,23 @@ export class ActivationService extends BaseService {
         .returning()
 
       this.log.info('activation_requested', {
+        slug: 'activation-success',
         activationId,
         userId: input.userId,
         serviceCode: input.serviceCode,
-        providerId: candidate.providerId,
-        grizzlyActivationId: grizzlyResult.activationId,
       })
 
       return activation as ActivationResult
-    } catch (err) {
-      // Release held credits on failure
-      if (hold?.id) {
-        await this.creditLedger.releaseHold(hold.id)
-      }
-      throw err
+    } catch (dbErr) {
+      // If DB fails, try to cancel on Grizzly to avoid losing money
+      this.log.error('activation_db_failed', {
+        slug: 'activation-db-error',
+        error: dbErr instanceof Error ? dbErr.message : String(dbErr),
+      })
+      try {
+        await grizzly.setStatus(grizzlyResult.activationId, -8)
+      } catch {}
+      throw dbErr
     }
   }
 

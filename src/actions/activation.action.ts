@@ -95,58 +95,23 @@ export async function requestActivationAction(
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
-    const isGrizzlyNoBalance = errorMessage.includes('grizzly_no_balance')
-    const isAllProvidersFailed = errorMessage.includes('all_providers_failed')
-    const isProviderInsufficient = errorMessage.includes('provider_insufficient')
-    const isOutOfStock = errorMessage.includes('out_of_stock')
 
-    // New shadow-pricing errors: show specific messages to the user
-    if (isOutOfStock) {
-      return {
-        success: false,
-        error: 'Ce service est actuellement en rupture de stock pour ce pays. Veuillez réessayer dans quelques instants.',
-        errorCode: 'OUT_OF_STOCK',
-      }
-    }
-
-    if (isProviderInsufficient || isGrizzlyNoBalance || isAllProvidersFailed) {
-      const errorCode = generateErrorCode(
-        isGrizzlyNoBalance ? 'NO_BALANCE' : 'ALL_FAILED',
-        input.serviceCode
-      )
-
-      await createSupportAlert({
-        userId: session.user.id,
-        serviceCode: input.serviceCode,
-        countryCode: input.countryCode,
-        errorCode,
-        context: {
-          errorMessage,
-          timestamp: new Date().toISOString(),
-        },
-      })
-
-      log.warn('request_activation_service_unavailable', {
-        input,
-        errorCode,
-        userId: session.user.id,
-        isGrizzlyNoBalance,
-      })
-
-      return {
-        success: false,
-        error: USER_FACING_ERROR,
-        errorCode,
-      }
-    }
-
-    log.error('request_activation_failed', {
-      input,
-      error: errorMessage,
+    // LOG EXACT ERROR FOR VERCEL DEBUGGING
+    // Search for 'slug: activation-failure-detail' in Vercel Logs to see the real issue
+    log.error('activation_request_failed', {
+      slug: 'activation-failure-detail',
+      message: errorMessage,
+      serviceCode: input.serviceCode,
+      countryCode: input.countryCode,
+      userId: session.user.id,
     })
+
+    // Return SPECIFIC error to UI instead of generic message
+    // This helps us know if it's 'NO_NUMBERS', 'BAD_ACTION', etc.
     return {
       success: false,
-      error: USER_FACING_ERROR,
+      error: errorMessage.length > 80 ? 'Échec de l\'activation (voir logs)' : errorMessage,
+      errorCode: 'GRIZZLY_ERROR',
     }
   }
 }
@@ -262,49 +227,19 @@ export async function retryActivationAction(
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
-    const isGrizzlyNoBalance = errorMessage.includes('grizzly_no_balance')
-    const isAllProvidersFailed = errorMessage.includes('all_providers_failed')
-    const isOutOfStock = errorMessage.includes('out_of_stock')
 
-    if (isOutOfStock) {
-      return {
-        success: false,
-        error: 'Ce service est actuellement en rupture de stock pour ce pays. Veuillez réessayer dans quelques instants.',
-        errorCode: 'OUT_OF_STOCK',
-      }
-    }
-
-    if (isGrizzlyNoBalance || isAllProvidersFailed) {
-      const errorCode = generateErrorCode(
-        isGrizzlyNoBalance ? 'NO_BALANCE' : 'ALL_FAILED',
-        input.serviceCode
-      )
-
-      await createSupportAlert({
-        userId: session.user.id,
-        serviceCode: input.serviceCode,
-        countryCode: input.countryCode,
-        errorCode,
-        context: {
-          errorMessage,
-          timestamp: new Date().toISOString(),
-        },
-      })
-
-      return {
-        success: false,
-        error: USER_FACING_ERROR,
-        errorCode,
-      }
-    }
-
+    // LOG EXACT ERROR FOR VERCEL DEBUGGING
     log.error('retry_activation_failed', {
-      input,
-      error: errorMessage,
+      slug: 'activation-failure-detail',
+      message: errorMessage,
+      serviceCode: input.serviceCode,
+      userId: session.user.id,
     })
+
     return {
       success: false,
-      error: USER_FACING_ERROR,
+      error: errorMessage.length > 80 ? 'Échec de la relance (voir logs)' : errorMessage,
+      errorCode: 'GRIZZLY_ERROR',
     }
   }
 }

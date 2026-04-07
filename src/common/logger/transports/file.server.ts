@@ -1,21 +1,8 @@
 /**
  * File Transport (Node.js ONLY)
  *
- * Writes JSONL (one JSON object per line) to date-partitioned files:
- *   logs/app-2026-03-26.jsonl
- *   logs/error-2026-03-26.jsonl
- *   logs/access-2026-03-26.jsonl
- *   logs/audit-2026-03-26.jsonl
- *
- * This file uses the `.server.ts` Next.js convention so it is NEVER
- * included in client or edge bundles. Do NOT import this file from
- * code that may run in Edge or Browser runtimes.
- *
- * Safety:
- * - Creates log directory on first write
- * - Appends to files (no truncation)
- * - Buffers writes to reduce I/O (flushes every 500ms or 50 entries)
- * - Handles errors gracefully (logs to stderr, never throws)
+ * Writes JSONL (one JSON object per line) to date-partitioned files.
+ * DISABLED on Vercel/Serverless (read-only filesystem).
  */
 
 import * as fs from 'node:fs'
@@ -27,25 +14,20 @@ import { LOG_LEVEL_PRIORITY } from '../types'
 import { serializeEntry } from '../schema'
 
 export interface FileTransportOptions {
-  /** Base directory for log files (default: <project>/logs) */
   logDir?: string
-  /** Minimum level to write (default: 'debug') */
   minLevel?: LogLevel
-  /** Buffer flush interval in ms (default: 500) */
   flushIntervalMs?: number
-  /** Max buffer size before forced flush (default: 50) */
   maxBufferSize?: number
 }
 
 type StreamName = 'app' | 'error' | 'access' | 'audit'
 
 function getDateString(): string {
-  return new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+  return new Date().toISOString().slice(0, 10)
 }
 
 function resolveLogDir(custom?: string): string {
   if (custom) return custom
-  // Default: project root / logs
   try {
     return path.join(process.cwd(), 'logs')
   } catch {
@@ -61,12 +43,22 @@ function streamForEntry(entry: StructuredLogEntry): StreamName {
 }
 
 export function createFileTransport(opts: FileTransportOptions = {}): Transport {
+  // DISABLE on Vercel/Serverless — filesystem is read-only
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    return {
+      name: 'noop',
+      minLevel: 'fatal',
+      write: () => {},
+      flush: async () => {},
+      close: async () => {},
+    }
+  }
+
   const logDir = resolveLogDir(opts.logDir)
   const minLevel: LogLevel = opts.minLevel ?? 'debug'
   const flushIntervalMs = opts.flushIntervalMs ?? 500
   const maxBufferSize = opts.maxBufferSize ?? 50
 
-  // Buffers per stream
   const buffers: Record<StreamName, string[]> = {
     app: [],
     error: [],
@@ -94,29 +86,24 @@ export function createFileTransport(opts: FileTransportOptions = {}): Transport 
   function flushStream(stream: StreamName): void {
     const buf = buffers[stream]
     if (buf.length === 0) return
-
     const lines = buf.splice(0, buf.length)
     const data = lines.join('\n') + '\n'
     const filePath = getFilePath(stream)
-
     try {
       ensureDir()
       fs.appendFileSync(filePath, data, 'utf-8')
     } catch (err) {
       console.error(`[logger/file-transport] Write failed: ${filePath}`, err)
-      // Re-add to buffer? No — we'd loop. Drop them.
     }
   }
 
   function flushAll(): void {
-    for (const stream of ['app', 'error', 'access', 'audit'] as StreamName[]) {
-      flushStream(stream)
+    for (const s of ['app', 'error', 'access', 'audit'] as StreamName[]) {
+      flushStream(s)
     }
   }
 
-  // Start periodic flush
   flushTimer = setInterval(flushAll, flushIntervalMs)
-  // Don't keep Node alive just for logging
   if (flushTimer && typeof flushTimer === 'object' && 'unref' in flushTimer) {
     flushTimer.unref()
   }
@@ -124,34 +111,17 @@ export function createFileTransport(opts: FileTransportOptions = {}): Transport 
   return {
     name: 'file',
     minLevel,
-
     write(entry: StructuredLogEntry): void {
       if (LOG_LEVEL_PRIORITY[entry.level] < LOG_LEVEL_PRIORITY[minLevel]) return
-
       const stream = streamForEntry(entry)
       const line = serializeEntry(entry)
       buffers[stream].push(line)
-
-      // Also write errors to both error stream AND app stream
-      if (stream === 'error') {
-        buffers.app.push(line)
-      }
-
-      // Force flush if buffer is large
-      if (buffers[stream].length >= maxBufferSize) {
-        flushStream(stream)
-      }
+      if (stream === 'error') buffers.app.push(line)
+      if (buffers[stream].length >= maxBufferSize) flushStream(stream)
     },
-
-    async flush(): Promise<void> {
-      flushAll()
-    },
-
+    async flush(): Promise<void> { flushAll() },
     async close(): Promise<void> {
-      if (flushTimer) {
-        clearInterval(flushTimer)
-        flushTimer = null
-      }
+      if (flushTimer) { clearInterval(flushTimer); flushTimer = null }
       flushAll()
     },
   }
