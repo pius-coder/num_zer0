@@ -72,9 +72,18 @@ export class PaymentPurchaseService extends BaseService {
     // CRITICAL FIX: .trim() to remove hidden newlines from env vars which cause 400 errors
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://num-zero.vercel.app').trim()
     const email = (process.env.FAPSHI_DEFAULT_EMAIL || 'numzero@gmail.com').trim()
+    
+    // Validate amount strictly - no fallback value to avoid user confusion
+    const amount = Math.floor(Number(purchase.priceXaf))
+    this.assert(
+      amount > 0,
+      'invalid_purchase_amount',
+      `Invalid purchase amount: ${purchase.priceXaf}`,
+      { purchaseId, priceXaf: purchase.priceXaf }
+    )
 
     const payload = {
-      amount: Math.floor(Number(purchase.priceXaf) || 100),
+      amount,
       email,
       userId: purchase.userId ?? purchaseId,
       externalId: purchase.idempotencyKey ?? purchaseId,
