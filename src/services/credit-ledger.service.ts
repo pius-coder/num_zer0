@@ -169,6 +169,10 @@ export class CreditLedgerService extends BaseService {
           continue;
         }
 
+        // CRITICAL FIX: We deliberately OMIT debitedAt, releasedAt, activationId and createdAt.
+        // On Vercel/Postgres.js, passing `null` for timestamp fields serializes them as empty strings ""
+        // which Postgres rejects. By omitting them from `.values()`, Drizzle ignores them entirely
+        // and Postgres applies DEFAULT (NULL for debited/released, NOW() for created).
         await tx.insert(creditHold).values({
           id: this.generateId("hold"),
           userId: params.userId,
@@ -179,8 +183,6 @@ export class CreditLedgerService extends BaseService {
           state: "held",
           expiresAt: nowPlusMinutes(params.holdTimeMinutes),
           idempotencyKey: params.idempotencyKey,
-          debitedAt: null,
-          releasedAt: null,
           ...(params.activationId && { activationId: params.activationId }),
         });
       }
