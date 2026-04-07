@@ -191,18 +191,21 @@ export class CreditLedgerService extends BaseService {
           continue;
         }
 
-        await tx.insert(creditHold).values({
-          id: this.generateId("hold"),
-          userId: params.userId,
-          walletId: wallet.id,
-          activationId: params.activationId,
-          amount: lot.consumeAmount,
-          creditType: realLot.creditType, // Use type from the verified DB record
-          lotId: realLot.id,
-          state: "held",
-          expiresAt: nowPlusMinutes(params.holdTimeMinutes),
-          idempotencyKey: params.idempotencyKey,
-        });
+      await tx.insert(creditHold).values({
+        id: this.generateId("hold"),
+        userId: params.userId,
+        walletId: wallet.id,
+        activationId: params.activationId ?? null,
+        amount: lot.consumeAmount,
+        creditType: realLot.creditType,
+        lotId: lot.lotId,
+        state: "held",
+        expiresAt: nowPlusMinutes(params.holdTimeMinutes),
+        idempotencyKey: params.idempotencyKey,
+        debitedAt: null,
+        releasedAt: null,
+        createdAt: new Date(),
+      })
       }
 
       // Update wallet held balance
