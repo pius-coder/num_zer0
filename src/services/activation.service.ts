@@ -82,12 +82,6 @@ export class ActivationService extends BaseService {
       input.countryCode
     )
 
-    // FINAL GRIZZLY BALANCE CHECK — before holding user credits
-    await this.verifyGrizzlyBalanceLive(
-      serviceMeta.externalId,
-      input.countryCode
-    )
-
     // ── PHASE 2: FINANCIAL COMMITMENT ──
     const hold = await this.creditLedger.holdCredits({
       userId: input.userId,
@@ -98,12 +92,6 @@ export class ActivationService extends BaseService {
 
     // ── PHASE 3: THE PURCHASE ──
     try {
-      // FINAL GRIZZLY BALANCE CHECK right before purchase
-      await this.verifyGrizzlyBalanceLive(
-        serviceMeta.externalId,
-        input.countryCode
-      )
-
       const grizzly = getGrizzlyClient()
       const grizzlyResult = await grizzly.getNumberV2({
         service: serviceMeta.externalId,
@@ -251,40 +239,5 @@ export class ActivationService extends BaseService {
     this.assert(!!updated, 'activation_not_found', 'Activation not found', { activationId })
     this.log.info('sms_received', { activationId, codeLength: smsCode.length })
     return updated
-  }
-
-  /**
-   * FINAL Grizzly balance check — last gate before purchase.
-   * Catches the race condition where balance dropped since Phase 1.
-   * Throws 'grizzly_no_balance' if insufficient.
-   */
-  private async verifyGrizzlyBalanceLive(serviceCode: string, countryCode: string): Promise<void> {
-    const grizzly = getGrizzlyClient()
-    const balance = await grizzly.getBalance()
-
-    const priceEntry = await grizzly.getPricesV3(countryCode, serviceCode)
-    if (!priceEntry) return // Let the purchase call handle it
-
-    const costUsd = priceEntry.price
-    const safetyBuffer = 0.05
-
-    if (balance < costUsd + safetyBuffer) {
-      this.log.error('grizzly_insufficient_balance', {
-        balance,
-        requiredUsd: costUsd,
-        safetyBuffer,
-      })
-
-      throw this.error(
-        'grizzly_no_balance',
-        `Solde fournisseur insuffisant. Coût: $${costUsd.toFixed(4)}, Solde: $${balance.toFixed(4)}`,
-        { currentBalanceUsd: balance, requiredUsd: costUsd },
-      )
-    }
-
-    this.log.info('grizzly_balance_verified', {
-      balance,
-      costUsd,
-    })
   }
 }
