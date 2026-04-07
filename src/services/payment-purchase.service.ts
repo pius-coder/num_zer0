@@ -1,7 +1,6 @@
 import { and, eq, or } from 'drizzle-orm'
 
 import { BaseService } from './base.service'
-import { env } from '@/config/env'
 import { creditPackage, creditPurchase } from '@/database/schema'
 import { getFapshiClient } from './fapshi'
 
@@ -68,30 +67,54 @@ export class PaymentPurchaseService extends BaseService {
     )
 
     const fapshi = getFapshiClient()
-    const result = await fapshi.generateLink({
+    
+    // Safety fallbacks to prevent 400 Bad Request on Vercel
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://num-zero.vercel.app'
+    const email = process.env.FAPSHI_DEFAULT_EMAIL || 'numzero@gmail.com'
+
+    const payload = {
       amount: purchase.priceXaf,
-      email: env.FAPSHI_DEFAULT_EMAIL || 'numzero@gmail.com',
-      userId: purchase.userId ?? undefined,
-      externalId: purchase.idempotencyKey ?? undefined,
-      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/wallet?transId=${purchaseId}`,
+      email,
+      userId: purchase.userId ?? purchaseId,
+      externalId: purchase.idempotencyKey ?? purchaseId,
+      redirectUrl: `${appUrl}/wallet?transId=${purchaseId}`,
+    }
+
+    // Log the exact payload sent to Fapshi
+    this.log.info('fapshi_payload_attempt', {
+      slug: 'fapshi-purchase-debug',
+      payload
     })
 
-    await this.db
-      .update(creditPurchase)
-      .set({
-        checkoutUrl: result.link,
-        paymentGatewayId: result.transId,
+    try {
+      const result = await fapshi.generateLink(payload)
+      this.log.info('fapshi_success', { slug: 'fapshi-purchase-success', transId: result.transId })
+      
+      await this.db
+        .update(creditPurchase)
+        .set({
+          checkoutUrl: result.link,
+          paymentGatewayId: result.transId,
+        })
+        .where(eq(creditPurchase.id, purchaseId))
+
+      this.log.info('fapshi_payment_initiated', {
+        purchaseId,
+        transId: result.transId,
       })
-      .where(eq(creditPurchase.id, purchaseId))
 
-    this.log.info('fapshi_payment_initiated', {
-      purchaseId,
-      transId: result.transId,
-    })
-
-    return {
-      link: result.link,
-      transId: result.transId,
+      return {
+        link: result.link,
+        transId: result.transId,
+      }
+    } catch (err) {
+      // Detailed logging on failure so we see exactly why Fapshi said 400
+      this.log.error('fapshi_error_details', {
+        slug: 'fapshi-purchase-error',
+        payload,
+        error: err instanceof Error ? err.message : String(err)
+      })
+      throw err
     }
   }
 
