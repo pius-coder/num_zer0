@@ -57,11 +57,6 @@ export class CreditLedgerService extends BaseService {
     return created;
   }
 
-  /**
-   * Uses the `user_wallet_summary` DB view (Rule 7).
-   * Fallback: computes balance directly from tables if the view is missing.
-   * Safety: returns zero balance if all DB access fails (prevents 500 crash).
-   */
   async getBalance(userId: string): Promise<WalletBalance> {
     const zeroBalance: WalletBalance = {
       base: 0, bonus: 0, promotional: 0, held: 0, available: 0,
@@ -69,7 +64,6 @@ export class CreditLedgerService extends BaseService {
       totalExpired: 0, totalBonusReceived: 0, activeHoldsCount: 0,
     };
 
-    // 1. Attempt to use the optimized SQL view
     try {
       const [row] = await this.db.execute<{
         base_balance: number; bonus_balance: number; promo_balance: number; held_balance: number;
@@ -93,11 +87,10 @@ export class CreditLedgerService extends BaseService {
           totalBonusReceived: row.total_bonus_received, activeHoldsCount: row.active_holds_count,
         };
       }
-    } catch (err) {
+    } catch {
       this.log.warn('wallet_view_fallback', { msg: 'View failed, trying direct table query' });
     }
 
-    // 2. Fallback: Calculate balance manually from creditWallet table
     try {
       const wallet = await this.db.query.creditWallet.findFirst({
         where: eq(creditWallet.userId, userId),
@@ -113,25 +106,15 @@ export class CreditLedgerService extends BaseService {
           totalBonusReceived: wallet.totalBonusReceived, activeHoldsCount: 0,
         };
       }
-    } catch (err) {
+    } catch {
       this.log.warn('wallet_table_fallback', { msg: 'Direct table query failed' });
     }
 
-    // 3. Ultimate Safety: If DB is totally broken, return 0 to keep app running
     this.log.warn('wallet_balance_final_fallback', { userId });
-    
-    // Try to create wallet silently in background so it might exist next time
     try { await this.getOrCreateWallet(userId); } catch {}
-    
     return zeroBalance;
   }
 
-  /**
-   * Uses the `get_consumable_lots()` stored function (Rule 7).
-   * Banking-level FIFO with row-level locking — eliminates race conditions.
-   * IMPROVEMENT: Now gracefully skips "Ghost Lots" (corrupted references) 
-   * instead of crashing the whole activation flow.
-   */
   async holdCredits(params: {
     userId: string;
     amount: number;
@@ -146,10 +129,7 @@ export class CreditLedgerService extends BaseService {
     });
     if (existingHold) return existingHold;
 
-    const holdId = this.generateId("hold");
-
     await this.transaction(async (tx) => {
-      // DB function: FIFO lot selection with FOR UPDATE locks
       const lotsResult = await tx.execute<{
         lot_id: string;
         consume_amount: number;
@@ -172,45 +152,39 @@ export class CreditLedgerService extends BaseService {
         },
       );
 
-      // Create hold records for each consumed lot
+      // FIX: Conditionally include activationId. If undefined, Drizzle omits the column entirely
+      // and Postgres applies DEFAULT NULL cleanly — no empty strings, no type casting.
       for (const lot of lots) {
-        // PHYSICAL VERIFICATION: Check if the lot actually exists in DB.
-        // This prevents crash on "Ghost Lots" (lots referenced by balance calculation but missing in table).
         const realLot = await tx.query.creditLot.findFirst({
           where: eq(creditLot.id, lot.lotId),
           columns: { id: true, creditType: true, remainingAmount: true },
         });
 
         if (!realLot) {
-          // Gracefully skip the corrupted/ghost lot and proceed with other valid credits.
           this.log.warn('skipping_ghost_lot', {
             slug: 'credit-consistency-check',
             lotId: lot.lotId,
-            msg: 'Lot ID returned by procedure does not exist in DB. Skipping to avoid crashing transaction.',
+            msg: 'Lot ID returned by procedure does not exist in DB. Skipping.',
           });
           continue;
         }
 
-      await tx.insert(creditHold).values({
-        id: this.generateId("hold"),
-        userId: params.userId,
-        walletId: wallet.id,
-        activationId: params.activationId ?? null,
-        amount: lot.consumeAmount,
-        creditType: realLot.creditType, // 'base' or 'bonus'
-        lotId: lot.lotId,
-        state: "held",
-        expiresAt: nowPlusMinutes(params.holdTimeMinutes),
-        idempotencyKey: params.idempotencyKey,
-        // Workaround: postgres.js sends empty strings for null timestamp columns.
-        // Using a past date avoids Postgres "invalid input" error safely.
-        debitedAt: new Date(0), 
-        releasedAt: new Date(0), 
-        createdAt: new Date(), 
-      });
+        await tx.insert(creditHold).values({
+          id: this.generateId("hold"),
+          userId: params.userId,
+          walletId: wallet.id,
+          amount: lot.consumeAmount,
+          creditType: realLot.creditType,
+          lotId: lot.lotId,
+          state: "held",
+          expiresAt: nowPlusMinutes(params.holdTimeMinutes),
+          idempotencyKey: params.idempotencyKey,
+          debitedAt: null,
+          releasedAt: null,
+          ...(params.activationId && { activationId: params.activationId }),
+        });
       }
 
-      // Update wallet held balance
       await tx
         .update(creditWallet)
         .set({
@@ -221,7 +195,7 @@ export class CreditLedgerService extends BaseService {
 
     this.log.info("credits_held", {
       userId: params.userId,
-      holdId,
+      holdId: this.generateId("log"),
       amount: params.amount,
     });
 
