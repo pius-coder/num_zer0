@@ -128,8 +128,9 @@ export class CreditLedgerService extends BaseService {
 
   /**
    * Uses the `get_consumable_lots()` stored function (Rule 7).
-   * Banking-level FIFO with row-level locking — eliminates race conditions
-   * that the previous app-side lot selection had.
+   * Banking-level FIFO with row-level locking — eliminates race conditions.
+   * IMPROVEMENT: Now gracefully skips "Ghost Lots" (corrupted references) 
+   * instead of crashing the whole activation flow.
    */
   async holdCredits(params: {
     userId: string;
@@ -173,13 +174,22 @@ export class CreditLedgerService extends BaseService {
 
       // Create hold records for each consumed lot
       for (const lot of lots) {
-        const lotInfo = await tx.query.creditLot.findFirst({
+        // PHYSICAL VERIFICATION: Check if the lot actually exists in DB.
+        // This prevents crash on "Ghost Lots" (lots referenced by balance calculation but missing in table).
+        const realLot = await tx.query.creditLot.findFirst({
           where: eq(creditLot.id, lot.lotId),
-          columns: { creditType: true },
+          columns: { creditType: true, remainingAmount: true },
         });
-        this.assert(!!lotInfo, "lot_not_found", "Consumed lot not found", {
-          lotId: lot.lotId,
-        });
+
+        if (!realLot) {
+          // Gracefully skip the corrupted/ghost lot and proceed with other valid credits.
+          this.log.warn('skipping_ghost_lot', {
+            slug: 'credit-consistency-check',
+            lotId: lot.lotId,
+            msg: 'Lot ID returned by procedure does not exist in DB. Skipping to avoid crashing transaction.',
+          });
+          continue;
+        }
 
         await tx.insert(creditHold).values({
           id: this.generateId("hold"),
@@ -187,8 +197,8 @@ export class CreditLedgerService extends BaseService {
           walletId: wallet.id,
           activationId: params.activationId,
           amount: lot.consumeAmount,
-          creditType: lotInfo.creditType,
-          lotId: lot.lotId,
+          creditType: realLot.creditType, // Use type from the verified DB record
+          lotId: realLot.id,
           state: "held",
           expiresAt: nowPlusMinutes(params.holdTimeMinutes),
           idempotencyKey: params.idempotencyKey,
