@@ -1,6 +1,7 @@
 import { and, eq, or } from 'drizzle-orm'
 
 import { BaseService } from './base.service'
+import { env } from '@/config/env'
 import { creditPackage, creditPurchase } from '@/database/schema'
 import { getFapshiClient } from './fapshi'
 
@@ -9,6 +10,7 @@ export interface CreatePurchaseInput {
   packageId: string
   paymentMethod: 'mtn_momo' | 'orange_money' | 'card' | 'bank_transfer' | 'crypto'
   idempotencyKey: string
+  email?: string
 }
 
 export class PaymentPurchaseService extends BaseService {
@@ -67,9 +69,10 @@ export class PaymentPurchaseService extends BaseService {
 
     const fapshi = getFapshiClient()
     const result = await fapshi.generateLink({
-      amount: purchase!.priceXaf,
-      userId: purchase!.userId ?? undefined,
-      externalId: purchase!.idempotencyKey ?? undefined,
+      amount: purchase.priceXaf,
+      email: env.FAPSHI_DEFAULT_EMAIL || 'numzero@gmail.com',
+      userId: purchase.userId ?? undefined,
+      externalId: purchase.idempotencyKey ?? undefined,
       redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/wallet?transId=${purchaseId}`,
     })
 

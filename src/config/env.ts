@@ -39,6 +39,7 @@ export const env = createEnv({
     SMTP_PASS: z.string().optional(),
     DEFAULT_FROM_EMAIL: z.string().default('noreply@numzero.com'),
     DEFAULT_FROM_NAME: z.string().default('NumZero'),
+    FAPSHI_DEFAULT_EMAIL: z.string().default('numzero@gmail.com'),
 
     // ─── Social Providers ───────────────────────────────────────────────
     GOOGLE_CLIENT_ID: z.string().optional(),
@@ -79,6 +80,7 @@ export const env = createEnv({
     SMTP_PASS: process.env.SMTP_PASS,
     DEFAULT_FROM_EMAIL: process.env.DEFAULT_FROM_EMAIL,
     DEFAULT_FROM_NAME: process.env.DEFAULT_FROM_NAME,
+    FAPSHI_DEFAULT_EMAIL: process.env.FAPSHI_DEFAULT_EMAIL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
