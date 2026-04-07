@@ -197,15 +197,17 @@ export class CreditLedgerService extends BaseService {
         walletId: wallet.id,
         activationId: params.activationId ?? null,
         amount: lot.consumeAmount,
-        creditType: realLot.creditType,
+        creditType: realLot.creditType, // 'base' or 'bonus'
         lotId: lot.lotId,
         state: "held",
         expiresAt: nowPlusMinutes(params.holdTimeMinutes),
         idempotencyKey: params.idempotencyKey,
-        debitedAt: null,
-        releasedAt: null,
-        createdAt: new Date(),
-      })
+        // Workaround: postgres.js sends empty strings for null timestamp columns.
+        // Using a past date avoids Postgres "invalid input" error safely.
+        debitedAt: new Date(0), 
+        releasedAt: new Date(0), 
+        createdAt: new Date(), 
+      });
       }
 
       // Update wallet held balance
