@@ -178,7 +178,7 @@ export class CreditLedgerService extends BaseService {
         // This prevents crash on "Ghost Lots" (lots referenced by balance calculation but missing in table).
         const realLot = await tx.query.creditLot.findFirst({
           where: eq(creditLot.id, lot.lotId),
-          columns: { creditType: true, remainingAmount: true },
+          columns: { id: true, creditType: true, remainingAmount: true },
         });
 
         if (!realLot) {
