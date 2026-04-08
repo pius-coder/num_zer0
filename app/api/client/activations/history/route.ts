@@ -45,6 +45,7 @@ export async function GET(req: Request) {
           createdAt: true,
           completedAt: true,
           cancelledAt: true,
+          timerExpiresAt: true,
         },
       })
     } catch {

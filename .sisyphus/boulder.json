@@ -1,16 +1,57 @@
 {
-  "active_plan": "/home/afreeserv/project/num_zero/.sisyphus/plans/credit-hold-refactor.md",
-  "started_at": "2026-04-08T09:54:09.880Z",
+  "active_plan": "/home/afreeserv/project/num_zero/.sisyphus/plans/activation-flow-fix.md",
+  "started_at": "2026-04-08T18:09:15.594Z",
   "session_ids": [
-    "ses_293931803ffeZ8JabZAYMaIj5F",
-    "ses_293354392ffeKmOxbSJoHgSTXM",
-    "ses_293320c4bffedQvT4y4N1j1oNf",
-    "ses_2932ce4d6ffeA4fLWPRTwk4X9W",
-    "ses_293248305ffeWpuIpN4CVeVULF",
-    "ses_293138991ffeQx568w9CviOE4K",
-    "ses_2930a43f6ffe4KDD1HGUjqFUFx"
+    "ses_291dbfbe6ffe5DM93US4WsYeJ3",
+    "ses_291b495b4ffeyDO6YnB6gjnz3s",
+    "ses_291b497c9ffeOsBJqSYC4Zy4Jl",
+    "ses_291b4782fffe1Fp5Pc0h7Qqq23",
+    "ses_291ace341ffe536UMJPNoymyhX",
+    "ses_291ad214bffeDED5jOGK9uT7sK",
+    "ses_291ac9ff1ffef0WFXcKXA76fOQ",
+    "ses_291a3f4b7ffekZ32YZMipLFrRW",
+    "ses_291a3bdc3ffe0PmYL3b2Wwg9GV",
+    "ses_29197accdffe5gTGrmbGx7Bxgv",
+    "ses_29197df7dffeb3w0dZeEFOk9XN"
   ],
-  "plan_name": "credit-hold-refactor",
+  "plan_name": "activation-flow-fix",
   "agent": "atlas",
-  "task_sessions": {}
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Add getStatus() v1 to Grizzly service",
+      "session_id": "ses_291b497c9ffeOsBJqSYC4Zy4Jl",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-08T18:17:13.989Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "Add cancel detection to activation.service.ts",
+      "session_id": "ses_291ad214bffeDED5jOGK9uT7sK",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-04-08T18:24:12.624Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "Fix state transitions: eliminate \"Demandé\" in UI",
+      "session_id": "ses_291a3f4b7ffekZ32YZMipLFrRW",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-04-08T18:36:05.796Z"
+    },
+    "todo:9": {
+      "task_key": "todo:9",
+      "task_label": "9",
+      "task_title": "Add cancel button with 5-minute cooldown to Sheet",
+      "session_id": "ses_29197df7dffeb3w0dZeEFOk9XN",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-04-08T18:48:51.856Z"
+    }
+  }
 }

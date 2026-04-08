@@ -22,6 +22,7 @@ interface ActivationData {
   smsCode: string | null
   state: string
   creditsCharged: number
+  timerExpiresAt: string | null
 }
 
 interface ActiveActivationCardProps {
@@ -55,6 +56,10 @@ export const ActiveActivationCard = memo(function ActiveActivationCard({
     }
   }
   const StateIcon = IconComponent
+
+  // Cancel is enabled when timer has expired OR when timerExpiresAt is null (e.g. failed activations)
+  const cancelEnabled =
+    !activation.timerExpiresAt || new Date(activation.timerExpiresAt) <= new Date()
 
   const handleClick = () => {
     onClick?.()
@@ -113,6 +118,13 @@ export const ActiveActivationCard = memo(function ActiveActivationCard({
             </div>
             <p className='text-xs text-muted-foreground mt-1'>Achat en cours...</p>
           </div>
+          <button
+            onClick={() => onCancel(activation.id)}
+            disabled={!cancelEnabled}
+            className='text-xs text-destructive hover:underline disabled:opacity-40'
+          >
+            Annuler
+          </button>
         </div>
       )}
 
@@ -143,7 +155,8 @@ export const ActiveActivationCard = memo(function ActiveActivationCard({
           </div>
           <button
             onClick={() => onCancel(activation.id)}
-            className='text-xs text-destructive hover:underline'
+            disabled={!cancelEnabled}
+            className='text-xs text-destructive hover:underline disabled:opacity-40'
           >
             Annuler
           </button>

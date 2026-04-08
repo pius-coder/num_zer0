@@ -54,6 +54,10 @@ export function ConfirmDialog({
             setPhase('active')
           }
         },
+        onError: () => {
+          // Close dialog on error - user can retry from main UI
+          onClose()
+        },
       }
     )
   }
