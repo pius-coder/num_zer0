@@ -1,8 +1,7 @@
-import { eq, and } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 import { BaseService } from './base.service'
 import { smsActivation } from '@/database/schema'
-import { creditHold } from '@/database/schema'
 import { CreditLedgerService } from './credit-ledger.service'
 import { ProviderRoutingService } from './provider-routing.service'
 import { getServiceBySlug } from '@/common/catalog'
@@ -63,16 +62,18 @@ export class ActivationService extends BaseService {
     })
 
     const grizzly = getGrizzlyClient()
+    
+    // 1. GENERATE ID FIRST for perfect traceability
+    const activationId = this.generateId('act')
     let grizzlyResult: any
 
     try {
-      // DIRECT CALL TO GRIZZLY (Single source of truth)
+      // 2. DIRECT CALL TO GRIZZLY
       grizzlyResult = await grizzly.getNumberV2({
         service: serviceMeta.externalId,
         country: input.countryCode,
       })
     } catch (err) {
-      // Log exact error for Vercel debugging
       this.log.error('activation_grizzly_failed', {
         slug: 'activation-failure-detail',
         error: err instanceof Error ? err.message : String(err),
@@ -82,20 +83,21 @@ export class ActivationService extends BaseService {
       throw err
     }
 
-    // If Grizzly success, we calculate price and hold credits afterwards
     const priceResult = await this.quotePrice(input.serviceCode, input.countryCode)
     const quotedCredits = priceResult.priceCredits
 
     try {
-      const hold = await this.creditLedger.holdCredits({
+      // 3. HOLD CREDITS with the pre-generated ID
+      // This will link all consumed lots (bonus/base) to this unique activationId
+      await this.creditLedger.holdCredits({
         userId: input.userId,
         amount: quotedCredits,
         holdTimeMinutes: input.holdTimeMinutes,
         idempotencyKey: input.idempotencyKey,
+        activationId: activationId,
       })
 
-      // Save to DB
-      const activationId = this.generateId('act')
+      // 4. SAVE TO DB with the same ID
       const [activation] = await this.db
         .insert(smsActivation)
         .values({
@@ -108,7 +110,7 @@ export class ActivationService extends BaseService {
           state: 'waiting',
           creditsCharged: quotedCredits,
           wholesaleCostUsd: String(grizzlyResult.activationCost),
-          timerExpiresAt: hold?.expiresAt ?? null,
+          timerExpiresAt: new Date(Date.now() + input.holdTimeMinutes * 60 * 1000),
           numberAssignedAt: new Date(),
           phoneNumber: grizzlyResult.phoneNumber,
         })
@@ -118,19 +120,25 @@ export class ActivationService extends BaseService {
         slug: 'activation-success',
         activationId,
         userId: input.userId,
-        serviceCode: input.serviceCode,
       })
 
       return activation as ActivationResult
     } catch (dbErr) {
-      // If DB fails, try to cancel on Grizzly to avoid losing money
       this.log.error('activation_db_failed', {
         slug: 'activation-db-error',
         error: dbErr instanceof Error ? dbErr.message : String(dbErr),
       })
-      try {
-        await grizzly.setStatus(grizzlyResult.activationId, -8)
-      } catch {}
+
+      // TOTAL ROLLBACK
+      // 1. Release ALL credits holds linked to this activationId
+      await this.creditLedger.releaseHoldByActivationId(activationId)
+
+      // 2. Cancel on Grizzly if we had a number
+      if (grizzlyResult?.activationId) {
+        try {
+          await grizzly.setStatus(grizzlyResult.activationId, -8)
+        } catch {}
+      }
       throw dbErr
     }
   }
@@ -198,22 +206,10 @@ export class ActivationService extends BaseService {
 
     this.assert(!!updated, 'activation_not_found', 'Activation update failed', { activationId })
 
-    // If Grizzly refunded, release held credits to user
+    // If Grizzly refunded, release ALL held credits for this activation
     if (grizzlyRefunded) {
-      // Find and release any active holds for this activation
-      const activeHold = await this.db.query.creditHold.findFirst({
-        where: and(
-          eq(creditHold.activationId, activationId),
-          eq(creditHold.state, 'held'),
-        ),
-      })
-      if (activeHold) {
-        await this.creditLedger.releaseHold(activeHold.id)
-        this.log.info('credits_refunded_on_cancel', {
-          activationId,
-          holdId: activeHold.id,
-        })
-      }
+      await this.creditLedger.releaseHoldByActivationId(activationId)
+      this.log.info('credits_refunded_on_cancel', { activationId })
     } else {
       this.log.info('cancel_no_refund_grizzly_did_not_refund', {
         activationId,
@@ -238,5 +234,51 @@ export class ActivationService extends BaseService {
     this.assert(!!updated, 'activation_not_found', 'Activation not found', { activationId })
     this.log.info('sms_received', { activationId, codeLength: smsCode.length })
     return updated
+  }
+
+  /**
+   * Poll Grizzly for the SMS code using the providerActivationId (Task 11).
+   * This is the "single source of truth" for the SMS code.
+   */
+  async checkSmsStatus(activationId: string) {
+    const existing = await this.db.query.smsActivation.findFirst({
+      where: eq(smsActivation.id, activationId),
+    })
+
+    if (!existing || !existing.providerActivationId) {
+      throw this.error('activation_not_found', 'Activation or Provider ID not found')
+    }
+
+    // If already completed, no need to check
+    if (existing.state === 'completed' && existing.smsCode) {
+      return existing
+    }
+
+    const grizzly = getGrizzlyClient()
+    const status = await grizzly.getStatusV2(Number(existing.providerActivationId))
+
+    // If SMS is received (status.sms contains the data)
+    if (status.sms && status.sms.code) {
+      const [updated] = await this.db
+        .update(smsActivation)
+        .set({
+          state: 'completed',
+          smsCode: status.sms.code,
+          fullSmsText: status.sms.text,
+          smsReceivedAt: new Date(),
+          completedAt: new Date(),
+        })
+        .where(eq(smsActivation.id, activationId))
+        .returning()
+      
+      this.log.info('sms_retrieved_from_grizzly', {
+        activationId,
+        code: status.sms.code,
+      })
+      
+      return updated
+    }
+
+    return existing
   }
 }

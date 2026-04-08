@@ -124,10 +124,13 @@ export class CreditLedgerService extends BaseService {
   }) {
     const wallet = await this.getOrCreateWallet(params.userId);
 
-    const existingHold = await this.db.query.creditHold.findFirst({
-      where: eq(creditHold.idempotencyKey, params.idempotencyKey),
-    });
-    if (existingHold) return existingHold;
+    // Idempotency: if activationId is provided and holds already exist, skip
+    if (params.activationId) {
+      const existingHolds = await this.db.query.creditHold.findMany({
+        where: eq(creditHold.activationId, params.activationId),
+      });
+      if (existingHolds.length > 0) return existingHolds[0];
+    }
 
     await this.transaction(async (tx) => {
       const lotsResult = await tx.execute<{
@@ -185,7 +188,7 @@ export class CreditLedgerService extends BaseService {
             ${lot.lotId}, 
             'held', 
             ${nowPlusMinutes(params.holdTimeMinutes)}, 
-            ${params.idempotencyKey},
+            ${params.idempotencyKey + '_' + lot.lotId},
             ${params.activationId || null}
           )
         `);
@@ -205,8 +208,15 @@ export class CreditLedgerService extends BaseService {
       amount: params.amount,
     });
 
+    // Return the first hold linked to this activation (multi-lot safe)
+    if (params.activationId) {
+      return this.db.query.creditHold.findFirst({
+        where: eq(creditHold.activationId, params.activationId),
+      });
+    }
+    // Fallback: find by key prefix pattern
     return this.db.query.creditHold.findFirst({
-      where: eq(creditHold.idempotencyKey, params.idempotencyKey),
+      where: sql`${creditHold.idempotencyKey} LIKE ${params.idempotencyKey + '_%'}`,
     });
   }
 
@@ -228,6 +238,58 @@ export class CreditLedgerService extends BaseService {
 
     return this.db.query.creditHold.findFirst({
       where: eq(creditHold.id, holdId),
+    });
+  }
+
+  async releaseHoldByActivationId(activationId: string) {
+    const holds = await this.db.query.creditHold.findMany({
+      where: eq(creditHold.activationId, activationId),
+    });
+
+    if (holds.length === 0) return;
+
+    // Sum up only the 'held' amounts to update wallet balance
+    const totalHeldAmount = holds
+      .filter((h) => h.state === "held")
+      .reduce((sum, h) => sum + h.amount, 0);
+
+    if (totalHeldAmount === 0) return;
+
+    // Get wallet ID from first hold (safe: holds.length > 0 checked above)
+    const walletId = holds[0]!.walletId;
+
+    await this.transaction(async (tx) => {
+      for (const hold of holds) {
+        if (hold.state !== "held") continue;
+
+        // Restore lot balance
+        await tx
+          .update(creditLot)
+          .set({
+            remainingAmount: sql`${creditLot.remainingAmount} + ${hold.amount}`,
+          })
+          .where(eq(creditLot.id, hold.lotId));
+
+        // Mark hold as released
+        await tx
+          .update(creditHold)
+          .set({ state: "released", releasedAt: new Date() })
+          .where(eq(creditHold.id, hold.id));
+      }
+
+      // Update wallet heldBalance (critical: was missing!)
+      await tx
+        .update(creditWallet)
+        .set({
+          heldBalance: sql`${creditWallet.heldBalance} - ${totalHeldAmount}`,
+        })
+        .where(eq(creditWallet.id, walletId));
+    }, "release_holds_by_activation");
+
+    this.log.info("holds_released_by_activation", {
+      activationId,
+      holdsCount: holds.filter((h) => h.state === "held").length,
+      totalAmount: totalHeldAmount,
     });
   }
 

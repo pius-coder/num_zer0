@@ -7,8 +7,10 @@ import { requireSession } from '@/common/auth/api-auth.server'
 import { createLogger } from '@/common/logger'
 import { db } from '@/database'
 import { smsActivation } from '@/database/schema'
+import { ActivationService } from '@/services/activation.service'
 
 const log = createLogger({ prefix: 'api-activation-detail' })
+const activationService = new ActivationService()
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = extractRequestContext(req)
@@ -29,6 +31,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
 
     const { id } = await params
+
+    // 1. Trigger live sync with Grizzly if still waiting for code
+    try {
+      await activationService.checkSmsStatus(id)
+    } catch (syncErr) {
+      log.warn('activation_sync_failed', { id, error: String(syncErr) })
+    }
+
+    // 2. Read latest data from DB
     const activation = await db.query.smsActivation.findFirst({
       where: eq(smsActivation.id, id),
       columns: {
