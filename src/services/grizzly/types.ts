@@ -24,7 +24,7 @@ export interface GrizzlyActivation {
   activationTime: string
 }
 
-export type GrizzlySetStatusCode = -8 | -1 | 1 | 3 | 6 | 8
+export type GrizzlySetStatusCode = 8 | -1 | 1 | 3 | 6
 
 export interface GrizzlySetStatusResponse {
   status: GrizzlyActivationStatus

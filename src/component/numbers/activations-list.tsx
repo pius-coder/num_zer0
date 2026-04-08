@@ -32,7 +32,7 @@ export function ActivationsList({
   )
 
   const active = useMemo(
-    () => activations.filter((a) => ['requested', 'assigned'].includes(a.state)),
+    () => activations.filter((a) => ['requested', 'assigned', 'waiting'].includes(a.state)),
     [activations]
   )
   const completed = useMemo(

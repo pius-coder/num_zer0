@@ -1,8 +1,10 @@
 {
   "version": "2.1",
   "observer": {
-    "enabled": false,
+    "enabled": true,
     "run_interval_minutes": 5,
     "min_observations_to_analyze": 20
-  }
+  },
+  "project_id": "0fae5f93925e",
+  "project_name": "num_zero"
 }
