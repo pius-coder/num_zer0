@@ -67,60 +67,10 @@ export class ActivationService extends BaseService {
     const priceResult = await this.quotePrice(input.serviceCode, input.countryCode)
     const quotedCredits = priceResult.priceCredits
 
-    // 2. HOLD CREDITS (without activationId — FK not linked yet)
-    // credit_hold.activation_id is nullable, so this is valid
-    try {
-      await this.creditLedger.holdCredits({
-        userId: input.userId,
-        amount: quotedCredits,
-        holdTimeMinutes: input.holdTimeMinutes,
-        idempotencyKey: input.idempotencyKey,
-        // activationId omitted — will be linked after smsActivation is inserted
-      })
-    } catch (err) {
-      this.log.error('activation_hold_failed', {
-        error: err instanceof Error ? err.message : String(err),
-        serviceCode: input.serviceCode,
-      })
-      throw err
-    }
-
-    // 3. GET NUMBER FROM GRIZZLY
-    let grizzlyResult: Awaited<ReturnType<typeof grizzly.getNumberV2>>
-    try {
-      grizzlyResult = await grizzly.getNumberV2({
-        service: serviceMeta.externalId,
-        country: input.countryCode,
-      })
-    } catch (err) {
-      // Grizzly failed — release held credits and rethrow
-      this.log.error('activation_grizzly_failed', {
-        error: err instanceof Error ? err.message : String(err),
-        serviceCode: input.serviceCode,
-        countryCode: input.countryCode,
-      })
-      await this.creditLedger.releaseHoldsByIdempotencyKey(input.idempotencyKey)
-      throw err
-    }
-
-    // 4. SIGNAL ACCESS_READY to Grizzly (mandatory per Grizzly lifecycle)
-    try {
-      await grizzly.setStatus(grizzlyResult.activationId, 1)
-    } catch (err) {
-      // setStatus(1) failed — cancel on Grizzly with -1 (immediate cancel) and release credits
-      this.log.error('activation_set_ready_failed', {
-        activationId: grizzlyResult.activationId,
-        error: err instanceof Error ? err.message : String(err),
-      })
-      try {
-        await grizzly.setStatus(grizzlyResult.activationId, -1)
-      } catch {}
-      await this.creditLedger.releaseHoldsByIdempotencyKey(input.idempotencyKey)
-      throw err
-    }
-
-    // 5. GENERATE ID and INSERT smsActivation (FK now safe — holds don't reference it yet)
+    // 2. GENERATE activationId FIRST — before any DB writes
     const activationId = this.generateId('act')
+
+    // 3. INSERT smsActivation with state='requested' — no phoneNumber, no providerActivationId yet
     try {
       await this.db.insert(smsActivation).values({
         id: activationId,
@@ -128,47 +78,128 @@ export class ActivationService extends BaseService {
         serviceSlug: input.serviceCode,
         countryCode: input.countryCode,
         providerId: 'grizzly',
-        providerActivationId: String(grizzlyResult.activationId),
-        state: 'waiting',
+        state: 'requested',
         creditsCharged: quotedCredits,
-        wholesaleCostUsd: String(grizzlyResult.activationCost),
-        timerExpiresAt: new Date(Date.now() + input.holdTimeMinutes * 60 * 1000),
-        numberAssignedAt: new Date(),
-        phoneNumber: grizzlyResult.phoneNumber,
       })
-    } catch (dbErr) {
-      this.log.error('activation_db_failed', {
-        error: dbErr instanceof Error ? dbErr.message : String(dbErr),
+      this.log.info('step_3_activation_inserted', {
+        activationId,
+        userId: input.userId,
+        serviceCode: input.serviceCode,
       })
-      // Cancel on Grizzly (use -1 = immediate cancel) and release credits
-      try {
-        await grizzly.setStatus(grizzlyResult.activationId, -1)
-      } catch {}
-      await this.creditLedger.releaseHoldsByIdempotencyKey(input.idempotencyKey)
-      throw dbErr
+    } catch (err) {
+      this.log.error('step_3_activation_insert_failed', {
+        activationId,
+        error: err instanceof Error ? err.message : String(err),
+      })
+      throw err
     }
 
-    // 6. LINK HOLDS to the activation (FK now valid — smsActivation exists)
+    // 4. HOLD CREDITS with activationId — now REQUIRED
     try {
-      await this.creditLedger.linkHoldsToActivation(input.idempotencyKey, activationId)
-    } catch (linkErr) {
-      this.log.error('activation_link_holds_failed', {
+      await this.creditLedger.holdCredits({
+        userId: input.userId,
+        amount: quotedCredits,
+        holdTimeMinutes: input.holdTimeMinutes,
         activationId,
-        error: linkErr instanceof Error ? linkErr.message : String(linkErr),
+        idempotencyKey: input.idempotencyKey,
       })
-      // Attempt full cleanup: cancel Grizzly + release credits
+      this.log.info('step_4_credits_held', {
+        activationId,
+        amount: quotedCredits,
+      })
+    } catch (err) {
+      // Rollback: DELETE smsActivation
+      this.log.error('step_4_hold_credits_failed', {
+        activationId,
+        error: err instanceof Error ? err.message : String(err),
+      })
+      try {
+        await this.db.delete(smsActivation).where(eq(smsActivation.id, activationId))
+        this.log.info('step_4_rollback_activation_deleted', { activationId })
+      } catch {}
+      throw err
+    }
+
+    // 5. GET NUMBER FROM GRIZZLY
+    let grizzlyResult: Awaited<ReturnType<typeof grizzly.getNumberV2>>
+    try {
+      grizzlyResult = await grizzly.getNumberV2({
+        service: serviceMeta.externalId,
+        country: input.countryCode,
+      })
+      this.log.info('step_5_grizzly_number_received', {
+        activationId,
+        providerActivationId: grizzlyResult.activationId,
+        phoneNumber: grizzlyResult.phoneNumber,
+      })
+    } catch (err) {
+      // Rollback: release holds + DELETE smsActivation
+      this.log.error('step_5_grizzly_failed', {
+        activationId,
+        error: err instanceof Error ? err.message : String(err),
+      })
+      try {
+        await this.creditLedger.releaseHoldByActivationId(activationId)
+        this.log.info('step_5_rollback_holds_released', { activationId })
+      } catch {}
+      try {
+        await this.db.delete(smsActivation).where(eq(smsActivation.id, activationId))
+        this.log.info('step_5_rollback_activation_deleted', { activationId })
+      } catch {}
+      throw err
+    }
+
+    // 6. SIGNAL ACCESS_READY to Grizzly (mandatory per Grizzly lifecycle)
+    try {
+      await grizzly.setStatus(grizzlyResult.activationId, 1)
+      this.log.info('step_6_grizzly_access_ready', {
+        activationId,
+        providerActivationId: grizzlyResult.activationId,
+      })
+    } catch (err) {
+      // Rollback: cancel Grizzly + release holds + DELETE smsActivation
+      this.log.error('step_6_set_ready_failed', {
+        activationId,
+        error: err instanceof Error ? err.message : String(err),
+      })
       try {
         await grizzly.setStatus(grizzlyResult.activationId, -1)
       } catch {}
-      await this.creditLedger.releaseHoldsByIdempotencyKey(input.idempotencyKey)
-      // Mark activation as cancelled since credits are released
       try {
-        await this.db
-          .update(smsActivation)
-          .set({ state: 'cancelled', cancelledAt: new Date() })
-          .where(eq(smsActivation.id, activationId))
+        await this.creditLedger.releaseHoldByActivationId(activationId)
+        this.log.info('step_6_rollback_holds_released', { activationId })
       } catch {}
-      throw linkErr
+      try {
+        await this.db.delete(smsActivation).where(eq(smsActivation.id, activationId))
+        this.log.info('step_6_rollback_activation_deleted', { activationId })
+      } catch {}
+      throw err
+    }
+
+    // 7. UPDATE smsActivation with providerActivationId, phoneNumber, state='waiting'
+    try {
+      await this.db
+        .update(smsActivation)
+        .set({
+          providerActivationId: String(grizzlyResult.activationId),
+          phoneNumber: grizzlyResult.phoneNumber,
+          state: 'waiting',
+          wholesaleCostUsd: String(grizzlyResult.activationCost),
+          timerExpiresAt: new Date(Date.now() + input.holdTimeMinutes * 60 * 1000),
+          numberAssignedAt: new Date(),
+        })
+        .where(eq(smsActivation.id, activationId))
+      this.log.info('step_7_activation_updated', {
+        activationId,
+        phoneNumber: grizzlyResult.phoneNumber,
+        state: 'waiting',
+      })
+    } catch (dbErr) {
+      // Log error but don't rollback — cleanup_expired_hands cron handles it
+      this.log.error('step_7_update_failed', {
+        activationId,
+        error: dbErr instanceof Error ? dbErr.message : String(dbErr),
+      })
     }
 
     this.log.info('activation_requested', {

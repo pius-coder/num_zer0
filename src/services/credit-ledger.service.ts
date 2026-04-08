@@ -138,18 +138,16 @@ export class CreditLedgerService extends BaseService {
     userId: string
     amount: number
     holdTimeMinutes: number
-    activationId?: string
+    activationId: string
     idempotencyKey: string
   }) {
     const wallet = await this.getOrCreateWallet(params.userId)
 
-    // Idempotency: if activationId is provided and holds already exist, skip
-    if (params.activationId) {
-      const existingHolds = await this.db.query.creditHold.findMany({
-        where: eq(creditHold.activationId, params.activationId),
-      })
-      if (existingHolds.length > 0) return existingHolds[0]
-    }
+    // Idempotency: if holds already exist for this activationId, skip
+    const existingHolds = await this.db.query.creditHold.findMany({
+      where: eq(creditHold.activationId, params.activationId),
+    })
+    if (existingHolds.length > 0) return existingHolds[0]
 
     await this.transaction(async (tx) => {
       const lotsResult = await tx.execute<{
@@ -167,8 +165,6 @@ export class CreditLedgerService extends BaseService {
         requestedAmount: params.amount,
       })
 
-      // FIX: Conditionally include activationId. If undefined, Drizzle omits the column entirely
-      // and Postgres applies DEFAULT NULL cleanly — no empty strings, no type casting.
       for (const lot of lots) {
         const realLot = await tx.query.creditLot.findFirst({
           where: eq(creditLot.id, lot.lotId),
@@ -184,26 +180,19 @@ export class CreditLedgerService extends BaseService {
           continue
         }
 
-        // SENIOR FIX: Using raw SQL (tx.execute) with explicit parameters.
-        // This bypasses Drizzle's serialization issues on Vercel and guarantees
-        // that Postgres uses its native DEFAULT values for NULL columns.
         const holdId = this.generateId('hold')
-        await tx.execute(sql`
-          INSERT INTO "credit_hold" (
-            "id", "user_id", "wallet_id", "amount", "credit_type", "lot_id", "state", "expires_at", "idempotency_key", "activation_id"
-          ) VALUES (
-            ${holdId}, 
-            ${params.userId}, 
-            ${wallet.id}, 
-            ${lot.consumeAmount}, 
-            ${realLot.creditType}, 
-            ${lot.lotId}, 
-            'held', 
-            ${nowPlusMinutes(params.holdTimeMinutes)}, 
-            ${params.idempotencyKey + '_' + lot.lotId},
-            ${params.activationId || null}
-          )
-        `)
+        await tx.insert(creditHold).values({
+          id: holdId,
+          userId: params.userId,
+          walletId: wallet.id,
+          activationId: params.activationId,
+          amount: lot.consumeAmount,
+          creditType: realLot.creditType,
+          lotId: lot.lotId,
+          state: 'held',
+          expiresAt: nowPlusMinutes(params.holdTimeMinutes),
+          idempotencyKey: `${params.idempotencyKey}_${lot.lotId}`,
+        })
       }
 
       await tx
@@ -215,8 +204,8 @@ export class CreditLedgerService extends BaseService {
     }, 'hold_credits')
 
     this.log.info('credits_held', {
+      activationId: params.activationId,
       userId: params.userId,
-      holdId: this.generateId('log'),
       amount: params.amount,
     })
 
@@ -344,38 +333,6 @@ export class CreditLedgerService extends BaseService {
       holdsCount: heldHolds.length,
       totalAmount: totalHeldAmount,
     })
-  }
-
-  /**
-   * Link orphaned holds (activation_id IS NULL) to an activation
-   * after the smsActivation row has been inserted (FK now valid).
-   * Returns the number of holds linked.
-   */
-  async linkHoldsToActivation(idempotencyKey: string, activationId: string) {
-    const holds = await this.db.query.creditHold.findMany({
-      where: sql`${creditHold.idempotencyKey} LIKE ${`${idempotencyKey}_%`}`,
-    })
-
-    // Only link holds that are 'held' AND not yet linked to an activation
-    const unlinked = holds.filter((h) => h.state === 'held' && !h.activationId)
-    if (unlinked.length === 0) {
-      this.log.warn('link_holds_no_unlinked', { idempotencyKey, activationId })
-      return 0
-    }
-
-    await this.transaction(async (tx) => {
-      for (const hold of unlinked) {
-        await tx.update(creditHold).set({ activationId }).where(eq(creditHold.id, hold.id))
-      }
-    }, 'link_holds_to_activation')
-
-    this.log.info('holds_linked_to_activation', {
-      idempotencyKey,
-      activationId,
-      linkedCount: unlinked.length,
-    })
-
-    return unlinked.length
   }
 
   async releaseHold(holdId: string) {

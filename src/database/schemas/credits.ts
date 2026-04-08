@@ -108,7 +108,9 @@ export const creditHold = pgTable(
     walletId: text('wallet_id')
       .notNull()
       .references(() => creditWallet.id, { onDelete: 'cascade' }),
-    activationId: text('activation_id').references(() => smsActivation.id),
+    activationId: text('activation_id')
+      .notNull()
+      .references(() => smsActivation.id, { onDelete: 'cascade' }),
     amount: integer('amount').notNull(),
     creditType: creditTypeEnum('credit_type').notNull(),
     lotId: text('lot_id')
