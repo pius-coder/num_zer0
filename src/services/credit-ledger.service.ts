@@ -169,22 +169,26 @@ export class CreditLedgerService extends BaseService {
           continue;
         }
 
-        // CRITICAL FIX: We deliberately OMIT debitedAt, releasedAt, activationId and createdAt.
-        // On Vercel/Postgres.js, passing `null` for timestamp fields serializes them as empty strings ""
-        // which Postgres rejects. By omitting them from `.values()`, Drizzle ignores them entirely
-        // and Postgres applies DEFAULT (NULL for debited/released, NOW() for created).
-        await tx.insert(creditHold).values({
-          id: this.generateId("hold"),
-          userId: params.userId,
-          walletId: wallet.id,
-          amount: lot.consumeAmount,
-          creditType: realLot.creditType,
-          lotId: lot.lotId,
-          state: "held",
-          expiresAt: nowPlusMinutes(params.holdTimeMinutes),
-          idempotencyKey: params.idempotencyKey,
-          ...(params.activationId && { activationId: params.activationId }),
-        });
+        // SENIOR FIX: Using raw SQL (tx.execute) with explicit parameters.
+        // This bypasses Drizzle's serialization issues on Vercel and guarantees 
+        // that Postgres uses its native DEFAULT values for NULL columns.
+        const holdId = this.generateId("hold");
+        await tx.execute(sql`
+          INSERT INTO "credit_hold" (
+            "id", "user_id", "wallet_id", "amount", "credit_type", "lot_id", "state", "expires_at", "idempotency_key", "activation_id"
+          ) VALUES (
+            ${holdId}, 
+            ${params.userId}, 
+            ${wallet.id}, 
+            ${lot.consumeAmount}, 
+            ${realLot.creditType}, 
+            ${lot.lotId}, 
+            'held', 
+            ${nowPlusMinutes(params.holdTimeMinutes)}, 
+            ${params.idempotencyKey},
+            ${params.activationId || null}
+          )
+        `);
       }
 
       await tx
