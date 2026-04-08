@@ -435,11 +435,14 @@ export abstract class BaseService {
     } catch (err) {
       this.log.error('transaction_rollback', {
         label,
-        error: err instanceof Error ? err.message : String(err),
+        error:        err instanceof Error ? err.message : String(err),
+        pgCode:       (err as any).code,
+        pgDetail:     (err as any).detail,
+        pgConstraint: (err as any).constraint,
       })
       throw err
     }
-  }
+
 
   protected generateId(entityPrefix: string): string {
     return `${entityPrefix}_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`
