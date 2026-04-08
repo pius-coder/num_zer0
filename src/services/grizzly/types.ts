@@ -40,6 +40,13 @@ export interface GrizzlyActivationStatusV2 {
   } | null
 }
 
+export type GrizzlyActivationStatusV1 =
+  | 'STATUS_WAIT_CODE'
+  | 'STATUS_WAIT_RESEND'
+  | 'STATUS_CANCEL'
+  | 'STATUS_OK'
+  | { remainingSeconds: number }
+
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
 export interface GrizzlyServiceItem {

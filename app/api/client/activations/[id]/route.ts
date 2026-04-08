@@ -65,7 +65,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         maxPriceSentUsd: false,
         marginRatio: false,
         providerResponseRaw: false,
-        timerExpiresAt: false,
+        timerExpiresAt: true,
         refundedAt: false,
         updatedAt: false,
         requestedCountryIso: false,

@@ -2,6 +2,7 @@ import { BaseService } from '../base.service'
 import { TTLCache } from './cache'
 import type {
   GrizzlyActivation,
+  GrizzlyActivationStatusV1,
   GrizzlyActivationStatusV2,
   GrizzlyCountryItem,
   GrizzlyGetNumberOptions,
@@ -54,7 +55,10 @@ export class GrizzlyClient extends BaseService {
     }
   }
 
-  private buildParams(action: string, extra?: Record<string, string | number | undefined>): Record<string, string> {
+  private buildParams(
+    action: string,
+    extra?: Record<string, string | number | undefined>
+  ): Record<string, string> {
     const params: Record<string, string> = { api_key: this._apiKey, action }
     if (extra) {
       for (const [k, v] of Object.entries(extra)) {
@@ -77,6 +81,10 @@ export class GrizzlyClient extends BaseService {
 
   async getStatusV2(activationId: number): Promise<GrizzlyActivationStatusV2> {
     return activation.getStatusV2(this, this._apiKey, activationId)
+  }
+
+  async getStatusV1(activationId: number): Promise<GrizzlyActivationStatusV1> {
+    return activation.getStatusV1(this, this._apiKey, activationId)
   }
 
   async getBalance(): Promise<number> {
@@ -112,7 +120,11 @@ export class GrizzlyClient extends BaseService {
       this.checkError(rawText)
       // Grizzly can return Array or Object
       let parsed: any
-      try { parsed = JSON.parse(rawText) } catch { parsed = rawText }
+      try {
+        parsed = JSON.parse(rawText)
+      } catch {
+        parsed = rawText
+      }
       const countries = Array.isArray(parsed) ? parsed : Object.values(parsed)
       this.cache.set(key, countries)
       return countries
@@ -135,7 +147,10 @@ export class GrizzlyClient extends BaseService {
         return parsed
       } catch (e) {
         this.log.error('grizzly_json_parse_failed', { text: rawText.slice(0, 100) })
-        throw this.error('grizzly_parse_error', `Unexpected response format: ${rawText.slice(0, 50)}`)
+        throw this.error(
+          'grizzly_parse_error',
+          `Unexpected response format: ${rawText.slice(0, 50)}`
+        )
       }
     }, 'getRawPricesV3')
   }

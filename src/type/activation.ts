@@ -9,6 +9,7 @@ export interface ActivationInfo {
   createdAt: string
   completedAt: string | null
   cancelledAt: string | null
+  timerExpiresAt: string | null
 }
 
 export interface RequestActivationInput {

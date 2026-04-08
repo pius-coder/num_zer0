@@ -11,12 +11,14 @@ interface ActivationsListProps {
   activations?: ActivationInfo[]
   isLoading?: boolean
   onRefetch?: () => void
+  onActivationClick?: (id: string) => void
 }
 
 export function ActivationsList({
   activations = [],
   isLoading = false,
   onRefetch,
+  onActivationClick,
 }: ActivationsListProps) {
   const cancelMutation = useCancelActivation()
 
@@ -70,6 +72,7 @@ export function ActivationsList({
                 activation={act}
                 onCopy={handleCopy}
                 onCancel={handleCancel}
+                onClick={onActivationClick ? () => onActivationClick(act.id) : undefined}
               />
             ))}
           </div>

@@ -134,8 +134,14 @@ export function useActivationsList(): UseQueryResult<ActivationsListResponse, Er
 export function useActivation(
   id: string | null,
   enabled = true
-): UseQueryResult<ActivationInfo, Error> {
-  return useQuery({
+): UseQueryResult<ActivationInfo, Error> & {
+  timerExpiresAt: string | null
+  cancelEnabled: boolean
+  cancel: () => Promise<void>
+} {
+  const qc = useQueryClient()
+
+  const activationQuery = useQuery<ActivationInfo, Error>({
     queryKey: numbersKeys.activation(id ?? ''),
     queryFn: async (): Promise<ActivationInfo> => {
       const res = await fetch(`/api/client/activations/${id}`)
@@ -152,6 +158,33 @@ export function useActivation(
       return 2_000
     },
   })
+
+  const timerExpiresAt = activationQuery.data?.timerExpiresAt ?? null
+  const cancelEnabled = timerExpiresAt ? new Date(timerExpiresAt) <= new Date() : false
+
+  const cancelMutation = useMutation({
+    mutationFn: async () => {
+      if (!id) throw new Error('No activation ID')
+      const res = await fetch(`/api/client/activations/${id}/cancel`, { method: 'POST' })
+      if (!res.ok) throw new Error('Cancel request failed')
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: numbersKeys.activation(id ?? '') })
+    },
+  })
+
+  const cancel = async () => {
+    if (!id) return
+    await cancelMutation.mutateAsync()
+  }
+
+  return {
+    ...activationQuery,
+    timerExpiresAt,
+    cancelEnabled,
+    cancel,
+  }
 }
 
 // ─── Mutations (Server Actions) ────────────────────────────────────────────

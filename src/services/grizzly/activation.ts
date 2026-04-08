@@ -1,6 +1,7 @@
 import type { BaseService } from '../base.service'
 import type {
   GrizzlyActivation,
+  GrizzlyActivationStatusV1,
   GrizzlyActivationStatusV2,
   GrizzlyGetNumberOptions,
   GrizzlySetStatusCode,
@@ -120,6 +121,27 @@ export async function getStatusV2(
     checkTextError(base, rawText)
     return JSON.parse(rawText) as GrizzlyActivationStatusV2
   }, 'getStatusV2')
+}
+
+export async function getStatusV1(
+  base: BaseService,
+  apiKey: string,
+  activationId: number
+): Promise<GrizzlyActivationStatusV1> {
+  return base.withRetry(async () => {
+    const rawText = await base.httpGetText('', {
+      params: buildParams(apiKey, 'getStatus', { id: activationId }),
+    })
+    checkTextError(base, rawText)
+    const trimmed = rawText.trim()
+    if (trimmed === 'STATUS_WAIT_CODE') return 'STATUS_WAIT_CODE'
+    if (trimmed === 'STATUS_WAIT_RESEND') return 'STATUS_WAIT_RESEND'
+    if (trimmed === 'STATUS_CANCEL') return 'STATUS_CANCEL'
+    if (trimmed === 'STATUS_OK') return 'STATUS_OK'
+    const seconds = Number.parseInt(trimmed, 10)
+    if (Number.isFinite(seconds)) return { remainingSeconds: seconds }
+    throw base.error('grizzly_parse_error', 'Unexpected getStatusV1 response', { raw: trimmed })
+  }, 'getStatusV1')
 }
 
 export async function getBalance(base: BaseService, apiKey: string): Promise<number> {
