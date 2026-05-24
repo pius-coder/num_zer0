@@ -43,3 +43,26 @@
 
 **Nouvelle motivation (file-based) :**
 > TanStack Start a besoin du route tree généré pour le SSR bundling. Les routes sont en `src/routes/` avec `createFileRoute`. La génération est automatique via le plugin Vite. Le `router.tsx` importe le tree généré. C'est la seule manière supportée par Start aujourd'hui.
+
+---
+
+## 2026-05-24 | Split Déploiement (Thème 1) | Ajouté/Modifié
+
+**Deux artifacts : backend Hono standalone + frontend TanStack Start**
+
+- `apps/app/src/server-hono.ts` — Entrypoint Hono standalone pour la prod
+- `apps/app/vite.config.ts` — RouteRules Nitro pour proxy /aura/* → backend
+- `apps/app/package.json` — Scripts `build:backend` (bun build), `dev:backend`, `start:backend`
+- `apps/app/.env.production` — Variables d'env pour la prod
+- `Dockerfile.backend` + `Dockerfile.frontend` — Images Docker pour chaque artifact
+- `packages/aura/package.json` — Ajout de toutes les dépendances manquantes (uuid, base-ui, langchain, hookform, hugeicons, cva, cmdk, vaul, recharts, resizable-panels, tanstack/react-router, vite)
+- `packages/aura/tsconfig.json` — Ajout des paths `@/aura/*` → `./src/` et `@/generated/prisma/*`
+- `tsconfig.base.json` — Correction des paths `@aura-js/core/*` et ajout `@/aura/*`
+- `packages/aura/src/server/index.ts` — Export de `createAuraHonoApp`
+- `apps/app/vite.config.ts` — Ajout alias `#/aura/` → package aura
+
+**Résultat :**
+- `bun run build:backend` → `build/backend/server-hono.js` (8.1 MB) ✅
+- `bun run build:frontend` → `.output/` (client + ssr) ✅
+- `bun src/server-hono.ts` → serveur Hono standalone sur :3001 ✅
+- `bun dev` → serveur de dev unifié (TanStack + Hono) ✅

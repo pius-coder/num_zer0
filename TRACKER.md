@@ -109,13 +109,14 @@ num_zer0/                                  ← Monorepo racine
 ## Todo list globale (référence toutes les parties du plan)
 
 ### Thème 1 — Split Déploiement (PLAN_THEMATIQUE.md §1)
-- [ ] Créer `src/server-hono.ts` (entrypoint backend standalone)
-- [ ] Configurer `build:backend` (tsup)
-- [ ] Configurer `build:frontend` (vite)
-- [ ] Ajouter RouteRules Nitro pour proxy en prod
-- [ ] Créer Dockerfile.backend
-- [ ] Créer Dockerfile.frontend
-- [ ] Configurer variables d'environnement (.env.production)
+- [x] Créer `server-hono.ts` — entrypoint Hono standalone ✅
+- [x] Configurer `build:backend` (bun build) ✅
+- [x] Configurer `build:frontend` (vite build) ✅
+- [x] Ajouter RouteRules Nitro pour proxy en prod ✅
+- [x] Créer Dockerfiles (backend + frontend) ✅
+- [x] Configurer variables d'environnement (.env.production) ✅
+- [x] Ajouter les dépendances manquantes à @aura-js/core ✅
+- [ ] Tester le split complet (deux artifacts déployés) — à faire en déploiement réel
 
 ### Thème 2 — Dashboard (PLAN_THEMATIQUE.md §2)
 - [ ] Créer EventBus (src/aura/server/observability/event-bus.ts)
@@ -139,12 +140,12 @@ num_zer0/                                  ← Monorepo racine
 - [ ] Phase 3: Nettoyage (anciens exports, tests)
 
 ### Monorepo Migration
-- [x] Phase 0: TRACKER.md + CHANGELOG.md
-- [ ] Phase 1: Structure monorepo
-- [ ] Phase 2: packages/aura
-- [ ] Phase 3: apps/app
-- [ ] Phase 4: Wiring + test
-- [ ] Phase 5: Cleanup
+- [x] Phase 0: TRACKER.md + CHANGELOG.md ✅
+- [x] Phase 1: Structure monorepo ✅
+- [x] Phase 2: packages/aura ✅
+- [x] Phase 3: apps/app ✅
+- [x] Phase 4: Wiring + test ✅
+- [x] Phase 5: Cleanup ✅
 
 ---
 
@@ -154,14 +155,18 @@ num_zer0/                                  ← Monorepo racine
 |---------|--------|--------|--------|
 | 2026-05-24 | Phase 0: système tracking | ✅ | `3c495af` |
 | 2026-05-24 | Phase 1-3: monorepo + migration framework + app | ✅ | `1550ab3` |
-| 2026-05-24 | Phase 4: wiring + test dev server | ✅ | *(en cours)* |
+| 2026-05-24 | Phase 4: wiring + test dev server | ✅ | `93dfc0c` |
+| 2026-05-24 | Phase 5: cleanup gitignore | ✅ | `2d46633` |
+| 2026-05-24 | Thème 1: Split Déploiement | ✅ | *(en cours)* |
 
 ## Prochaine action
 
-**Phase 5** : Nettoyage
-1. Supprimer `ref/` directory
-2. Supprimer `tmp/` directory
-3. Commit + push final
+**Thème 2** : Dashboard MVP
+1. EventBus (logs/metrics in-memory)
+2. MetricsStore
+3. Routes API dashboard
+4. WebSocket logs temps réel
+5. Frontend MVP (Logs, Run function, Erreurs)
 
 ---
 

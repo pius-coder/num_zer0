@@ -8,6 +8,10 @@
       "types": "./src/server/index.ts",
       "default": "./src/server/index.ts"
     },
+    "./server/hono-app": {
+      "types": "./src/server/hono-app.ts",
+      "default": "./src/server/hono-app.ts"
+    },
     "./client": {
       "types": "./src/client/index.ts",
       "default": "./src/client/index.ts"
@@ -31,21 +35,39 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1046.0",
+    "@base-ui/react": "^1.4.1",
     "@hono/node-server": "^1.13.2",
+    "@hookform/resolvers": "^5.2.2",
+    "@hugeicons/core-free-icons": "^4.1.4",
+    "@hugeicons/react": "^1.1.6",
+    "@langchain/core": "^1.1.46",
+    "@prisma/adapter-pg": "^7",
     "@prisma/client": "^7",
+    "@smithy/node-http-handler": "^4.0.0",
+    "@tanstack/react-query": "^5.100.10",
+    "@tanstack/react-router": "^1.168.11",
+    "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
+    "cmdk": "^1.1.1",
     "hono": "^4.12.18",
+    "libphonenumber-js": "^1.11.0",
+    "nuqs": "^2.8.9",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.75.0",
+    "react-resizable-panels": "^4.11.1",
+    "recharts": "^3.8.1",
+    "sonner": "^2.0.7",
+    "uuid": "^10.0.0",
+    "vaul": "^1.1.2",
     "zod": "^3.25.76",
     "zustand": "^5.0.13"
   },
-  "peerDependencies": {
-    "@tanstack/react-query": "^5.100.10",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-hook-form": "^7.75.0"
-  },
+  "peerDependencies": {},
   "devDependencies": {
+    "prisma": "^7",
     "typescript": "^6.0.2",
-    "vitest": "^4.1.5",
-    "prisma": "^7"
+    "vite": "^8.0.0",
+    "vitest": "^4.1.5"
   }
 }

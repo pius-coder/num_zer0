@@ -4,6 +4,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "paths": {
+      "@/aura/_generated/*": ["./src/_generated/*"],
+      "@/aura/*": ["./src/*"],
+      "@/generated/prisma/*": ["../../apps/app/src/generated/prisma/*"],
       "@/*": ["./src/*"]
     },
     "jsx": "react-jsx",

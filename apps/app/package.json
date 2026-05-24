@@ -5,8 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "prisma generate && vite dev --port 3000",
+    "dev:backend": "bun src/server-hono.ts",
     "build": "prisma generate && vite build",
+    "build:backend": "bun build ./src/server-hono.ts --outdir ./build/backend --target bun",
+    "build:frontend": "vite build",
     "start": "vite preview",
+    "start:backend": "bun ./build/backend/server-hono.js",
+    "start:frontend": "node .output/server/index.mjs",
     "test": "vitest run",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",

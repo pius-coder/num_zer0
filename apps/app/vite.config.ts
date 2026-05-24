@@ -16,12 +16,22 @@ export default defineConfig({
       { find: /^@\/aura\/_generated\/(.*)/, replacement: path.resolve(ROOT, "src/aura/_generated/$1") },
       { find: /^@\/aura\/(.*)/, replacement: path.resolve(PKG_AURA, "$1") },
       { find: /^@\/(.*)/, replacement: path.resolve(ROOT, "src/$1") },
+      { find: /^#\/aura\/(.*)/, replacement: path.resolve(PKG_AURA, "$1") },
     ],
   },
   plugins: [
     devtools(),
     tailwindcss(),
-    tanstackStart(),
+    tanstackStart({
+      server: {
+        routeRules: {
+          "/aura/**": { proxy: "http://localhost:3001" },
+          "/aura-internal/**": { proxy: "http://localhost:3001" },
+          "/files/**": { proxy: "http://localhost:3001" },
+          "/health": { proxy: "http://localhost:3001" },
+        },
+      },
+    }),
     viteReact(),
   ],
 });

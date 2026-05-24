@@ -19,7 +19,9 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "@aura-js/core/*": ["./packages/aura/src/aura/*"],
+      "@aura-js/core/*": ["./packages/aura/src/*"],
+      "@/aura/_generated/*": ["./apps/app/src/aura/_generated/*"],
+      "@/aura/*": ["./packages/aura/src/*"],
       "@/*": ["./apps/app/src/*"]
     }
   }
