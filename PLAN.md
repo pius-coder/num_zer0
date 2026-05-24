@@ -1,318 +1,262 @@
-# Auria Stack v3 — Plan d'Architecture
+# Plan Auria — Uniformisation API (inspiré Convex)
 
-## Vision
+## Problème
 
-Auria Stack est un framework full-stack React type-safe avec architecture **Convex-like** :
-- Backend Hono déployable séparément
-- Frontend React (SSR initial uniquement, tout le reste via hooks + WebSocket)
-- Invalidation 100% automatique via entity tracker Prisma
-- Dashboard Coolify-like pour monitorer toutes les opérations en temps réel
+Le code actuel a **3 patterns** différents pour définir des artefacts :
+
+| Pattern | Exemple | Statut |
+|---------|---------|--------|
+| Builder chainable | `defineOperationFn("x").query().input(...).entities(...).public().handler(fn)` | ✅ Opérations seulement |
+| Objet config | `defineAgent("x", { model, ... })`, `defineDbReadFn({ name, input, ... })` | ❌ Inconsistant |
+| Mini-builder | `defineWorkflow("x").handler(fn)`, `defineCommonFn("x").run(fn)` | ⚠️ Pas assez riche |
+
+**Objectif** : TOUTES les fonctions de définition utilisent le même builder pattern, et le client s'inspire de la DX Convex (args plats, mutations callables).
 
 ---
 
-## Structure Monorepo
+## 1. Uniformisation Server — Builder Unique
+
+Tous les artefacts Auria suivent le même pattern :
 
 ```
-auria/
-├── package.json               # workspaces: ["packages/*", "apps/*"]
-├── pnpm-workspace.yaml
-├── tsconfig.json              # base config
-├── turbo.json                 # pipeline de build
-├── .github/workflows/
-│   ├── ci.yml
-│   └── release.yml
-│
-├── packages/
-│   ├── core/                  # @auria/core — ZERO DEP RUNTIME
-│   │   ├── src/
-│   │   │   ├── types.ts       # OperationRef, AgentRef, ThreadRef
-│   │   │   ├── envelope.ts    # AuriaEnvelope, success/error helpers
-│   │   │   ├── errors.ts      # AuriaError hierarchy
-│   │   │   └── index.ts
-│   │   └── package.json
-│   │
-│   ├── server/                # @auria/server — BACKEND RUNTIME
-│   │   ├── src/
-│   │   │   ├── index.ts       # createAuriaApp()
-│   │   │   ├── app.ts         # Hono app factory
-│   │   │   ├── operation/
-│   │   │   │   ├── builder.ts # defineOperation() builder API
-│   │   │   │   ├── registry.ts# OperationRegistry (Map)
-│   │   │   │   └── runner.ts  # runOperation() avec entity tracker
-│   │   │   ├── context/
-│   │   │   │   ├── factory.ts # createAuriaContext()
-│   │   │   │   ├── session.ts # Session from cookie
-│   │   │   │   └── call.ts    # In-process calls
-│   │   │   ├── transport/
-│   │   │   │   ├── hono-app.ts# Mounts all sub-routers
-│   │   │   │   ├── routes/
-│   │   │   │   │   ├── bridge.ts     # POST /aura/*
-│   │   │   │   │   ├── internal.ts   # POST /aura-internal/*
-│   │   │   │   │   ├── files.ts      # GET /files/*
-│   │   │   │   │   ├── health.ts     # GET /health
-│   │   │   │   │   └── http-actions.ts # POST /aura-http/*
-│   │   │   │   ├── middleware/
-│   │   │   │   │   ├── csrf.ts       # CSRF double-submit cookie
-│   │   │   │   │   └── rate-limit.ts # Rate limiting
-│   │   │   │   └── cookies.ts
-│   │   │   ├── db/
-│   │   │   │   ├── client.ts  # Prisma singleton
-│   │   │   │   ├── readonly.ts# Read-only Prisma Proxy
-│   │   │   │   └── tracker.ts # Entity-tracker Proxy (auto-invalidation)
-│   │   │   ├── auth/
-│   │   │   │   ├── session.ts
-│   │   │   │   ├── password.ts
-│   │   │   │   ├── otp.ts
-│   │   │   │   └── operations.ts
-│   │   │   ├── ai/
-│   │   │   │   ├── agent.ts
-│   │   │   │   └── context-binding.ts
-│   │   │   ├── scheduler/
-│   │   │   │   ├── scheduler.ts
-│   │   │   │   ├── runner.ts
-│   │   │   │   └── cron.ts
-│   │   │   ├── workflows.ts
-│   │   │   ├── outbox.ts
-│   │   │   ├── search.ts
-│   │   │   ├── vector.ts
-│   │   │   ├── pagination.ts
-│   │   │   ├── notifications.ts
-│   │   │   ├── storage/
-│   │   │   │   ├── types.ts
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── filesystem.ts
-│   │   │   │   └── s3.ts
-│   │   │   ├── broadcast/
-│   │   │   │   ├── server.ts     # WebSocket + HTTP broadcast
-│   │   │   │   └── publish.ts    # publishInvalidation()
-│   │   │   ├── discovery.ts
-│   │   │   └── vite-plugin.ts
-│   │   └── package.json
-│   │
-│   ├── client/               # @auria/client — FRONTEND RUNTIME
-│   │   ├── src/
-│   │   │   ├── index.ts
-│   │   │   ├── provider.tsx     # AuriaProvider (QueryClient + BC + WS)
-│   │   │   ├── hooks.ts        # useQuery, useMutation, useManifest
-│   │   │   ├── transport.ts    # callOperation(), CSRF auto-heal
-│   │   │   ├── form.ts         # useAuriaForm
-│   │   │   ├── guard.tsx       # Auth guard
-│   │   │   ├── paginated-query.ts
-│   │   │   ├── agent.ts
-│   │   │   ├── params.ts
-│   │   │   ├── stepper.ts
-│   │   │   ├── manifest-cache.ts
-│   │   │   └── hydration-boundary.tsx
-│   │   └── package.json
-│   │
-│   ├── cli/                  # @auria/cli — CLI OUTILS
-│   │   ├── src/
-│   │   │   ├── index.ts
-│   │   │   └── commands/
-│   │   │       ├── make.ts
-│   │   │       ├── codegen.ts
-│   │   │       ├── doctor.ts
-│   │   │       ├── cron.ts
-│   │   │       └── outbox.ts
-│   │   └── package.json
-│   │
-│   ├── ui/                   # @auria/ui — UI COMPONENTS
-│   │   ├── src/
-│   │   │   ├── index.ts
-│   │   │   ├── aura-data-table.tsx
-│   │   │   ├── aura-form.tsx
-│   │   │   ├── aura-auth-card.tsx
-│   │   │   ├── aura-agent-chat.tsx
-│   │   │   ├── aura-dashboard-shell.tsx
-│   │   │   ├── aura-empty-state.tsx
-│   │   │   ├── aura-bump-toaster.tsx
-│   │   │   ├── aura-confirm-dialog.tsx
-│   │   │   ├── aura-file-upload.tsx
-│   │   │   ├── aura-search-input.tsx
-│   │   │   ├── aura-error-boundary.tsx
-│   │   │   ├── aura-loading-skeleton.tsx
-│   │   │   ├── aura-settings-layout.tsx
-│   │   │   └── aura-guard-view.tsx
-│   │   └── package.json
-│   │
-│   └── create-app/           # create-auria-app
-│       ├── src/index.ts
-│       └── template/
-│
-├── apps/
-│   ├── api/                  # BACKEND DÉPLOYABLE
-│   │   ├── src/
-│   │   │   ├── server.ts
-│   │   │   ├── aura.config.ts
-│   │   │   └── operations/
-│   │   │       ├── _registry.ts
-│   │   │       ├── system/health.operation.ts
-│   │   │       └── todos/
-│   │   ├── prisma/schema.prisma
-│   │   ├── Dockerfile
-│   │   └── package.json
-│   │
-│   ├── dashboard/            # DASHBOARD COOLIFY-LIKE
-│   │   ├── src/
-│   │   │   ├── client.tsx
-│   │   │   ├── router.tsx
-│   │   │   ├── server.ts
-│   │   │   ├── app/
-│   │   │   │   └── routes/
-│   │   │   │       ├── __root.tsx
-│   │   │   │       ├── index.tsx
-│   │   │   │       ├── operations.tsx
-│   │   │   │       ├── logs.tsx
-│   │   │   │       ├── database.tsx
-│   │   │   │       ├── jobs.tsx
-│   │   │   │       ├── agents.tsx
-│   │   │   │       ├── users.tsx
-│   │   │   │       ├── storage.tsx
-│   │   │   │       ├── settings.tsx
-│   │   │   │       └── api-keys.tsx
-│   │   │   ├── components/
-│   │   │   │   ├── overview-cards.tsx
-│   │   │   │   ├── realtime-log-stream.tsx
-│   │   │   │   ├── operations-table.tsx
-│   │   │   │   ├── metrics-chart.tsx
-│   │   │   │   └── deployment-status.tsx
-│   │   │   └── hooks/
-│   │   │       ├── use-operations.ts
-│   │   │       ├── use-logs.ts
-│   │   │       └── use-metrics.ts
-│   │   ├── aura.config.ts
-│   │   ├── prisma/schema.prisma
-│   │   └── package.json
-│   │
-│   └── example/              # STARTER APP
-│
-├── docs/
-│   ├── architecture.md
-│   ├── getting-started.md
-│   ├── operations.md
-│   └── deployment.md
-└── prisma/schema.prisma      # Shared
+defineXXX("domain.name")
+  .optionalConfig()
+  .optionalMeta()
+  .define(fn)        // ← toujours .define() à la fin
+```
+
+### Operations (query/mutation/action)
+
+```typescript
+// Current (déjà bon mais renommer .handler → .define)
+export const list = defineQuery("todos.list")
+  .input(z.object({ status: z.string().optional() }))
+  .entities(["Todo"])
+  .public()
+  .define(async ({ ctx, input }) => {
+    return ctx.db.todo.findMany({ where: input.status ? { status: input.status } : undefined })
+  })
+
+// Mêmes constructeurs pour mutation / action
+export const create = defineMutation("todos.create")
+  .input(z.object({ title: z.string().min(1) }))
+  .entities(["Todo"])
+  .public()
+  .define(async ({ ctx, input }) => {
+    return ctx.db.todo.create({ data: { title: input.title } })
+  })
+
+export const doSomething = defineAction("todos.doSomething")
+  .input(z.object({ url: z.string() }))
+  .public()
+  .define(async ({ ctx, input }) => {
+    return ctx.fetch(input.url)
+  })
+```
+
+Changements :
+- `defineOperationFn("x")` → `defineQuery("x")` / `defineMutation("x")` / `defineAction("x")`
+- `.handler(fn)` → `.define(fn)` (uniforme avec les autres)
+- `.query().input().entities().public().handler()` → `defineQuery().input().entities().public().define()`
+
+### Agent
+
+```typescript
+// Avant : defineAgent("x", { model, systemPrompt, tools })
+// Après :
+export const planner = defineAgent("ai.todo-planner")
+  .model(new ChatOpenRouter({ model: "gpt-4o-mini" }))
+  .systemPrompt("Tu es un assistant qui décompose des objectifs en tâches.")
+  .tools([operationAsTool(api.todos.create, { description: "..." })])
+  .maxSteps(5)
+  .define()
+```
+
+### DbReadFn
+
+```typescript
+// Avant : defineDbReadFn({ name, input, output, execute })
+// Après :
+export const activeUsers = defineDbReadFn("users.active")
+  .input(z.object({ days: z.number() }))
+  .output(z.array(userSchema))
+  .define(async ({ db, input }) => {
+    return db.$queryRaw`SELECT * FROM "AuraUser" WHERE ...`
+  })
+```
+
+### Workflow
+
+```typescript
+// Avant : defineWorkflow("x").handler(fn)
+// Après :
+export const fulfillOrder = defineWorkflow("orders.fulfill")
+  .define(async ({ ctx, input, step, sleep }) => {
+    const payment = await step("charge-payment", () => ...)
+    await step("send-email", () => ...)
+  })
+```
+
+### Search Index
+
+```typescript
+// Avant : defineSearchIndex("model", { fields })
+// Après :
+export const todoSearch = defineSearchIndex("Todo")
+  .fields(["title", "description"])
+  .language("french")
+  .define()
+```
+
+### Vector Index
+
+```typescript
+// Avant : defineVectorIndex("model", { vectorField })
+// Après :
+export const productVector = defineVectorIndex("Product")
+  .vectorField("embedding")
+  .dimensions(1536)
+  .indexType("hnsw")
+  .define()
+```
+
+### HttpAction
+
+```typescript
+// Déjà bon (builder) — juste renommer .handler → .define
+export const stripeWebhook = defineHttpAction("/webhook/stripe")
+  .method("POST")
+  .public()
+  .define(async (ctx, request) => {
+    return new Response("ok")
+  })
 ```
 
 ---
 
-## Phases d'implémentation
+## 2. Client DX — Inspiré Convex
 
-### Phase 0 : Nettoyage Architectural Critique
+### useQuery — args plats
 
-**0.1** — Suppression de `ctx.invalidate()` — Invalidation 100% entités automatiques
-- Brancher l'`entity-tracker.ts` (Proxy Prisma) dans le runner
-- Le tracker enveloppe le PrismaClient dans le contexte
-- Après handler, `tracker.writes` devient le set d'invalidation
-- Supprimer `ctx.invalidate()` et `ctx.invalidatedEntities` du contexte
-- `.entities([...])` reste optionnel (entités hors Prisma)
+```typescript
+// AVANT :
+const { data } = useAuraQuery(api.todos.list, { input: { status: "PENDING" } })
 
-```
-Runner flow:
-1. createTrackedPrismaClient(ctx.db) → { client, tracker }
-2. Handler s'exécute avec trackedDb
-3. ctx.db.todo.create(...) → tracker.writes.add("Todo")
-4. Après handler: invalidates = [...operation.entities, ...tracker.writes]
-5. publishInvalidation({ keys: invalidates })
+// APRÈS :
+const data = useQuery(api.todos.list, { status: "PENDING" })
 ```
 
-**0.2** — Séparation Backend / Frontend
-- `apps/api/` = serveur Hono standalone
-- `apps/dashboard/` = app React (SSR initial, hooks ensuite)
+- Plus de `{ input: {...} }` wrapper
+- Args passés directement (plats, comme Convex)
+- Retourne `undefined` pendant le chargement (plus `{ data, isLoading }`)
+- `"skip"` pour désactiver (comme Convex)
 
-### Phase 1 : Structure Monorepo
-- Créer tous les packages, apps, configs (pnpm workspace, turbo, tsconfig)
-- Rename `aura` → `auria` dans tout le codebase
+### useMutation — callable directe
 
-### Phase 2 : Builder API `().()` (DDX)
-- Nouveau builder : `auria.operation("name").type("mutation").input(z).handler(fn)`
-- API client chaînée : `api.todos().list({ input })` au lieu de `api.todos.list`
-- Codegen update pour générer des fonctions au lieu d'objets
+```typescript
+// AVANT :
+const create = useAuraMutation(api.todos.create)
+create.mutate({ title: "..." })
 
-### Phase 3 : Entity Tracker Runner
-- Wire `createTrackedPrismaClient` dans le runner
-- Remplacer l'invalidation manuelle par l'auto-detection
-- Supprimer `ctx.invalidate` de tous les types
-
-### Phase 4 : Dashboard Coolify-like
-- 10 pages (Overview, Operations, Logs, DB, Jobs, Agents, Users, Storage, Settings, API Keys)
-- Opérations dashboard préfixées `dashboard.*`
-- Temps réel via WebSocket broadcast
-- Composants : stats-cards, realtime-log-stream, operations-table, metrics-chart
-
-### Phase 5 : Déploiement Deux Bases
-
-**Backend (apps/api)** :
-```dockerfile
-FROM oven/bun:1
-EXPOSE 3001
-CMD ["bun", "dist/server.js"]
+// APRÈS :
+const create = useMutation(api.todos.create)
+create({ title: "..." })
 ```
-Routes : `POST /aura/*`, `GET /aura/_manifest`, `POST /aura-internal/*`, `POST /aura-http/*`, `GET /files/*`, `GET /health`, `WS /ws`
 
-**Frontend (apps/dashboard)** :
-- Build static → Vercel / Cloudflare Pages
-- SSR initial uniquement (1er fetch)
-- Tout le reste via hooks + WebSocket temps réel
+- `useMutation(ref)` retourne une **fonction async** `(args) => Promise<T>`
+- Plus de `.mutate()`, `.isPending`, etc.
+- `onSuccess`, `onError`, `invalidate` via options séparées si besoin :
+  ```typescript
+  const create = useMutation(api.todos.create, {
+    onSuccess: (data) => { ... },
+    invalidate: ["Todo"],
+  })
+  ```
+  Mais par défaut les entités sont déduites du manifeste (auto-invalidation).
 
-### Phase 6 : Rename `aura` → `auria`
-- `@aura/*` → `@auria/*`
-- `AuraError` → `AuriaError`
-- `AuraContext` → `AuriaContext`
-- Variables d'env `AURA_*` → `AURIA_*`
+### useAction
+
+```typescript
+const doAction = useAction(api.todos.doSomething)
+doAction({ url: "..." })
+```
+
+Même pattern que `useMutation`.
+
+### Gestion d'état
+
+```typescript
+// Loading : data est undefined
+const data = useQuery(api.todos.list, params)
+if (data === undefined) return <Loading />
+
+// Error : try/catch ou error boundary
+// Skip : "skip"
+const data = useQuery(api.todos.list, shouldFetch ? params : "skip")
+```
 
 ---
 
-## Architecture d'invalidation automatique
+## 3. Changements Concrets
+
+### Fichiers à modifier
+
+| Fichier | Changement |
+|---------|-----------|
+| `src/aura/core/types.ts` | Ajouter `defineQuery`/`defineMutation`/`defineAction` types |
+| `src/aura/server/operation.ts` | Renommer `defineOperationFn` → `defineQuery`/`defineMutation`/`defineAction`. `.handler(fn)` → `.define(fn)` |
+| `src/aura/server/agent.ts` | `defineAgent(name, obj)` → builder chainable |
+| `src/aura/server/db-read.ts` | `defineDbReadFn({ object })` → builder chainable |
+| `src/aura/server/search.ts` | `defineSearchIndex(name, obj)` → builder chainable |
+| `src/aura/server/vector.ts` | `defineVectorIndex(name, obj)` → builder chainable |
+| `src/aura/server/workflow.ts` | `defineWorkflow(name).handler(fn)` → builder chainable avec `.define()` |
+| `src/aura/server/http-action.ts` | `.handler(fn)` → `.define(fn)` |
+| `src/aura/client/hooks.ts` | `useAuraQuery` → `useQuery`. `useAuraMutation` → `useMutation`. Args plats. Callables. |
+| `src/aura/client/index.ts` | Mettre à jour les exports |
+| `src/operations/**/*.operation.ts` | Migrer toutes les ops vers `defineQuery`/`defineMutation`/`defineAction` |
+| `src/operations/ai/todo-planner.agent.ts` | Migrer vers builder chainable |
+| `src/aura/_generated/api.ts` | Ajuster la codegen pour les nouveaux noms |
+
+### Nouveaux fichiers
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│ FLOW D'INVALIDATION                                         │
-│                                                             │
-│ Opération :                                                  │
-│   defineOperation("todos.create").type("mutation")           │
-│     .input(z.object({ title: z.string() }))                 │
-│     .handler(async ({ ctx, input }) => {                    │
-│       const t = await ctx.db.todo.create({ data: input })   │
-│       await ctx.db.user.update(...)                         │
-│       return t                                              │
-│     })                                                      │
-│                                                             │
-│ Runner :                                                    │
-│   const { client, tracker } = createTrackedPrismaClient(db) │
-│   const data = await handler({ ctx: { ...ctx, db: client } })│
-│   // tracker.writes = { "Todo", "User" }                    │
-│   invalidates = [...operation.entities, ...tracker.writes]  │
-│   publishInvalidation({ keys: invalidates })                │
-│                                                             │
-│ Broadcast :                                                 │
-│   POST /invalidate (HMAC signé) → WebSocket fanout          │
-│                                                             │
-│ Client :                                                    │
-│   WebSocket reçoit → invalidateQueries predicate            │
-│   → refetch automatique des queries qui matchent            │
-└─────────────────────────────────────────────────────────────┘
+src/aura/server/
+  define-query.ts       // defineQuery() builder
+  define-mutation.ts    // defineMutation() builder  
+  define-action.ts      // defineAction() builder
+  define-agent.ts       // defineAgent() builder (extrait de agent.ts)
+  define-db-read.ts     // defineDbReadFn() builder (extrait de db-read.ts)
+  define-search.ts      // defineSearchIndex() builder
+  define-vector.ts      // defineVectorIndex() builder
+  define-workflow.ts    // defineWorkflow() builder
 ```
 
-## Dashboard Coolify — Pages et opérations
+Ou tout garder dans les fichiers existants, juste changer les signatures.
 
-| Route | Page | Opérations |
-|-------|------|------------|
-| `/` | Overview | `dashboard.overview.stats` |
-| `/operations` | Operations | `dashboard.operations.list`, `.recent` |
-| `/logs` | Logs | `dashboard.logs.stream` (WS) |
-| `/database` | Database | `dashboard.db.status`, `.migrations` |
-| `/jobs` | Jobs | `dashboard.jobs.list`, `.run` |
-| `/agents` | Agents | `dashboard.agents.threads`, `.usage` |
-| `/users` | Users | `dashboard.users.list`, `.sessions` |
-| `/storage` | Storage | `dashboard.storage.usage` |
-| `/settings` | Settings | `dashboard.settings.get`, `.update` |
-| `/api-keys` | API Keys | `dashboard.apikeys.list`, `.create` |
+---
 
-## Conventions
+## 4. Plan d'Implémentation
 
-- Namespace packages : `@auria/*`
-- Suffixes fichiers : `.operation.ts`, `.agent.ts`, `.cron.ts`, `.workflow.ts`, `.http.ts`, `.search.ts`, `.vector.ts`, `.db-read.ts`, `.component.ts`
-- Auto-discovery : le codegen scane les dossiers et génère `_registry.ts` + `api.ts`
-- Noms en kebab-case, chemins deviennent noms dotted (ex: `todos/list.operation.ts` → `todos.list`)
-- Le dashboard utilise Auria lui-même comme backend (scratch your own itch)
+### Phase 1 — Nouveaux constructeurs server
+- Créer `defineQuery` / `defineMutation` / `defineAction` (wrap `defineOperationFn`)
+- Ajouter `.define()` comme alias de `.handler()`
+- Migrer toutes les ops existantes
+
+### Phase 2 — Builder uniforme pour les autres fonctions
+- `defineAgent` : passer d'objet à builder
+- `defineDbReadFn` : idem
+- `defineSearchIndex` : idem
+- `defineVectorIndex` : idem
+- `defineWorkflow` : ajouter `.define()`
+
+### Phase 3 — Nouveau client DX
+- `useQuery(ref, flatArgs)` au lieu de `useAuraQuery(ref, { input })`
+- `useMutation(ref)` → `(args) => Promise<T>` au lieu de `{ mutate }`
+- `useAction(ref)` → `(args) => Promise<T>`
+- Option `"skip"` pour désactiver les queries
+- Auto-invalidation via entités du manifeste
+
+### Phase 4 — Nettoyage
+- Retirer les anciens exports (`useAuraQuery`, `useAuraMutation`, `defineOperationFn`)
+- Mettre à jour la codegen
+- Mettre à jour les tests
