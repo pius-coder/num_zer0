@@ -5,6 +5,33 @@
 
 ---
 
+## Resume Session (lecture obligatoire après reset)
+
+**Projet :** Aura — framework full-stack React/Hono/Prisma en monorepo Bun (pas pnpm, pas node).
+
+**Structure :** `packages/aura/` = framework `@aura-js/core` (server, client, ui, core, cli) ; `apps/app/` = projet utilisateur `@aura-js/app`.
+
+**Routing :** File-based avec `createFileRoute` dans `src/routes/`, `routeTree.gen.ts` généré par Vite. TanStack Start impose ça pour le SSR.
+
+**Dernier commit :** `ce3e460` "brain update 1" (Thème 1 split déploiement terminé).
+
+**Builds qui marchent :** `bun run build:backend` → `build/backend/server-hono.js` (8.1 MB, serveur Hono standalone). `bun run build:frontend` → `.output/` (client + SSR). `bun src/server-hono.ts` pour backend en dev.
+
+**Prochaine action :** Thème 2 — Dashboard MVP. Créer EventBus in-memory, MetricsStore, routes API dashboard, WebSocket logs, et frontend MVP (Logs, Run function, Erreurs). Tout le code va dans `packages/aura/src/server/dashboard/` et `packages/aura/src/server/observability/`.
+
+**Pièges connus :**
+- `packages/aura/` importe `@/generated/prisma/client` (app-specific). Les tsconfig paths pointent vers `../../apps/app/src/generated/prisma/`.
+- Les fichiers UI importent `#/aura/ui/*` (alias Vite configuré) et `@/lib/utils`, `@/components/*`, `@/hooks/*` (app-specific).
+- `context-adapter.ts` (dans server/) importe `@tanstack/start-server-core` — ne pas inclure dans le barrel serveur si on veut un backend standalone.
+- `packages/aura/package.json` a TOUTES les dépendances déclarées (plus de 30) — ne pas hésiter à en ajouter si manquantes, sinon Vite 8/Rolldown échoue.
+
+**Fichiers clés :**
+- `PLAN.md` = standardisation DX (builders, hooks)
+- `PLAN_THEMATIQUE.md` = split, dashboard, Hono (3 thèmes)
+- `CHANGELOG.md` = log de chaque modif avec old/new motivation
+
+---
+
 ## Architecture (source de vérité)
 
 ```
