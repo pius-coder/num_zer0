@@ -1,0 +1,14 @@
+{
+  "name": "num_zer0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @aura-js/app dev",
+    "build": "pnpm --filter @aura-js/core build && pnpm --filter @aura-js/app build",
+    "test": "pnpm --filter @aura-js/core test && pnpm --filter @aura-js/app test",
+    "clean": "pnpm -r exec rm -rf dist .output node_modules"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  }
+}

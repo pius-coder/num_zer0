@@ -152,17 +152,22 @@ num_zer0/                                  ← Monorepo racine
 
 | Session | Action | Statut | Commit |
 |---------|--------|--------|--------|
-| 2026-05-24 | Création TRACKER.md + CHANGELOG.md | ✅ | — |
+| 2026-05-24 | Phase 0: système tracking | ✅ | `3c495af` |
+| 2026-05-24 | Phase 1-3: monorepo + migration framework + app | ✅ | *(en cours)* |
 
 ## Prochaine action
 
-**Phase 1** : Créer la structure monorepo
-1. Créer `pnpm-workspace.yaml`
-2. Créer root `package.json` avec workspaces
-3. Créer `packages/aura/package.json`
-4. Créer `apps/app/package.json`
-5. Copier le code framework dans `packages/aura/`
-6. Copier le code app dans `apps/app/`
+**Phase 4** : Tester que l'app fonctionne
+1. Installer les dépendances (`pnpm install`)
+2. Lancer `prisma generate`
+3. Tester `pnpm dev`
+4. Corriger les erreurs d'import
+
+**Phase 5** : Nettoyage
+1. Supprimer `ref/` directory
+2. Supprimer `tmp/` directory
+3. Mettre à jour `.gitignore`
+4. Commit final
 
 ---
 
