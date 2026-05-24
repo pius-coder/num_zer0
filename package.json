@@ -1,14 +1,11 @@
 {
   "name": "num_zer0",
   "private": true,
+  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
-    "dev": "pnpm --filter @aura-js/app dev",
-    "build": "pnpm --filter @aura-js/core build && pnpm --filter @aura-js/app build",
-    "test": "pnpm --filter @aura-js/core test && pnpm --filter @aura-js/app test",
-    "clean": "pnpm -r exec rm -rf dist .output node_modules"
-  },
-  "engines": {
-    "node": ">=22",
-    "pnpm": ">=10"
+    "dev": "bun run --filter @aura-js/app dev",
+    "build": "bun run --filter @aura-js/core build && bun run --filter @aura-js/app build",
+    "test": "bun run --filter @aura-js/core test && bun run --filter @aura-js/app test",
+    "clean": "rm -rf packages/*/{dist,.output,node_modules} apps/*/{dist,.output,node_modules} node_modules"
   }
 }

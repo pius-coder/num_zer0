@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuraQuery, useAuraMutation } from "@/aura/client";
 import { api } from "@/aura/_generated/api";
@@ -14,6 +15,10 @@ import { AuraEmptyState, AuraLoadingSkeleton, AuraConfirmDialog } from "@/aura/u
 import { cn } from "@/lib/utils";
 import type { Todo } from "@/aura/entities";
 
+export const Route = createFileRoute("/todos")({
+  component: TodosPage,
+});
+
 const PRIORITY_VARIANTS = {
   LOW: "secondary",
   MEDIUM: "outline",
@@ -28,7 +33,7 @@ const PRIORITY_LABELS = {
   URGENT: "Urgente",
 } as const;
 
-export default function TodosPage() {
+function TodosPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "PENDING" | "IN_PROGRESS" | "DONE">("all");
 
   const { data, isLoading } = useAuraQuery(api.todos.list, {

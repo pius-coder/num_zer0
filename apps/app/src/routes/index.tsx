@@ -1,7 +1,12 @@
+import { createFileRoute } from '@tanstack/react-router'
 import { useAuraQuery } from '@/aura/client'
 import { api } from '@/aura/_generated/api'
 
-export default function HomePage() {
+export const Route = createFileRoute('/')({
+  component: HomePage,
+})
+
+function HomePage() {
   const { data, isPending } = useAuraQuery(api.system.health)
 
   return (

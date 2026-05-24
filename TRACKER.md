@@ -153,21 +153,15 @@ num_zer0/                                  ← Monorepo racine
 | Session | Action | Statut | Commit |
 |---------|--------|--------|--------|
 | 2026-05-24 | Phase 0: système tracking | ✅ | `3c495af` |
-| 2026-05-24 | Phase 1-3: monorepo + migration framework + app | ✅ | *(en cours)* |
+| 2026-05-24 | Phase 1-3: monorepo + migration framework + app | ✅ | `1550ab3` |
+| 2026-05-24 | Phase 4: wiring + test dev server | ✅ | *(en cours)* |
 
 ## Prochaine action
-
-**Phase 4** : Tester que l'app fonctionne
-1. Installer les dépendances (`pnpm install`)
-2. Lancer `prisma generate`
-3. Tester `pnpm dev`
-4. Corriger les erreurs d'import
 
 **Phase 5** : Nettoyage
 1. Supprimer `ref/` directory
 2. Supprimer `tmp/` directory
-3. Mettre à jour `.gitignore`
-4. Commit final
+3. Commit + push final
 
 ---
 

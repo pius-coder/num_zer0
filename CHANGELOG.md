@@ -21,20 +21,25 @@
 
 **Migration monorepo complète : structure + framework + app**
 
-- `pnpm-workspace.yaml`, `package.json` racine, `.gitignore`, `tsconfig.base.json`
+- `package.json` racine avec workspaces bun, `.gitignore`, `tsconfig.base.json`
 - `packages/aura/` — package `@aura-js/core` avec exports server/client/ui/shared/core/cli
 - `apps/app/` — package `@aura-js/app` avec l'application utilisateur
 - Migration du framework : `src/aura/*` → `packages/aura/src/*`
 - Migration de l'app : `ref/aura_stack/src/*` → `apps/app/src/*`
 - `_generated/` gardé dans l'app car spécifique au projet
-- Conversion file-based → code-based routing
-  - Ancien: `createFileRoute('/')` + `routeTree.gen.ts`
-  - Nouveau: `createRoute({ path: '/', component: ... })` dans `router.tsx`
 - `vite.config.ts` avec alias regex : `@/aura/_generated/*` → local, sinon `@/aura/*` → package
-- Routeurs convertis : layout, home, about, todos
 
-**Ancienne motivation (file-based) :**
-> Les routes sont définies par fichiers dans `app/routes/` avec `createFileRoute`. Le route tree est généré automatiquement par le plugin TanStack Router.
+## 2026-05-24 | Phase 4 | Modifié
 
-**Nouvelle motivation (code-based) :**
-> Les routes sont définies en dur dans `router.tsx` avec `createRoute`. Pas de génération, pas de fichiers de routes, contrôle total sur le route tree. L'utilisateur préfère le contrôle explicite à la magie implicite.
+**Routes file-based (compatibilité TanStack Start)**
+
+- Retour aux routes file-based car TanStack Start nécessite la génération du route tree pour le SSR
+- `src/routes/` avec `createFileRoute` — layout, home, about, todos
+- `router.tsx` importe depuis `routeTree.gen.ts`
+- `routeTree.gen.ts` ajouté au `.gitignore`
+
+**Ancienne motivation (code-based) :**
+> `createRoute()` dans `router.tsx` — contrôle total, pas de génération.
+
+**Nouvelle motivation (file-based) :**
+> TanStack Start a besoin du route tree généré pour le SSR bundling. Les routes sont en `src/routes/` avec `createFileRoute`. La génération est automatique via le plugin Vite. Le `router.tsx` importe le tree généré. C'est la seule manière supportée par Start aujourd'hui.
