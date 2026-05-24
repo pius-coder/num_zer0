@@ -69,3 +69,6 @@ dist/
 .vscode/
 *.swp
 *.swo
+
+# Agent secrets (tokens, API keys)
+.memory/secrets*
