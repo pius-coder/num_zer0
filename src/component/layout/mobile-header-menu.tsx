@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 
 interface MobileHeaderMenuProps {
   locale: string
@@ -11,13 +11,13 @@ export function MobileHeaderMenu({ locale, onSignOut }: MobileHeaderMenuProps) {
   return (
     <>
       <Link
-        href={`/${locale}/recharge`}
+        to={`/${locale}/recharge`}
         className='flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/[0.04] text-zinc-300 hover:text-white transition-colors'
       >
         <span className='text-[14px] font-semibold'>Recharge</span>
       </Link>
       <Link
-        href={`/${locale}/support`}
+        to={`/${locale}/support`}
         className='flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/[0.04] text-zinc-300 hover:text-white transition-colors'
       >
         <span className='text-[14px] font-semibold'>Support</span>

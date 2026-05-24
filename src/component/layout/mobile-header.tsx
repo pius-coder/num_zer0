@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useLocation } from 'react-router-dom'
 import { signOut } from '@/common/auth/auth-client'
 import { getRouteTitleFromPathname } from './route-titles'
 import { MobileHeaderLogo } from './mobile-header-logo'
@@ -15,7 +15,7 @@ interface MobileHeaderProps {
 
 export function MobileHeader({ locale = 'fr', isWallet = false, credits = 0 }: MobileHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const pathname = usePathname()
+  const { pathname } = useLocation()
   const currentTitle = getRouteTitleFromPathname(pathname)
 
   const handleSignOut = () => {

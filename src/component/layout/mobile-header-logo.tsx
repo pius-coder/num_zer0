@@ -1,8 +1,8 @@
 'use client'
 
+import { Link } from 'react-router-dom'
 import { PixelHeading } from '@/component/ui/pixel-heading'
 import { RechargeTriggerButton } from '@/component/recharge/recharge-trigger-button'
-import Link from 'next/link'
 
 interface MobileHeaderLogoProps {
   locale: string
@@ -13,7 +13,7 @@ interface MobileHeaderLogoProps {
 export function MobileHeaderLogo({ locale, isWallet, credits }: MobileHeaderLogoProps) {
   return (
     <div className='flex h-14 mx-7 mt-6.5 items-center justify-between bg-transparent'>
-      <Link href={`/${locale}/my-space`} className='flex items-center gap-2.5'>
+      <Link to={`/${locale}/my-space`} className='flex items-center gap-2.5'>
         <PixelHeading
           as='h1'
           initialFont='line'

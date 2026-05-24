@@ -1,11 +1,9 @@
+'use client'
+
 import { Suspense } from 'react'
-import { setRequestLocale } from 'next-intl/server'
 import { WalletPageShell } from '@/component/wallet/wallet-page-shell'
 
-export default async function WalletPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export function WalletPage() {
   return (
     <Suspense
       fallback={

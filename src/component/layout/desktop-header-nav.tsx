@@ -1,7 +1,6 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link, useLocation } from 'react-router-dom'
 import { Home, Wallet } from 'lucide-react'
 
 interface DesktopHeaderNavProps {
@@ -14,7 +13,7 @@ const NAV_ITEMS = [
 ]
 
 export function DesktopHeaderNav({ locale }: DesktopHeaderNavProps) {
-  const pathname = usePathname()
+  const { pathname } = useLocation()
 
   return (
     <nav className='flex items-center gap-1'>
@@ -25,7 +24,7 @@ export function DesktopHeaderNav({ locale }: DesktopHeaderNavProps) {
         return (
           <Link
             key={href}
-            href={fullHref}
+            to={fullHref}
             className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
               isActive
                 ? 'bg-muted text-foreground'

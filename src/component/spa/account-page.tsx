@@ -1,18 +1,13 @@
-import { setRequestLocale } from 'next-intl/server'
-import { redirect } from 'next/navigation'
-import { getServerSession } from '@/common/auth/get-server-session'
+'use client'
+
+import { useParams } from 'next/navigation'
 import { ProfileForm } from '@/component/account/profile-form'
 import { DeleteAccount } from '@/component/account/delete-account'
 import { LogoutButton } from '@/component/account/logout-button'
 
-export default async function AccountPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
-  const session = await getServerSession()
-  if (!session) {
-    redirect(`/${locale}/login`)
-  }
+export function AccountPage() {
+  const params = useParams()
+  const locale = params.locale as string
 
   return (
     <div className='mx-auto max-w-2xl space-y-8 px-4 py-8 md:px-6'>

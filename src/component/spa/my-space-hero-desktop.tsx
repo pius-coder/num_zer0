@@ -1,3 +1,5 @@
+'use client'
+
 export function MySpaceHeroDesktop() {
   return (
     <section className='hidden lg:block mb-8'>

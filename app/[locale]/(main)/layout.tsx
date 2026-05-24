@@ -1,39 +1,30 @@
-import { redirect } from 'next/navigation'
-import { setRequestLocale } from 'next-intl/server'
-import { getServerSession } from '@/common/auth/get-server-session'
-import { DesktopHeader } from '@/component/layout/desktop-header'
-import { MobileHeader } from '@/component/layout/mobile-header-wrapper'
-import { MobileBottomNav } from '@/component/layout/mobile-bottom-nav'
-import { SupportFloatingButton } from '@/component/support/support-floating-button'
-import { RechargeDrawerProvider } from '@/component/recharge/recharge-drawer-provider'
+'use client'
 
-export default async function MainLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
+import { useEffect } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { useSession } from '@/hooks/use-session'
 
-  const session = await getServerSession()
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useSession()
+  const router = useRouter()
+  const params = useParams()
+  const locale = params.locale as string
 
-  if (!session) {
-    redirect(`/${locale}/login`)
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace(`/${locale}/login`)
+    }
+  }, [isLoading, isAuthenticated, locale, router])
+
+  if (isLoading) {
+    return (
+      <div className='flex h-dvh items-center justify-center bg-background'>
+        <div className='h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent' />
+      </div>
+    )
   }
 
-  return (
-    <RechargeDrawerProvider>
-      <div className='flex h-dvh flex-col bg-background'>
-        <DesktopHeader locale={locale} />
-        <MobileHeader locale={locale} />
-        <main className='flex-1 overflow-y-auto'>
-          <div className='pb-20 md:pb-8'>{children}</div>
-        </main>
-        <MobileBottomNav locale={locale} />
-        <SupportFloatingButton />
-      </div>
-    </RechargeDrawerProvider>
-  )
+  if (!isAuthenticated) return null
+
+  return children
 }

@@ -1,3 +1,5 @@
+'use client'
+
 export function MySpaceHeroMobile() {
   return (
     <section className='relative isolate overflow-hidden border border-border bg-card px-5 py-6 lg:hidden'>

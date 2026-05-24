@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { useLocation } from 'react-router-dom'
 import { useBalance } from '@/hooks/use-credits'
 import { MobileHeader as MobileHeaderBase } from './mobile-header'
 
@@ -9,7 +9,7 @@ interface MobileHeaderWrapperProps {
 }
 
 export function MobileHeader({ locale }: MobileHeaderWrapperProps) {
-  const pathname = usePathname()
+  const { pathname } = useLocation()
   const { data: balance } = useBalance()
 
   const isWallet = pathname.includes('/wallet')
