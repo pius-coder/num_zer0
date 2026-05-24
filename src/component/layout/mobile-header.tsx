@@ -12,6 +12,17 @@ interface MobileHeaderProps {
   credits?: number
 }
 
+/**
+ * Render the mobile header containing the logo and title bar for small screens.
+ *
+ * The header derives its title from the current React Router pathname, manages a local
+ * menu open state, and triggers sign-out which redirects the browser to "/{locale}/login"
+ * where `{locale}` is the first segment of the current pathname.
+ *
+ * @param isWallet - When true, render wallet-specific logo state
+ * @param credits - Numeric credit value to display in the logo area
+ * @returns The JSX element for the mobile header (visible on screens below `md`)
+ */
 export function MobileHeader({ isWallet = false, credits = 0 }: MobileHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { pathname } = useLocation()

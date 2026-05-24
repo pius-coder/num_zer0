@@ -9,6 +9,13 @@ interface MobileHeaderLogoProps {
   credits: number
 }
 
+/**
+ * Renders the mobile header logo with a link to the user's space and a recharge control.
+ *
+ * @param isWallet - Whether the current page is the wallet page; when true the recharge button hides itself.
+ * @param credits - Number of credits to pass to the recharge button.
+ * @returns The header element containing the "NumZero" heading linked to "/my-space" and the recharge UI.
+ */
 export function MobileHeaderLogo({ isWallet, credits }: MobileHeaderLogoProps) {
   return (
     <div className='flex h-14 mx-7 mt-6.5 items-center justify-between bg-transparent'>

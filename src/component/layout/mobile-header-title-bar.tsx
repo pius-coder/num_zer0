@@ -11,6 +11,15 @@ interface MobileHeaderTitleBarProps {
   onSignOut: () => void
 }
 
+/**
+ * Render a mobile header title bar with a collapsible menu area.
+ *
+ * @param title - Text displayed in the header title.
+ * @param isMenuOpen - Whether the collapsible menu panel is expanded.
+ * @param onToggleMenu - Click handler invoked to toggle the menu panel.
+ * @param onSignOut - Callback passed to the menu for sign-out action.
+ * @returns A React element containing the header title button, the collapsible menu panel, and the menu toggle button.
+ */
 export function MobileHeaderTitleBar({
   title,
   isMenuOpen,

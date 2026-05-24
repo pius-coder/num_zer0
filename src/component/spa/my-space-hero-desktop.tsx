@@ -1,5 +1,12 @@
 'use client'
 
+/**
+ * Renders a desktop-only hero section with decorative blurred background elements, a primary heading, and a descriptive subheading.
+ *
+ * The section is hidden on screens smaller than `lg` and contains purely visual, pointer-events-none background shapes plus a foreground content block with the title "My Space" and a short description.
+ *
+ * @returns The JSX element for the desktop hero section containing background decorations and foreground heading/subheading.
+ */
 export function MySpaceHeroDesktop() {
   return (
     <section className='hidden lg:block mb-8'>

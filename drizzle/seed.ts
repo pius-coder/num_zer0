@@ -5,6 +5,11 @@ import { hash } from 'bcryptjs'
 import * as schema from '../src/database/schema'
 import { env } from '../src/config/env'
 
+/**
+ * Seeds the database with a default admin user, account, and credit wallet if the admin phone number is not already present.
+ *
+ * Connects to the configured Postgres database, checks for an existing user by the predefined phone number, and if none is found inserts rows for `user`, `account`, and `creditWallet` with preset values and timestamps. Always closes the database connection before returning.
+ */
 async function main() {
   const queryClient = postgres(env.DATABASE_URL, {
     max: 1,

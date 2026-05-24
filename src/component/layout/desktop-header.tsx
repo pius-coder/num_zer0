@@ -7,6 +7,14 @@ import { RechargeTriggerButton } from '@/component/recharge/recharge-trigger-but
 import { LogoApp } from './logo-app'
 import { DesktopHeaderNav } from './desktop-header-nav'
 
+/**
+ * Render the desktop header containing the app logo, main navigation, and credits/recharge control.
+ *
+ * The header is intended for desktop layouts (visible on medium screens and larger) and displays the app
+ * logo (linking to /my-space), the navigation section, and a credits area with a recharge trigger.
+ *
+ * @returns The header JSX element for the desktop layout.
+ */
 export function DesktopHeader() {
   const { data: balance } = useBalance()
   const credits = balance?.available ?? 0

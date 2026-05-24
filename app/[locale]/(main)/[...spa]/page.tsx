@@ -11,6 +11,14 @@ import { MySpacePage } from '@/component/spa/my-space-page'
 import { WalletPage } from '@/component/spa/wallet-page'
 import { AccountPage } from '@/component/spa/account-page'
 
+/**
+ * Render the single-page application router and app chrome scoped to the current locale.
+ *
+ * Uses Next.js route params to set BrowserRouter's basename, provides RechargeDrawerProvider,
+ * and composes the app layout (desktop/mobile headers, routed main content, mobile bottom navigation, and support floating button).
+ *
+ * @returns The React element tree for the locale-scoped SPA router and surrounding layout.
+ */
 export default function SpaRouter() {
   const params = useParams()
   const locale = params.locale as string
