@@ -25,62 +25,46 @@ defineXXX("domain.name")
   .define(fn)        // ← toujours .define() à la fin
 ```
 
-### Operations (query/mutation/action)
+### Operations (query/mutation/action) — INCHANGÉ
 
 ```typescript
-// Current (déjà bon mais renommer .handler → .define)
-export const list = defineQuery("todos.list")
+// On garde EXACTEMENT notre pattern actuel
+export default defineOperationFn("todos.list")
+  .query()
   .input(z.object({ status: z.string().optional() }))
   .entities(["Todo"])
   .public()
-  .define(async ({ ctx, input }) => {
+  .handler(async ({ ctx, input }) => {
     return ctx.db.todo.findMany({ where: input.status ? { status: input.status } : undefined })
-  })
-
-// Mêmes constructeurs pour mutation / action
-export const create = defineMutation("todos.create")
-  .input(z.object({ title: z.string().min(1) }))
-  .entities(["Todo"])
-  .public()
-  .define(async ({ ctx, input }) => {
-    return ctx.db.todo.create({ data: { title: input.title } })
-  })
-
-export const doSomething = defineAction("todos.doSomething")
-  .input(z.object({ url: z.string() }))
-  .public()
-  .define(async ({ ctx, input }) => {
-    return ctx.fetch(input.url)
   })
 ```
 
-Changements :
-- `defineOperationFn("x")` → `defineQuery("x")` / `defineMutation("x")` / `defineAction("x")`
-- `.handler(fn)` → `.define(fn)` (uniforme avec les autres)
-- `.query().input().entities().public().handler()` → `defineQuery().input().entities().public().define()`
+Le builder `defineOperationFn("x").query()|.mutate()|.action()` reste. Pas de `defineQuery`/`defineMutation`/`defineAction` séparés.
 
 ### Agent
 
 ```typescript
-// Avant : defineAgent("x", { model, systemPrompt, tools })
-// Après :
-export const planner = defineAgent("ai.todo-planner")
+// Avant : defineAgent("x", { model, systemPrompt, tools })  ← objet
+// Après : même pattern que les opérations (builder chainable)
+export default defineAgent("ai.todo-planner")
   .model(new ChatOpenRouter({ model: "gpt-4o-mini" }))
   .systemPrompt("Tu es un assistant qui décompose des objectifs en tâches.")
   .tools([operationAsTool(api.todos.create, { description: "..." })])
   .maxSteps(5)
-  .define()
+  .handler(async ({ ctx, input }) => {
+    // ...
+  })
 ```
 
 ### DbReadFn
 
 ```typescript
-// Avant : defineDbReadFn({ name, input, output, execute })
-// Après :
-export const activeUsers = defineDbReadFn("users.active")
+// Avant : defineDbReadFn({ name, input, output, execute })  ← objet
+// Après : builder chainable
+export default defineDbReadFn("users.active")
   .input(z.object({ days: z.number() }))
   .output(z.array(userSchema))
-  .define(async ({ db, input }) => {
+  .handler(async ({ db, input }) => {
     return db.$queryRaw`SELECT * FROM "AuraUser" WHERE ...`
   })
 ```
@@ -88,10 +72,10 @@ export const activeUsers = defineDbReadFn("users.active")
 ### Workflow
 
 ```typescript
-// Avant : defineWorkflow("x").handler(fn)
-// Après :
-export const fulfillOrder = defineWorkflow("orders.fulfill")
-  .define(async ({ ctx, input, step, sleep }) => {
+// Avant : defineWorkflow("x").handler(fn)  ← pas de .define()
+// Après : builder avec plus de config
+export default defineWorkflow("orders.fulfill")
+  .handler(async ({ ctx, input, step, sleep }) => {
     const payment = await step("charge-payment", () => ...)
     await step("send-email", () => ...)
   })
@@ -100,34 +84,38 @@ export const fulfillOrder = defineWorkflow("orders.fulfill")
 ### Search Index
 
 ```typescript
-// Avant : defineSearchIndex("model", { fields })
-// Après :
-export const todoSearch = defineSearchIndex("Todo")
+// Avant : defineSearchIndex("model", { fields })  ← objet
+// Après : builder chainable
+export default defineSearchIndex("Todo")
   .fields(["title", "description"])
   .language("french")
-  .define()
+  .handler(async ({ ctx, query }) => {
+    return ctx.search("Todo", { query })
+  })
 ```
 
 ### Vector Index
 
 ```typescript
-// Avant : defineVectorIndex("model", { vectorField })
-// Après :
-export const productVector = defineVectorIndex("Product")
+// Avant : defineVectorIndex("model", { vectorField })  ← objet
+// Après : builder chainable
+export default defineVectorIndex("Product")
   .vectorField("embedding")
   .dimensions(1536)
   .indexType("hnsw")
-  .define()
+  .handler(async ({ ctx, vector }) => {
+    return ctx.vectorSearch("Product", { vector })
+  })
 ```
 
 ### HttpAction
 
 ```typescript
-// Déjà bon (builder) — juste renommer .handler → .define
-export const stripeWebhook = defineHttpAction("/webhook/stripe")
+// Déjà bon (builder) — rien à changer
+export default defineHttpAction("/webhook/stripe")
   .method("POST")
   .public()
-  .define(async (ctx, request) => {
+  .handler(async (ctx, request) => {
     return new Response("ok")
   })
 ```
@@ -203,60 +191,42 @@ const data = useQuery(api.todos.list, shouldFetch ? params : "skip")
 
 | Fichier | Changement |
 |---------|-----------|
-| `src/aura/core/types.ts` | Ajouter `defineQuery`/`defineMutation`/`defineAction` types |
-| `src/aura/server/operation.ts` | Renommer `defineOperationFn` → `defineQuery`/`defineMutation`/`defineAction`. `.handler(fn)` → `.define(fn)` |
-| `src/aura/server/agent.ts` | `defineAgent(name, obj)` → builder chainable |
-| `src/aura/server/db-read.ts` | `defineDbReadFn({ object })` → builder chainable |
-| `src/aura/server/search.ts` | `defineSearchIndex(name, obj)` → builder chainable |
-| `src/aura/server/vector.ts` | `defineVectorIndex(name, obj)` → builder chainable |
-| `src/aura/server/workflow.ts` | `defineWorkflow(name).handler(fn)` → builder chainable avec `.define()` |
-| `src/aura/server/http-action.ts` | `.handler(fn)` → `.define(fn)` |
+| `src/aura/server/agent.ts` | `defineAgent(name, obj)` → builder chainable `.model().systemPrompt().tools().handler()` |
+| `src/aura/server/db-read.ts` | `defineDbReadFn({ object })` → builder chainable `.input().output().handler()` |
+| `src/aura/server/search.ts` | `defineSearchIndex(name, obj)` → builder chainable `.fields().language().handler()` |
+| `src/aura/server/vector.ts` | `defineVectorIndex(name, obj)` → builder chainable `.vectorField().dimensions().indexType().handler()` |
 | `src/aura/client/hooks.ts` | `useAuraQuery` → `useQuery`. `useAuraMutation` → `useMutation`. Args plats. Callables. |
 | `src/aura/client/index.ts` | Mettre à jour les exports |
-| `src/operations/**/*.operation.ts` | Migrer toutes les ops vers `defineQuery`/`defineMutation`/`defineAction` |
 | `src/operations/ai/todo-planner.agent.ts` | Migrer vers builder chainable |
-| `src/aura/_generated/api.ts` | Ajuster la codegen pour les nouveaux noms |
+| `src/aura/_generated/api.ts` | Rien (le pattern d'export ne change pas) |
 
-### Nouveaux fichiers
+### Rien à changer
 
-```
-src/aura/server/
-  define-query.ts       // defineQuery() builder
-  define-mutation.ts    // defineMutation() builder  
-  define-action.ts      // defineAction() builder
-  define-agent.ts       // defineAgent() builder (extrait de agent.ts)
-  define-db-read.ts     // defineDbReadFn() builder (extrait de db-read.ts)
-  define-search.ts      // defineSearchIndex() builder
-  define-vector.ts      // defineVectorIndex() builder
-  define-workflow.ts    // defineWorkflow() builder
-```
-
-Ou tout garder dans les fichiers existants, juste changer les signatures.
+| Fichier | Raison |
+|---------|--------|
+| `src/aura/server/operation.ts` | `defineOperationFn` reste exactement comme il est |
+| `src/aura/server/workflow.ts` | Déjà un builder, juste retoucher |
+| `src/aura/server/http-action.ts` | Déjà un builder, rien à faire |
+| `src/operations/**/*.operation.ts` | Le pattern `defineOperationFn("x").query().input().handler()` ne change pas |
 
 ---
 
 ## 4. Plan d'Implémentation
 
-### Phase 1 — Nouveaux constructeurs server
-- Créer `defineQuery` / `defineMutation` / `defineAction` (wrap `defineOperationFn`)
-- Ajouter `.define()` comme alias de `.handler()`
-- Migrer toutes les ops existantes
-
-### Phase 2 — Builder uniforme pour les autres fonctions
-- `defineAgent` : passer d'objet à builder
-- `defineDbReadFn` : idem
+### Phase 1 — Builder uniforme pour defineAgent, defineDbReadFn, defineSearchIndex, defineVectorIndex
+- `defineAgent` : passer d'objet `(name, { model, ... })` à builder `.model().systemPrompt().tools().handler()`
+- `defineDbReadFn` : idem, objet → builder `.input().output().handler()`
 - `defineSearchIndex` : idem
 - `defineVectorIndex` : idem
-- `defineWorkflow` : ajouter `.define()`
+- Rien ne change pour `defineOperationFn`, `defineWorkflow`, `defineHttpAction` (déjà des builders)
 
-### Phase 3 — Nouveau client DX
+### Phase 2 — Client DX (inspiré Convex)
 - `useQuery(ref, flatArgs)` au lieu de `useAuraQuery(ref, { input })`
 - `useMutation(ref)` → `(args) => Promise<T>` au lieu de `{ mutate }`
 - `useAction(ref)` → `(args) => Promise<T>`
 - Option `"skip"` pour désactiver les queries
-- Auto-invalidation via entités du manifeste
+- Auto-invalidation via entités du manifeste (déjà existant)
 
-### Phase 4 — Nettoyage
-- Retirer les anciens exports (`useAuraQuery`, `useAuraMutation`, `defineOperationFn`)
-- Mettre à jour la codegen
+### Phase 3 — Nettoyage
+- Retirer les anciens exports (`useAuraQuery`, `useAuraMutation`)
 - Mettre à jour les tests
