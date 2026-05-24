@@ -1,11 +1,3 @@
-/**
- * AI Agent framework — `defineAgent`, thread management, tool calling, streaming.
- * Resolves: Requirements 31.1–31.10, 32.1–32.6, 33.1–33.6, 35.1–35.5 (Task 23).
- *
- * Built on LangChain JS for model abstraction and tool execution.
- * Streaming uses the Aura broadcast WebSocket (not HTTP streaming).
- */
-
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { StructuredToolInterface } from "@langchain/core/tools";
 import { DynamicStructuredTool } from "@langchain/core/tools";
@@ -18,8 +10,7 @@ import { publishInvalidation } from "../invalidate";
 import { v4 as uuidv4 } from "uuid";
 import { toPrismaJson } from "../json";
 import type { OperationRef } from "@/aura/core/types";
-
-// ─── Types ───
+import type { AuraContext } from "../context";
 
 export interface AgentToolDef {
   name: string;
@@ -38,13 +29,13 @@ export interface AgentRAGConfig {
 export interface AgentDefinition {
   readonly __auraAgent: true;
   readonly name: string;
-  /** Alias of `name` — satisfies the `AgentRef` contract on `ctx.agent.*`. */
   readonly _name: string;
   readonly model: BaseChatModel;
   readonly systemPrompt: string;
   readonly tools: AgentToolDef[];
   readonly maxSteps: number;
   readonly rag?: AgentRAGConfig;
+  readonly handler?: (args: { ctx: AuraContext; input: unknown }) => Promise<unknown>;
 }
 
 export interface DefineAgentOptions {
@@ -55,24 +46,7 @@ export interface DefineAgentOptions {
   rag?: AgentRAGConfig;
 }
 
-// ─── Registry ───
-
 const agentRegistry = new Map<string, AgentDefinition>();
-
-export function defineAgent(name: string, options: DefineAgentOptions): AgentDefinition {
-  const def: AgentDefinition = {
-    __auraAgent: true,
-    name,
-    _name: name,
-    model: options.model,
-    systemPrompt: options.systemPrompt,
-    tools: options.tools ?? [],
-    maxSteps: options.maxSteps ?? 10,
-    rag: options.rag,
-  };
-  agentRegistry.set(name, def);
-  return def;
-}
 
 export function getAgent(name: string): AgentDefinition | null {
   return agentRegistry.get(name) ?? null;
@@ -82,7 +56,73 @@ export function listAgents(): AgentDefinition[] {
   return [...agentRegistry.values()];
 }
 
-// ─── Thread Management ───
+interface AgentBuilder {
+  model(m: BaseChatModel): this & { handler(h: AgentDefinition["handler"]): AgentDefinition };
+  systemPrompt(s: string): this & { handler(h: AgentDefinition["handler"]): AgentDefinition };
+  tools(t: AgentToolDef[]): this & { handler(h: AgentDefinition["handler"]): AgentDefinition };
+  maxSteps(n: number): this & { handler(h: AgentDefinition["handler"]): AgentDefinition };
+  rag(r: AgentRAGConfig): this & { handler(h: AgentDefinition["handler"]): AgentDefinition };
+  handler(h: AgentDefinition["handler"]): AgentDefinition;
+}
+
+export function defineAgent(name: string): AgentBuilder {
+  const state: {
+    model?: BaseChatModel;
+    systemPrompt?: string;
+    tools?: AgentToolDef[];
+    maxSteps?: number;
+    rag?: AgentRAGConfig;
+    handler?: AgentDefinition["handler"];
+  } = {};
+
+  const finalize = () => {
+    if (!state.model) throw new Error(`[aura] Agent "${name}" requires .model()`);
+    if (!state.systemPrompt) throw new Error(`[aura] Agent "${name}" requires .systemPrompt()`);
+
+    const def: AgentDefinition = {
+      __auraAgent: true,
+      name,
+      _name: name,
+      model: state.model!,
+      systemPrompt: state.systemPrompt!,
+      tools: state.tools ?? [],
+      maxSteps: state.maxSteps ?? 10,
+      rag: state.rag,
+      handler: state.handler,
+    };
+    agentRegistry.set(name, def);
+    return def;
+  };
+
+  const builder = {
+    model(m: BaseChatModel) {
+      state.model = m;
+      return builder;
+    },
+    systemPrompt(s: string) {
+      state.systemPrompt = s;
+      return builder;
+    },
+    tools(t: AgentToolDef[]) {
+      state.tools = t;
+      return builder;
+    },
+    maxSteps(n: number) {
+      state.maxSteps = n;
+      return builder;
+    },
+    rag(r: AgentRAGConfig) {
+      state.rag = r;
+      return builder;
+    },
+    handler(h: AgentDefinition["handler"]) {
+      state.handler = h;
+      return finalize();
+    },
+  };
+
+  return builder as AgentBuilder;
+}
 
 export async function createThread(
   agentName: string,
@@ -113,12 +153,6 @@ export async function getThreadMessages(
   });
 }
 
-// ─── Tool Conversion ───
-
-/**
- * Convert an Aura operation ref into an AgentToolDef.
- * The `.asTool()` modifier on operations calls this.
- */
 export function operationAsTool(
   ref: OperationRef,
   opts: { description: string; requiresApproval?: boolean },
@@ -126,10 +160,9 @@ export function operationAsTool(
   return {
     name: ref._name,
     description: opts.description,
-    parameters: z.record(z.unknown()), // Runtime: actual schema resolved from registry
+    parameters: z.record(z.unknown()),
     requiresApproval: opts.requiresApproval,
     async execute(input) {
-      // In-process call through the registry
       const { getOperation } = await import("../registry");
       const op = getOperation(ref._name);
       if (!op) throw new Error(`Operation not found: ${ref._name}`);
@@ -152,8 +185,6 @@ function toLangChainTool(def: AgentToolDef): StructuredToolInterface {
   });
 }
 
-// ─── Generate Text (non-streaming) ───
-
 export interface GenerateTextOptions {
   threadId: string;
   prompt: string;
@@ -169,12 +200,10 @@ export async function generateText(
   const agent = agentRegistry.get(agentName);
   if (!agent) throw new Error(`Agent not found: ${agentName}`);
 
-  // Persist user message
   await prisma.auraAgentMessage.create({
     data: { id: uuidv4(), threadId: options.threadId, role: "user", content: options.prompt },
   });
 
-  // Load thread history
   const history = await getThreadMessages(options.threadId, { limit: 50 }, prisma);
   const messages: BaseMessage[] = [
     new SystemMessage(agent.systemPrompt),
@@ -186,14 +215,12 @@ export async function generateText(
     }),
   ];
 
-  // Invoke model with tools
   const tools = agent.tools.map(toLangChainTool);
   const maxSteps = options.maxSteps ?? agent.maxSteps;
   let response: BaseMessage;
   let totalInput = 0;
   let totalOutput = 0;
 
-  // Simple tool loop (up to maxSteps)
   for (let step = 0; step < maxSteps; step++) {
     const modelWithTools = tools.length > 0 && typeof (agent.model as { bindTools?: unknown }).bindTools === "function"
       ? ((agent.model as unknown as { bindTools: (t: unknown[]) => BaseChatModel }).bindTools(tools))
@@ -202,18 +229,15 @@ export async function generateText(
     response = await modelWithTools.invoke(messages);
     messages.push(response);
 
-    // Track usage if available
     const usageMeta = (response as unknown as { usage_metadata?: { input_tokens?: number; output_tokens?: number } }).usage_metadata;
     if (usageMeta) {
       totalInput += usageMeta.input_tokens ?? 0;
       totalOutput += usageMeta.output_tokens ?? 0;
     }
 
-    // Check for tool calls
     const toolCalls = (response as AIMessage).tool_calls;
     if (!toolCalls || toolCalls.length === 0) break;
 
-    // Execute tool calls
     for (const tc of toolCalls) {
       const toolDef = agent.tools.find((t) => t.name === tc.name);
       if (!toolDef) {
@@ -221,7 +245,6 @@ export async function generateText(
         continue;
       }
 
-      // Human-in-the-loop check
       if (toolDef.requiresApproval) {
         await prisma.auraAgentMessage.create({
           data: {
@@ -233,7 +256,6 @@ export async function generateText(
             metadata: toPrismaJson({ status: "pending_approval" }),
           },
         });
-        // Return early — agent pauses until approval
         const msgId = uuidv4();
         await prisma.auraAgentMessage.create({
           data: { id: msgId, threadId: options.threadId, role: "assistant", content: `En attente d'approbation pour l'action: ${tc.name}` },
@@ -244,7 +266,6 @@ export async function generateText(
       const result = await toolDef.execute(tc.args);
       messages.push(new ToolMessage({ content: JSON.stringify(result), tool_call_id: tc.id! }));
 
-      // Persist tool call + result
       await prisma.auraAgentMessage.create({
         data: {
           id: uuidv4(),
@@ -258,14 +279,12 @@ export async function generateText(
     }
   }
 
-  // Persist assistant response
   const content = typeof response!.content === "string" ? response!.content : JSON.stringify(response!.content);
   const messageId = uuidv4();
   await prisma.auraAgentMessage.create({
     data: { id: messageId, threadId: options.threadId, role: "assistant", content },
   });
 
-  // Record usage
   if (totalInput > 0 || totalOutput > 0) {
     await prisma.auraAIUsage.create({
       data: {
@@ -278,7 +297,7 @@ export async function generateText(
         inputTokens: totalInput,
         outputTokens: totalOutput,
         totalTokens: totalInput + totalOutput,
-        latencyMs: 0, // TODO: measure
+        latencyMs: 0,
         estimatedCost: null,
       },
     });
@@ -286,8 +305,6 @@ export async function generateText(
 
   return { content, messageId, usage: { inputTokens: totalInput, outputTokens: totalOutput } };
 }
-
-// ─── Stream Text (via WebSocket broadcast) ───
 
 export interface StreamTextOptions extends GenerateTextOptions {
   onDelta?: (delta: string) => void;
@@ -301,12 +318,10 @@ export async function streamText(
   const agent = agentRegistry.get(agentName);
   if (!agent) throw new Error(`Agent not found: ${agentName}`);
 
-  // Persist user message
   await prisma.auraAgentMessage.create({
     data: { id: uuidv4(), threadId: options.threadId, role: "user", content: options.prompt },
   });
 
-  // Load history
   const history = await getThreadMessages(options.threadId, { limit: 50 }, prisma);
   const messages: BaseMessage[] = [
     new SystemMessage(agent.systemPrompt),
@@ -320,35 +335,28 @@ export async function streamText(
   const messageId = uuidv4();
   let fullContent = "";
 
-  // Stream from model
   const stream = await agent.model.stream(messages);
   for await (const chunk of stream) {
     const delta = typeof chunk.content === "string" ? chunk.content : "";
     if (delta) {
       fullContent += delta;
       options.onDelta?.(delta);
-
-      // Broadcast delta via WebSocket
       void publishInvalidation({
         keys: [`__agent_stream:${options.threadId}:${messageId}:${delta}`],
       });
     }
   }
 
-  // Broadcast done signal
   void publishInvalidation({
     keys: [`__agent_stream_done:${options.threadId}:${messageId}`],
   });
 
-  // Persist final message
   await prisma.auraAgentMessage.create({
     data: { id: messageId, threadId: options.threadId, role: "assistant", content: fullContent },
   });
 
   return { content: fullContent, messageId };
 }
-
-// ─── Usage Tracking ───
 
 export async function getAgentUsage(
   opts: { userId?: string; agentName?: string; since?: Date } = {},

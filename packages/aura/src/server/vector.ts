@@ -1,10 +1,3 @@
-/**
- * Vector search — `defineVectorIndex` + `ctx.db.vectorSearch`.
- * Resolves: Requirements 27.1–27.7 (Task 18).
- *
- * Backed by PostgreSQL's pgvector extension (cosine similarity by default).
- */
-
 import { db } from "./db";
 import type { AuraDb } from "./db";
 import { AuraError } from "@/aura/core/errors";
@@ -15,18 +8,10 @@ export interface VectorIndexDefinition {
   dimensions: number;
   filterFields?: string[];
   indexType?: "hnsw" | "ivfflat";
+  handler?: (args: { ctx: unknown; vector: number[]; filters?: Record<string, unknown> }) => Promise<unknown>;
 }
 
 const vectorIndexes = new Map<string, VectorIndexDefinition>();
-
-export function defineVectorIndex(
-  model: string,
-  config: Omit<VectorIndexDefinition, "model">,
-): VectorIndexDefinition {
-  const def: VectorIndexDefinition = { model, ...config };
-  vectorIndexes.set(model, def);
-  return def;
-}
 
 export function getVectorIndex(model: string): VectorIndexDefinition | null {
   return vectorIndexes.get(model) ?? null;
@@ -36,9 +21,59 @@ export function listVectorIndexes(): VectorIndexDefinition[] {
   return [...vectorIndexes.values()];
 }
 
-/**
- * Generate the SQL migration for a vector index.
- */
+interface VectorIndexBuilder {
+  vectorField(v: string): this & { handler(h: VectorIndexDefinition["handler"]): VectorIndexDefinition };
+  dimensions(d: number): this & { handler(h: VectorIndexDefinition["handler"]): VectorIndexDefinition };
+  filterFields(ff: string[]): this & { handler(h: VectorIndexDefinition["handler"]): VectorIndexDefinition };
+  indexType(t: "hnsw" | "ivfflat"): this & { handler(h: VectorIndexDefinition["handler"]): VectorIndexDefinition };
+  handler(h: VectorIndexDefinition["handler"]): VectorIndexDefinition;
+}
+
+export function defineVectorIndex(model: string): VectorIndexBuilder {
+  const state: Partial<VectorIndexDefinition> = { model };
+
+  const finalize = () => {
+    if (!state.vectorField) throw new Error(`[aura] Vector index "${model}" requires .vectorField()`);
+    if (!state.dimensions) throw new Error(`[aura] Vector index "${model}" requires .dimensions()`);
+
+    const def: VectorIndexDefinition = {
+      model,
+      vectorField: state.vectorField!,
+      dimensions: state.dimensions!,
+      filterFields: state.filterFields,
+      indexType: state.indexType,
+      handler: state.handler,
+    };
+    vectorIndexes.set(model, def);
+    return def;
+  };
+
+  const builder = {
+    vectorField(v: string) {
+      state.vectorField = v;
+      return builder;
+    },
+    dimensions(d: number) {
+      state.dimensions = d;
+      return builder;
+    },
+    filterFields(ff: string[]) {
+      state.filterFields = ff;
+      return builder;
+    },
+    indexType(t: "hnsw" | "ivfflat") {
+      state.indexType = t;
+      return builder;
+    },
+    handler(h: VectorIndexDefinition["handler"]) {
+      state.handler = h;
+      return finalize();
+    },
+  };
+
+  return builder as VectorIndexBuilder;
+}
+
 export function generateVectorIndexSQL(def: VectorIndexDefinition): string {
   const indexType = def.indexType ?? "hnsw";
   return [
@@ -63,9 +98,6 @@ export interface VectorSearchResult<T> {
   distances: number[];
 }
 
-/**
- * Execute a vector similarity search against a registered vector index.
- */
 export async function vectorSearch<T = unknown>(
   model: string,
   options: VectorSearchOptions,
@@ -76,7 +108,6 @@ export async function vectorSearch<T = unknown>(
     throw new Error(`[aura:vector] No vector index registered for model "${model}"`);
   }
 
-  // Validate dimensionality
   if (options.vector.length !== def.dimensions) {
     throw new AuraError(
       "BAD_REQUEST",
@@ -87,7 +118,6 @@ export async function vectorSearch<T = unknown>(
   const limit = options.limit ?? 10;
   const vectorStr = `[${options.vector.join(",")}]`;
 
-  // Build filter clauses
   const filterClauses: string[] = [];
   const filterValues: unknown[] = [];
   let paramIdx = 1;

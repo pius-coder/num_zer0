@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useAuraQuery, useAuraMutation } from "@/aura/client";
+import { useQuery, useMutation } from "@/aura/client";
 import { api } from "@/aura/_generated/api";
 import { Button } from "@/aura/ui/button";
 import { Input } from "@/aura/ui/input";
@@ -36,8 +36,9 @@ const PRIORITY_LABELS = {
 function TodosPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "PENDING" | "IN_PROGRESS" | "DONE">("all");
 
-  const { data, isLoading } = useAuraQuery(api.todos.list, {
-    input: { numItems: 50, ...(statusFilter !== "all" && { status: statusFilter }) },
+  const { data, isLoading } = useQuery(api.todos.list, {
+    numItems: 50,
+    ...(statusFilter !== "all" && { status: statusFilter }),
   });
 
   const todos = data?.items ?? [];
@@ -98,8 +99,8 @@ function TodosPage() {
 }
 
 function TodoItem({ todo }: { todo: Todo }) {
-  const toggle = useAuraMutation(api.todos.toggle);
-  const remove = useAuraMutation(api.todos.delete);
+  const toggle = useMutation(api.todos.toggle);
+  const remove = useMutation(api.todos.delete);
 
   const isDone = todo.status === "DONE";
 
@@ -149,7 +150,7 @@ function CreateTodoCard() {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<"LOW" | "MEDIUM" | "HIGH" | "URGENT">("MEDIUM");
 
-  const create = useAuraMutation(api.todos.create, {
+  const create = useMutation(api.todos.create, {
     onSuccess: () => {
       setTitle("");
       setDescription("");
@@ -218,7 +219,7 @@ function AiGeneratorCard() {
   const [goal, setGoal] = useState("");
   const [count, setCount] = useState(5);
 
-  const generate = useAuraMutation(api.todos["ai-generate"], {
+  const generate = useMutation(api.todos["ai-generate"], {
     onSuccess: () => {
       setGoal("");
     },

@@ -34,6 +34,7 @@ export function useAuraAgentThread(threadId: string | null) {
     refetchInterval: 2000,
   });
 }
+export const useAgentThread = useAuraAgentThread;
 
 export function useAuraAgentStream(threadId: string | null) {
   const [isStreaming, setIsStreaming] = useState(false);
@@ -77,6 +78,7 @@ export function useAuraAgentStream(threadId: string | null) {
 
   return { isStreaming, streamingContent };
 }
+export const useAgentStream = useAuraAgentStream;
 
 export function useAuraAgentSend(agentName: string) {
   const queryClient = useQueryClient();
@@ -98,3 +100,4 @@ export function useAuraAgentSend(agentName: string) {
     },
   });
 }
+export const useAgentSend = useAuraAgentSend;

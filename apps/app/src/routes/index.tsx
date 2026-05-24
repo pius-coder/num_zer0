@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useAuraQuery } from '@/aura/client'
+import { useQuery } from '@/aura/client'
 import { api } from '@/aura/_generated/api'
 
 export const Route = createFileRoute('/')({
@@ -7,7 +7,7 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
-  const { data, isPending } = useAuraQuery(api.system.health)
+  const { data, isPending } = useQuery(api.system.health)
 
   return (
     <main className="page-wrap px-4 pb-8 pt-14">

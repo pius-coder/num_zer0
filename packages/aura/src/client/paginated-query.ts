@@ -62,3 +62,4 @@ export function useAuraPaginatedQuery<TInput extends Record<string, unknown>, TO
     refetch: query.refetch,
   };
 }
+export const usePaginatedQuery = useAuraPaginatedQuery;

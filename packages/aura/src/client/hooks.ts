@@ -2,11 +2,13 @@
 
 import { useRef } from "react";
 import {
-  useMutation,
-  useQuery,
+  useMutation as useTanStackMutation,
+  useQuery as useTanStackQuery,
   useQueryClient,
   type UseMutationOptions,
+  type UseMutationResult,
   type UseQueryOptions,
+  type UseQueryResult,
 } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { OperationRef } from "@/aura/core/types";
@@ -18,10 +20,8 @@ import {
   fetchAuraManifest,
   AuraClientError,
 } from "./transport";
-import { useAuraBroadcast } from "./provider";
-import {
-  getOperationEntities,
-} from "./manifest-cache";
+import { useBroadcast } from "./provider";
+import { getOperationEntities } from "./manifest-cache";
 import { auraQueryKey, type AuraQueryKey } from "@/aura/shared/query-key";
 
 export { auraQueryKey };
@@ -54,37 +54,34 @@ type NarrowOperationRef<T> = T extends OperationRef<infer _TType, infer TInput, 
   ? { input?: TInput; data: TOutput }
   : { input?: unknown; data: unknown };
 
-export interface UseAuraQueryOptions<TData> extends Omit<
+export interface UseQueryOptions_<TData> extends Omit<
   UseQueryOptions<TData, Error, TData, AuraQueryKey>,
   "queryKey" | "queryFn"
 > {
-  input?: unknown;
   params?: unknown;
   showBumps?: boolean;
 }
 
-// Overload 1 — typed `OperationRef` from `_generated/api.ts`. Inputs and
-// output are inferred from the ref.
-export function useAuraQuery<TRef extends OperationRef>(
+export function useQuery<TRef extends OperationRef>(
   operationRef: TRef,
-  options?: UseAuraQueryOptions<NarrowOperationRef<TRef>["data"]> & {
-    input?: NarrowOperationRef<TRef>["input"];
-  },
-): ReturnType<typeof useQuery<NarrowOperationRef<TRef>["data"], Error, NarrowOperationRef<TRef>["data"], AuraQueryKey>>;
-// Overload 2 — legacy string name with an explicit generic.
-export function useAuraQuery<TData = unknown>(
+  input?: NarrowOperationRef<TRef>["input"],
+  options?: UseQueryOptions_<NarrowOperationRef<TRef>["data"]>,
+): UseQueryResult<NarrowOperationRef<TRef>["data"], Error>;
+export function useQuery<TData = unknown>(
   operationName: string,
-  options?: UseAuraQueryOptions<TData>,
-): ReturnType<typeof useQuery<TData, Error, TData, AuraQueryKey>>;
-export function useAuraQuery(
+  input?: unknown,
+  options?: UseQueryOptions_<TData>,
+): UseQueryResult<TData, Error>;
+export function useQuery(
   operationRef: string | OperationRef,
-  options: UseAuraQueryOptions<unknown> & { input?: unknown } = {},
+  input?: unknown,
+  options: UseQueryOptions_<unknown> = {},
 ) {
   const operationName = resolveOperationName(operationRef);
-  const { input, params, showBumps = true, ...queryOptions } = options;
+  const { params, showBumps = true, ...queryOptions } = options;
   const entities = getOperationEntities(operationName);
 
-  return useQuery({
+  return useTanStackQuery({
     ...(queryOptions as UseQueryOptions<unknown, Error, unknown, AuraQueryKey>),
     queryKey: auraQueryKey(operationName, input, params),
     queryFn: async ({ signal }) => {
@@ -97,13 +94,11 @@ export function useAuraQuery(
       if (showBumps) displayAuraBumps(result.meta.bumps);
       return result.data;
     },
-    meta: {
-      entities,
-    },
+    meta: { entities },
   });
 }
 
-export interface UseAuraMutationOptions<TInput, TData> extends Omit<
+export interface UseMutationOptions_<TInput, TData> extends Omit<
   UseMutationOptions<TData, Error, TInput>,
   "mutationFn"
 > {
@@ -113,34 +108,42 @@ export interface UseAuraMutationOptions<TInput, TData> extends Omit<
   showBumps?: boolean;
 }
 
-// Overload 1 — typed `OperationRef` from `_generated/api.ts`. Input/output
-// are inferred from the operation's Zod schemas at the call site.
-export function useAuraMutation<TRef extends OperationRef<"mutate" | "action">>(
+interface CallableMutation<TInput, TData> {
+  (input: TInput): Promise<TData>;
+  mutate: UseMutationResult<TData, Error, TInput>["mutate"];
+  mutateAsync: UseMutationResult<TData, Error, TInput>["mutateAsync"];
+  isPending: boolean;
+  isIdle: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+  error: Error | null;
+  data: TData | undefined;
+  status: "idle" | "pending" | "success" | "error";
+  reset: () => void;
+}
+
+export function useMutation<TRef extends OperationRef<"mutate" | "action">>(
   operationRef: TRef,
-  options?: UseAuraMutationOptions<
+  options?: UseMutationOptions_<
     NarrowOperationRef<TRef>["input"],
     NarrowOperationRef<TRef>["data"]
   >,
-): ReturnType<
-  typeof useMutation<
-    NarrowOperationRef<TRef>["data"],
-    Error,
-    NarrowOperationRef<TRef>["input"]
-  >
+): CallableMutation<
+  NarrowOperationRef<TRef>["input"],
+  NarrowOperationRef<TRef>["data"]
 >;
-// Overload 2 — legacy string name with explicit generics.
-export function useAuraMutation<TInput = void, TData = unknown>(
+export function useMutation<TInput = void, TData = unknown>(
   operationName: string,
-  options?: UseAuraMutationOptions<TInput, TData>,
-): ReturnType<typeof useMutation<TData, Error, TInput>>;
-export function useAuraMutation(
+  options?: UseMutationOptions_<TInput, TData>,
+): CallableMutation<TInput, TData>;
+export function useMutation(
   operationRef: string | OperationRef,
-  options: UseAuraMutationOptions<unknown, unknown> = {},
+  options: UseMutationOptions_<unknown, unknown> = {},
 ) {
   const operationName = resolveOperationName(operationRef);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const broadcast = useAuraBroadcast();
+  const broadcast = useBroadcast();
   const {
     params,
     invalidate,
@@ -156,7 +159,7 @@ export function useAuraMutation(
     refresh: boolean;
   } | null>(null);
 
-  return useMutation({
+  const mutation = useTanStackMutation({
     mutationFn: async (input: unknown) => {
       const result = await callAuraOperationWithMeta<unknown>({
         operationName,
@@ -185,18 +188,9 @@ export function useAuraMutation(
           const queryEntities = [
             ...new Set([...metaEntities, ...manifestEntities]),
           ];
-          const matched = allKeys.some(
+          return allKeys.some(
             (key) => key === queryName || queryEntities.includes(key),
           );
-          if (matched) {
-            console.log(
-              `[aura:invalidate] Matched query "${queryName}" via keys:`,
-              allKeys,
-              "entities:",
-              queryEntities,
-            );
-          }
-          return matched;
         },
       });
 
@@ -221,12 +215,32 @@ export function useAuraMutation(
     },
     ...mutationOptions,
   });
+
+  const callable = (input: unknown) => mutation.mutateAsync(input);
+
+  Object.defineProperties(callable, {
+    mutate: { get: () => mutation.mutate },
+    mutateAsync: { get: () => mutation.mutateAsync },
+    isPending: { get: () => mutation.isPending },
+    isIdle: { get: () => mutation.isIdle },
+    isSuccess: { get: () => mutation.isSuccess },
+    isError: { get: () => mutation.isError },
+    error: { get: () => mutation.error },
+    data: { get: () => mutation.data },
+    status: { get: () => mutation.status },
+    reset: { get: () => mutation.reset },
+  });
+
+  return callable;
 }
 
 export function useAuraManifest() {
-  return useQuery({
+  return useTanStackQuery({
     queryKey: ["aura", "_manifest"],
     queryFn: ({ signal }) => fetchAuraManifest<AuraClientManifest>(signal),
     staleTime: 5 * 60_000,
   });
 }
+
+export const useAuraQuery = useQuery;
+export const useAuraMutation = useMutation;

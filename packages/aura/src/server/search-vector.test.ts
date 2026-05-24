@@ -4,11 +4,11 @@ import { defineVectorIndex, getVectorIndex, listVectorIndexes, generateVectorInd
 
 describe("search", () => {
   it("should register a search index", () => {
-    const def = defineSearchIndex("TestProduct", {
-      fields: ["name", "description"],
-      filterFields: ["categoryId"],
-      language: "french",
-    });
+    const def = defineSearchIndex("TestProduct")
+      .fields(["name", "description"])
+      .filterFields(["categoryId"])
+      .language("french")
+      .handler(async () => []);
 
     expect(def.model).toBe("TestProduct");
     expect(def.fields).toEqual(["name", "description"]);
@@ -17,10 +17,10 @@ describe("search", () => {
   });
 
   it("should generate correct SQL for search index", () => {
-    const def = defineSearchIndex("TestArticle", {
-      fields: ["title", "body"],
-      language: "english",
-    });
+    const def = defineSearchIndex("TestArticle")
+      .fields(["title", "body"])
+      .language("english")
+      .handler(async () => []);
 
     const sql = generateSearchIndexSQL(def);
     expect(sql).toContain('ALTER TABLE "TestArticle"');
@@ -33,12 +33,12 @@ describe("search", () => {
 
 describe("vector", () => {
   it("should register a vector index", () => {
-    const def = defineVectorIndex("TestDocument", {
-      vectorField: "embedding",
-      dimensions: 1536,
-      filterFields: ["workspaceId"],
-      indexType: "hnsw",
-    });
+    const def = defineVectorIndex("TestDocument")
+      .vectorField("embedding")
+      .dimensions(1536)
+      .filterFields(["workspaceId"])
+      .indexType("hnsw")
+      .handler(async () => []);
 
     expect(def.model).toBe("TestDocument");
     expect(def.dimensions).toBe(1536);
@@ -47,11 +47,11 @@ describe("vector", () => {
   });
 
   it("should generate correct SQL for vector index", () => {
-    const def = defineVectorIndex("TestEmbed", {
-      vectorField: "vec",
-      dimensions: 768,
-      indexType: "ivfflat",
-    });
+    const def = defineVectorIndex("TestEmbed")
+      .vectorField("vec")
+      .dimensions(768)
+      .indexType("ivfflat")
+      .handler(async () => []);
 
     const sql = generateVectorIndexSQL(def);
     expect(sql).toContain("CREATE EXTENSION IF NOT EXISTS vector");

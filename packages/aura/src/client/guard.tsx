@@ -3,7 +3,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
-import { useAuraQuery } from "./hooks";
+import { useQuery } from "./hooks";
 import type { AuthSessionResult } from "@/aura/shared/auth-types";
 
 export interface AuraGuardProps {
@@ -63,7 +63,7 @@ export function AuraGuard({
   authOperationName = "auth.me",
 }: AuraGuardProps) {
   const navigate = useNavigate();
-  const auth = useAuraQuery<AuthSessionResult>(authOperationName, {
+  const auth = useQuery<AuthSessionResult>(authOperationName, undefined, {
     retry: false,
     refetchOnWindowFocus: false,
   });

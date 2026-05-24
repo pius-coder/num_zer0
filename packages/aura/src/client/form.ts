@@ -10,7 +10,7 @@ import {
 } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
-import { useAuraMutation, type UseAuraMutationOptions } from "./hooks";
+import { useAuraMutation, type UseMutationOptions_ as UseAuraMutationOptions } from "./hooks";
 import { AuraClientError } from "./transport";
 
 export interface UseAuraFormOptions<

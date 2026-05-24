@@ -133,15 +133,15 @@ function makeAgent(name: string): void {
   const file = kebab(name);
   const path = `${OPS_DIR}/ai/${file}.agent.ts`;
 
-  ensureWrite(path, `/**
- * AI Agent: ${name}
- */
-export default {
-  name: "${name}",
-  systemPrompt: "You are a helpful assistant.",
-  tools: [],
-  maxSteps: 10,
-};
+  ensureWrite(path, `import { defineAgent } from "@/aura/server/ai/agent";
+
+export default defineAgent("${name}")
+  .model(null as any) // TODO: set model (e.g. new ChatOpenRouter({...}))
+  .systemPrompt("You are a helpful assistant.")
+  .maxSteps(10)
+  .handler(async ({ ctx, input }) => {
+    // TODO: implement agent logic
+  });
 `);
 }
 
@@ -171,11 +171,13 @@ function makeSearch(model: string): void {
 
   ensureWrite(path, `import { defineSearchIndex } from "@/aura/server/search";
 
-export default defineSearchIndex("${model}", {
-  fields: ["name", "description"], // TODO: adjust fields
-  filterFields: [],
-  language: "english",
-});
+export default defineSearchIndex("${model}")
+  .fields(["name", "description"]) // TODO: adjust fields
+  .filterFields([])
+  .language("english")
+  .handler(async ({ ctx, query, filters }) => {
+    return ctx.search("${model}", { query, filter: filters });
+  });
 `);
 }
 
@@ -186,12 +188,14 @@ function makeVector(model: string): void {
 
   ensureWrite(path, `import { defineVectorIndex } from "@/aura/server/vector";
 
-export default defineVectorIndex("${model}", {
-  vectorField: "embedding",
-  dimensions: ${dimensions},
-  filterFields: [],
-  indexType: "hnsw",
-});
+export default defineVectorIndex("${model}")
+  .vectorField("embedding")
+  .dimensions(${dimensions})
+  .filterFields([])
+  .indexType("hnsw")
+  .handler(async ({ ctx, vector, filters }) => {
+    return ctx.vectorSearch("${model}", { vector, filter: filters });
+  });
 `);
 }
 
@@ -202,19 +206,17 @@ function makeDbRead(name: string): void {
   ensureWrite(path, `import { defineDbReadFn } from "@/aura/server/db-read";
 import { z } from "zod";
 
-export default defineDbReadFn({
-  name: "${name}",
-  input: z.object({
+export default defineDbReadFn("${name}")
+  .input(z.object({
     // TODO: define input
-  }),
-  output: z.object({
+  }))
+  .output(z.object({
     // TODO: define output
-  }),
-  async execute({ db, input }) {
+  }))
+  .handler(async ({ db, input }) => {
     // TODO: implement query (raw SQL or Prisma view)
     return {};
-  },
-});
+  });
 `);
 }
 

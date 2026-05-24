@@ -50,6 +50,8 @@ export function useAuraBroadcast(): (keys: string[]) => void {
   return useContext(AuraRealtimeContext).broadcast;
 }
 
+export const useBroadcast = useAuraBroadcast;
+
 // ─── Realtime Provider ────────────────────────────────────────────────────────
 
 const RECONNECT_BASE_MS = 1_000;
@@ -386,3 +388,4 @@ export function AuraClientProvider({
     </QueryClientProvider>
   );
 }
+export const AuraProvider = AuraClientProvider;

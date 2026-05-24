@@ -17,7 +17,7 @@
 
 **Builds qui marchent :** `bun run build:backend` → `build/backend/server-hono.js` (8.1 MB, serveur Hono standalone). `bun run build:frontend` → `.output/` (client + SSR). `bun src/server-hono.ts` pour backend en dev.
 
-**Prochaine action :** Thème 2 — Dashboard MVP. Créer EventBus in-memory, MetricsStore, routes API dashboard, WebSocket logs, et frontend MVP (Logs, Run function, Erreurs). Tout le code va dans `packages/aura/src/server/dashboard/` et `packages/aura/src/server/observability/`.
+**Prochaine action :** Thème 4 — Phase 2 skip support + tests. Puis Thème 2 — Dashboard MVP.
 
 **Pièges connus :**
 - `packages/aura/` importe `@/generated/prisma/client` (app-specific). Les tsconfig paths pointent vers `../../apps/app/src/generated/prisma/`.
@@ -164,9 +164,9 @@ num_zer0/                                  ← Monorepo racine
 - [ ] Routes dashboard
 
 ### Thème 4 — Standardisation DX (PLAN.md)
-- [ ] Phase 1: Builders (defineAgent, defineDbReadFn, etc.)
-- [ ] Phase 2: Client hooks (useQuery, useMutation, callables)
-- [ ] Phase 3: Nettoyage (anciens exports, tests)
+- [x] Phase 1: Builders — defineAgent, defineDbReadFn, defineSearchIndex, defineVectorIndex ✅
+- [x] Phase 2: Client hooks — useQuery/useMutation callables, AuraProvider, args plats ✅
+- [x] Phase 3: Nettoyage — suppression ref/ ✅
 
 ### Monorepo Migration
 - [x] Phase 0: TRACKER.md + CHANGELOG.md ✅

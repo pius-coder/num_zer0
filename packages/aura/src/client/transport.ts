@@ -24,6 +24,8 @@ export function configureAuraClient(config: Partial<AuraClientConfig>): void {
   };
 }
 
+export const configureAura = configureAuraClient;
+
 export function getAuraClientConfig(): AuraClientConfig {
   return activeConfig;
 }
@@ -138,6 +140,8 @@ export async function callAuraOperation<TData = unknown>(
   return result.data;
 }
 
+export const callAura = callAuraOperation;
+
 export async function fetchAuraManifest<TManifest>(
   signal?: AbortSignal,
 ): Promise<TManifest> {
@@ -159,6 +163,8 @@ export async function fetchAuraManifest<TManifest>(
 
   return (await response.json()) as TManifest;
 }
+
+export const fetchManifest = fetchAuraManifest;
 
 function operationUrl(basePath: string, operationName: string): string {
   const safeBasePath = basePath.endsWith("/")

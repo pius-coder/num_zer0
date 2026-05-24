@@ -2,7 +2,7 @@ import { createRootRoute, HeadContent, Scripts, Outlet } from '@tanstack/react-r
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
-import { AuraClientProvider } from '@/aura/client'
+import { AuraProvider } from '@/aura/client'
 import { AuraBumpToaster } from '@/aura/ui'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
@@ -33,7 +33,7 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
-        <AuraClientProvider>
+        <AuraProvider>
           <Header />
           <Outlet />
           <Footer />
@@ -45,7 +45,7 @@ function RootDocument() {
               { name: 'Tanstack Query', render: <ReactQueryDevtoolsPanel /> },
             ]}
           />
-        </AuraClientProvider>
+        </AuraProvider>
         <Scripts />
       </body>
     </html>

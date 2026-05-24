@@ -12,7 +12,7 @@ import {
 import type { z } from "zod";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { useAuraMutation, type UseAuraMutationOptions } from "./hooks";
+import { useAuraMutation, type UseMutationOptions_ as UseAuraMutationOptions } from "./hooks";
 import { AuraClientError } from "./transport";
 
 interface StepperStoreState<TData extends FieldValues> {

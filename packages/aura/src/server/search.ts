@@ -1,12 +1,3 @@
-/**
- * Full-text search — `defineSearchIndex` + `ctx.db.search`.
- * Resolves: Requirements 26.1–26.6 (Task 17).
- *
- * Backed by PostgreSQL's native tsvector/tsquery full-text search.
- * The `defineSearchIndex` declaration generates migration SQL;
- * the `search` function executes ranked queries via `$queryRaw`.
- */
-
 import { db } from "./db";
 import type { AuraDb } from "./db";
 
@@ -15,23 +6,10 @@ export interface SearchIndexDefinition {
   fields: string[];
   filterFields?: string[];
   language?: string;
+  handler?: (args: { ctx: unknown; query: string; filters?: Record<string, unknown> }) => Promise<unknown>;
 }
 
 const searchIndexes = new Map<string, SearchIndexDefinition>();
-
-/**
- * Declare a full-text search index on a Prisma model.
- * At startup this registers the index; the actual GIN index + tsvector
- * column must be created via a Prisma migration (custom SQL).
- */
-export function defineSearchIndex(
-  model: string,
-  config: Omit<SearchIndexDefinition, "model">,
-): SearchIndexDefinition {
-  const def: SearchIndexDefinition = { model, ...config };
-  searchIndexes.set(model, def);
-  return def;
-}
 
 export function getSearchIndex(model: string): SearchIndexDefinition | null {
   return searchIndexes.get(model) ?? null;
@@ -41,11 +19,50 @@ export function listSearchIndexes(): SearchIndexDefinition[] {
   return [...searchIndexes.values()];
 }
 
-/**
- * Generate the SQL migration for a search index.
- * This is a helper for `aura:make search` — it outputs the SQL to paste
- * into a Prisma migration file.
- */
+interface SearchIndexBuilder {
+  fields(f: string[]): this & { handler(h: SearchIndexDefinition["handler"]): SearchIndexDefinition };
+  filterFields(ff: string[]): this & { handler(h: SearchIndexDefinition["handler"]): SearchIndexDefinition };
+  language(l: string): this & { handler(h: SearchIndexDefinition["handler"]): SearchIndexDefinition };
+  handler(h: SearchIndexDefinition["handler"]): SearchIndexDefinition;
+}
+
+export function defineSearchIndex(model: string): SearchIndexBuilder {
+  const state: Partial<SearchIndexDefinition> = { model };
+
+  const finalize = () => {
+    const def: SearchIndexDefinition = {
+      model,
+      fields: state.fields ?? [],
+      filterFields: state.filterFields,
+      language: state.language,
+      handler: state.handler,
+    };
+    searchIndexes.set(model, def);
+    return def;
+  };
+
+  const builder = {
+    fields(f: string[]) {
+      state.fields = f;
+      return builder;
+    },
+    filterFields(ff: string[]) {
+      state.filterFields = ff;
+      return builder;
+    },
+    language(l: string) {
+      state.language = l;
+      return builder;
+    },
+    handler(h: SearchIndexDefinition["handler"]) {
+      state.handler = h;
+      return finalize();
+    },
+  };
+
+  return builder as SearchIndexBuilder;
+}
+
 export function generateSearchIndexSQL(def: SearchIndexDefinition): string {
   const lang = def.language ?? "english";
   const weights = def.fields.map((f, i) => {
@@ -75,9 +92,6 @@ export interface SearchResult<T> {
   scores: number[];
 }
 
-/**
- * Execute a full-text search against a registered search index.
- */
 export async function search<T = unknown>(
   model: string,
   options: SearchOptions,
@@ -92,10 +106,9 @@ export async function search<T = unknown>(
   const limit = options.limit ?? 20;
   const offset = options.offset ?? 0;
 
-  // Build WHERE clause for filters
   const filterClauses: string[] = [];
   const filterValues: unknown[] = [];
-  let paramIdx = 2; // $1 is the query
+  let paramIdx = 2;
 
   if (options.filter) {
     for (const [key, value] of Object.entries(options.filter)) {

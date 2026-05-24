@@ -88,3 +88,42 @@
 
 **Nouvelle motivation D2 :**
 > TanStack Start nécessite la génération du route tree pour le SSR bundling. Routes en `src/routes/` avec `createFileRoute`. Génération automatique via le plugin Vite.
+
+---
+
+## 2026-05-24 | Thème 4 (DX) — Phase 1-3 | Ajouté/Modifié/Supprimé
+
+**Standardisation complète de la DX client + serveur (builder chainable partout)**
+
+### Phase 1 — Builders (4 artefacts migrés)
+
+- `defineDbReadFn("name").input(z).output(z).handler(fn)` — `packages/aura/src/server/db-read.ts`
+- `defineSearchIndex("Model").fields(f).filterFields(ff).language(l).handler(fn)` — `packages/aura/src/server/search.ts`
+- `defineVectorIndex("Model").vectorField(v).dimensions(d).filterFields(ff).indexType(t).handler(fn)` — `packages/aura/src/server/vector.ts`
+- `defineAgent("name").model(m).systemPrompt(s).tools(t).maxSteps(n).rag(r).handler(fn)` — `packages/aura/src/server/ai/agent.ts`
+- CLI `make.ts` : tous les stubs génèrent le nouveau pattern builder
+- Tests `search-vector.test.ts` : mis à jour pour le nouveau builder
+- `todo-planner.agent.ts` : migré vers le builder
+
+### Phase 2 — Client DX (hooks renommés + nouvelle API)
+
+- `useAuraQuery(ref, { input, ... })` → `useQuery(ref, flatInput, options?)` (args plats)
+- `useAuraMutation(ref, opts)` → `useMutation(ref, opts?)` callable directe avec `.mutate`/`.isPending`
+- `AuraClientProvider` → `AuraProvider` (alias conservé)
+- `configureAuraClient` → `configureAura` (alias)
+- `callAuraOperation` → `callAura` (alias)
+- `fetchAuraManifest` → `fetchManifest` (alias)
+- `useAuraBroadcast` → `useBroadcast` (alias)
+- `useAuraPaginatedQuery` → `usePaginatedQuery` (alias)
+- `useAuraAgentThread/Stream/Send` → `useAgentThread/Stream/Send` (alias)
+- Barrel `packages/aura/src/client/index.ts` : exports les deux (ancien + nouveau nom)
+- `packages/aura/src/client/hooks.ts` : `UseQueryOptions_`/`UseMutationOptions_` remplace `UseAuraQueryOptions`/`UseAuraMutationOptions`
+- `form.ts`/`stepper.ts`/`guard.tsx` : imports mis à jour pour les nouveaux types
+- App (`__root.tsx`, `index.tsx`, `todos.tsx`) : imports et appels mis à jour
+
+### Phase 3 — Nettoyage
+
+- `ref/` dossier supprimé (ancienne structure obsolète)
+
+### Ancienne API conservée :
+Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent encore comme alias. Les composants UI qui les importent continuent de fonctionner sans changement.
