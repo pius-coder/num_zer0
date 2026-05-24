@@ -2,7 +2,7 @@
 // Re-run `bun run aura:codegen` (or `bun src/aura/cli/codegen.ts`) to refresh.
 //
 // Typed surface for every registered Aura operation. Use
-// `api.namespace.operation` with `useAuraQuery`, `useAuraMutation`,
+// `api.namespace.operation` with `useQuery`, `useMutation`,
 // or `ctx.runQuery / runMutation / runAction` for full inference of
 // inputs and outputs.
 

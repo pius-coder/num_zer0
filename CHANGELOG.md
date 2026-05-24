@@ -125,5 +125,26 @@
 
 - `ref/` dossier supprimé (ancienne structure obsolète)
 
+### Audit Rewrite — Incompatibilités corrigées
+
+**CRITICAL :**
+- `server/index.ts` : ajout de 15+ exports manquants (`defineAgent`, `defineOperationFn`, `defineCronFn`, etc.)
+- `cli/make.ts` : `makeSearch`/`makeVector` génèrent `search()`/`vectorSearch()` (standalone) au lieu de `ctx.*()` qui n'existe pas
+- `cli/make.ts` : `makeAgent` ne génère plus `.model(null as any)` qui plantait à l'enregistrement
+- Tous les stubs CLI importent maintenant depuis `@/aura/server` (barrel) au lieu de chemins internes
+
+**HIGH :**
+- `server/manifest-injector.tsx` : réécrit avec `AuraProvider` au lieu de `AuraClientProvider`
+- `server/ai/agent.ts` : `DefineAgentOptions` supprimé (dead code) ; `AgentDefinition` étend `AgentRef`
+- `client/provider.tsx` : imports internes → `configureAura`/`fetchManifest`
+- `client/hooks.ts` : import interne → `fetchManifest`
+- `client/form.ts`, `client/stepper.ts` : imports internes → `useMutation`
+- 5 composants UI : imports réécrits vers les nouveaux noms (`useMutation`, `usePaginatedQuery`, `useAgentThread`, etc.)
+
+**LOW :**
+- Commentaires stalés dans `codegen.ts`, `api.ts`, `query-key.ts`, `runner.ts` mis à jour
+- `AuraProviderProps` type alias ajouté
+- `callAuraOperationWithMeta` exporté du barrel
+
 ### Ancienne API conservée :
 Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent encore comme alias. Les composants UI qui les importent continuent de fonctionner sans changement.

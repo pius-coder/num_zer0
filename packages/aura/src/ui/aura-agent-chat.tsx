@@ -5,7 +5,7 @@
 "use client";
 
 import { useState, useEffect, useRef, type ReactNode } from "react";
-import { useAuraAgentThread, useAuraAgentStream, useAuraAgentSend } from "@/aura/client/agent";
+import { useAgentThread, useAgentStream, useAgentSend } from "@/aura/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/aura/ui/card";
 import { Input } from "@/aura/ui/input";
 import { Button } from "@/aura/ui/button";
@@ -35,9 +35,9 @@ export function AuraAgentChat({
   emptyState,
   className,
 }: AuraAgentChatProps) {
-  const { data: messages = [] } = useAuraAgentThread(threadId);
-  const { isStreaming, streamingContent } = useAuraAgentStream(threadId);
-  const { mutate: send, isPending } = useAuraAgentSend(agentName);
+  const { data: messages = [] } = useAgentThread(threadId);
+  const { isStreaming, streamingContent } = useAgentStream(threadId);
+  const { mutate: send, isPending } = useAgentSend(agentName);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 

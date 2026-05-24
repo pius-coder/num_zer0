@@ -62,7 +62,7 @@ function makeOperation(name: string): void {
   const entityGuess = name.split(".")[0];
   const entity = entityGuess.charAt(0).toUpperCase() + entityGuess.slice(1);
 
-  ensureWrite(path, `import { defineOperationFn } from "@/aura/server/operation";
+  ensureWrite(path, `import { defineOperationFn } from "@/aura/server";
 import { z } from "zod";
 
 export default defineOperationFn("${name}")
@@ -133,14 +133,14 @@ function makeAgent(name: string): void {
   const file = kebab(name);
   const path = `${OPS_DIR}/ai/${file}.agent.ts`;
 
-  ensureWrite(path, `import { defineAgent } from "@/aura/server/ai/agent";
+  ensureWrite(path, `import { defineAgent } from "@/aura/server";
+import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 
 export default defineAgent("${name}")
-  .model(null as any) // TODO: set model (e.g. new ChatOpenRouter({...}))
-  .systemPrompt("You are a helpful assistant.")
-  .maxSteps(10)
+  // .model(new ChatOpenRouter({ apiKey: "...", model: "gpt-4o-mini" }))
+  // .systemPrompt("You are a helpful assistant.")
   .handler(async ({ ctx, input }) => {
-    // TODO: implement agent logic
+    throw new Error("Agent not configured: define .model() and .systemPrompt()");
   });
 `);
 }
@@ -169,14 +169,14 @@ function makeSearch(model: string): void {
   const file = kebab(model);
   const path = `${OPS_DIR}/${file}.search.ts`;
 
-  ensureWrite(path, `import { defineSearchIndex } from "@/aura/server/search";
+  ensureWrite(path, `import { defineSearchIndex, search } from "@/aura/server";
 
 export default defineSearchIndex("${model}")
   .fields(["name", "description"]) // TODO: adjust fields
   .filterFields([])
   .language("english")
   .handler(async ({ ctx, query, filters }) => {
-    return ctx.search("${model}", { query, filter: filters });
+    return search("${model}", { query, filter: filters });
   });
 `);
 }
@@ -186,7 +186,7 @@ function makeVector(model: string): void {
   const file = kebab(model);
   const path = `${OPS_DIR}/${file}.vector.ts`;
 
-  ensureWrite(path, `import { defineVectorIndex } from "@/aura/server/vector";
+  ensureWrite(path, `import { defineVectorIndex, vectorSearch } from "@/aura/server";
 
 export default defineVectorIndex("${model}")
   .vectorField("embedding")
@@ -194,7 +194,7 @@ export default defineVectorIndex("${model}")
   .filterFields([])
   .indexType("hnsw")
   .handler(async ({ ctx, vector, filters }) => {
-    return ctx.vectorSearch("${model}", { vector, filter: filters });
+    return vectorSearch("${model}", { vector, filter: filters });
   });
 `);
 }
@@ -203,7 +203,7 @@ function makeDbRead(name: string): void {
   const { dir, file } = nameToPath(name);
   const path = dir ? `${OPS_DIR}/${dir}/${file}.db-read.ts` : `${OPS_DIR}/${file}.db-read.ts`;
 
-  ensureWrite(path, `import { defineDbReadFn } from "@/aura/server/db-read";
+  ensureWrite(path, `import { defineDbReadFn } from "@/aura/server";
 import { z } from "zod";
 
 export default defineDbReadFn("${name}")

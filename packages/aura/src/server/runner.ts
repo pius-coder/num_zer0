@@ -106,7 +106,7 @@ export async function runAuraOperation<TData = unknown>(
         // the page — heavy and almost always redundant with TanStack Query
         // invalidation that already happens client-side. Leave it OFF by
         // default; callers can opt-in by setting `refresh: true` in
-        // `useAuraMutation` options.
+        // \`useMutation\` options.
         refresh: false,
       }),
       status: 200,

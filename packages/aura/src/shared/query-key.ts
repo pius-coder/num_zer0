@@ -2,7 +2,7 @@
  * Clé de cache TanStack Query pour les opérations Aura.
  *
  * Partagée entre le serveur (`AuraHydration`, `prefetchAuraQuery`) et
- * le client (`useAuraQuery`) pour garantir que l'hydratation SSR
+ * le client (\`useQuery\`) pour garantir que l'hydratation SSR
  * produise exactement la même clé que celle consommée côté client.
  */
 export type AuraQueryKey = readonly ["aura", string, unknown?, unknown?];

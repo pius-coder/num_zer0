@@ -9,7 +9,7 @@ import type { AuraDb } from "../db";
 import { publishInvalidation } from "../invalidate";
 import { v4 as uuidv4 } from "uuid";
 import { toPrismaJson } from "../json";
-import type { OperationRef } from "@/aura/core/types";
+import type { AgentRef, OperationRef } from "@/aura/core/types";
 import type { AuraContext } from "../context";
 
 export interface AgentToolDef {
@@ -26,10 +26,7 @@ export interface AgentRAGConfig {
   strategy?: "vector" | "text" | "hybrid";
 }
 
-export interface AgentDefinition {
-  readonly __auraAgent: true;
-  readonly name: string;
-  readonly _name: string;
+export interface AgentDefinition extends AgentRef {
   readonly model: BaseChatModel;
   readonly systemPrompt: string;
   readonly tools: AgentToolDef[];

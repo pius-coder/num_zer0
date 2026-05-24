@@ -7,7 +7,7 @@
 import { useState, type ReactElement } from "react";
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
 import type { OperationRef } from "@/aura/core/types";
-import { useAuraMutation } from "@/aura/client/hooks";
+import { useMutation } from "@/aura/client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,7 +45,7 @@ export function AuraConfirmDialog({
   trigger,
 }: AuraConfirmDialogProps) {
   const [open, setOpen] = useState(false);
-  const mutationHook = useAuraMutation<unknown, unknown>(
+  const mutationHook = useMutation<unknown, unknown>(
     typeof mutation === "string" ? mutation : (mutation?._name ?? "noop"),
     {
       onSuccess: () => {

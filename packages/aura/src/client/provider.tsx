@@ -15,9 +15,9 @@ import {
 } from "react";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 import {
-  configureAuraClient,
+  configureAura,
   type AuraClientConfig,
-  fetchAuraManifest,
+  fetchManifest,
 } from "./transport";
 import type { AuraClientManifest } from "@/aura/shared/manifest";
 import {
@@ -227,7 +227,7 @@ function AuraRealtimeProvider({
         connectWs();
         return;
       }
-      fetchAuraManifest<AuraClientManifest>()
+      fetchManifest<AuraClientManifest>()
         .then((data) => {
           const map: Record<string, string[]> = {};
           for (const op of data.operations) {
@@ -347,7 +347,7 @@ export function AuraClientProvider({
   wsUrl,
   initialManifest,
 }: AuraClientProviderProps) {
-  if (config) configureAuraClient(config);
+  if (config) configureAura(config);
 
   if (initialManifest) {
     setManifestEntities(manifestToEntityMap(initialManifest));
@@ -389,3 +389,4 @@ export function AuraClientProvider({
   );
 }
 export const AuraProvider = AuraClientProvider;
+export type AuraProviderProps = AuraClientProviderProps;

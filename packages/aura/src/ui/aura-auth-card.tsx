@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/aura/ui/tabs";
 import { Button } from "@/aura/ui/button";
 import { Input } from "@/aura/ui/input";
 import { Label } from "@/aura/ui/label";
-import { useAuraMutation } from "@/aura/client/hooks";
+import { useMutation } from "@/aura/client";
 import { cn } from "@/lib/utils";
 
 export type AuraAuthMode = "password" | "otp" | "phone";
@@ -88,7 +88,7 @@ export function AuraAuthCard({
 function PasswordForm({ op, regOp: _regOp, onSuccess }: { op: string; regOp: string; onSuccess?: (d: unknown) => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate, isPending } = useAuraMutation<{ email: string; password: string }, unknown>(op, {
+  const { mutate, isPending } = useMutation<{ email: string; password: string }, unknown>(op, {
     onSuccess,
   });
 
@@ -120,10 +120,10 @@ function OtpForm({ requestOp, verifyOp, onSuccess }: { requestOp: string; verify
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
 
-  const requestMutation = useAuraMutation<{ phone: string }, unknown>(requestOp, {
+  const requestMutation = useMutation<{ phone: string }, unknown>(requestOp, {
     onSuccess: () => setStep("verify"),
   });
-  const verifyMutation = useAuraMutation<{ phone: string; code: string }, unknown>(verifyOp, { onSuccess });
+  const verifyMutation = useMutation<{ phone: string; code: string }, unknown>(verifyOp, { onSuccess });
 
   if (step === "request") {
     return (

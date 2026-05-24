@@ -1,11 +1,12 @@
 "use client";
 
 export { AuraClientProvider, AuraProvider, useAuraBroadcast, useBroadcast } from "./provider";
-export type { AuraClientProviderProps } from "./provider";
+export type { AuraClientProviderProps, AuraProviderProps } from "./provider";
 export {
   AuraClientError,
   callAuraOperation,
   callAura,
+  callAuraOperationWithMeta,
   configureAuraClient,
   configureAura,
   fetchAuraManifest,

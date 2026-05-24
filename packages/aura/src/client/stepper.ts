@@ -12,7 +12,7 @@ import {
 import type { z } from "zod";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { useAuraMutation, type UseMutationOptions_ as UseAuraMutationOptions } from "./hooks";
+import { useMutation, type UseMutationOptions_ as UseMutationOpts } from "./hooks";
 import { AuraClientError } from "./transport";
 
 interface StepperStoreState<TData extends FieldValues> {
@@ -56,39 +56,19 @@ export interface UseStepperFormOptions<
     schema: z.ZodType<TValues, TValues>;
     defaultValues?: Partial<TValues>;
   }>;
-  mutation?: UseAuraMutationOptions<TValues, TData>;
+  mutation?: UseMutationOpts<TValues, TData>;
+
+  constructor(values: Partial<TValues>) {
+    this.step = 0;
+    this.values = values;
+  }
 }
 
-export function useStepperForm<
-  TValues extends FieldValues,
-  TData = unknown,
->(options: UseStepperFormOptions<TValues, TData>) {
-  const { operationName, stepperKey, steps, mutation: mutationOptions } = options;
-  const storeRef = useRef(createStepperStore<TValues>(stepperKey));
-  const store = storeRef.current();
-  const [hydrated, setHydrated] = useState(false);
-
-  // Hydrate persisted state on mount (client only).
-  useEffect(() => {
-    void storeRef.current.persist.rehydrate();
-    setHydrated(true);
-  }, []);
-
-  const currentStep = store.step;
-  const currentStepDef = steps[currentStep];
-  const isLastStep = currentStep === steps.length - 1;
-
-  const form = useForm<TValues>({
-    resolver: currentStepDef
-      ? (zodResolver(currentStepDef.schema as never) as Resolver<TValues>)
-      : undefined,
-    defaultValues: {
-      ...(currentStepDef?.defaultValues ?? {}),
-      ...(store.values ?? {}),
-    } as UseFormProps<TValues>["defaultValues"],
-  });
-
-  const mutation = useAuraMutation<TValues, TData>(operationName, {
+function createStepperForm<TValues extends FieldValues, TData = unknown>(
+  ...
+) {
+  ...
+  const mutation = useMutation<TValues, TData>(operationName, {
     ...mutationOptions,
     onError(error, variables, onMutateResult, context) {
       if (error instanceof AuraClientError && error.fieldErrors) {

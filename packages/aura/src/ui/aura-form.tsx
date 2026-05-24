@@ -11,7 +11,7 @@ import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import type { OperationRef } from "@/aura/core/types";
-import { useAuraMutation } from "@/aura/client/hooks";
+import { useMutation } from "@/aura/client";
 import { Input } from "@/aura/ui/input";
 import { Textarea } from "@/aura/ui/textarea";
 import { Button } from "@/aura/ui/button";
@@ -53,7 +53,7 @@ export function AuraForm<T = unknown>({
     defaultValues: defaultValues as Record<string, unknown>,
   });
 
-  const { mutate, isPending } = useAuraMutation<unknown, T>(
+  const { mutate, isPending } = useMutation<unknown, T>(
     typeof mutation === "string" ? mutation : mutation._name,
     {
       onSuccess: (data) => onSuccess?.(data as T),

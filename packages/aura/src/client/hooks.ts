@@ -17,7 +17,7 @@ import type { AuraClientManifest } from "@/aura/shared/manifest";
 import type { AuraBump } from "@/aura/core/envelope";
 import {
   callAuraOperationWithMeta,
-  fetchAuraManifest,
+  fetchManifest,
   AuraClientError,
 } from "./transport";
 import { useBroadcast } from "./provider";
@@ -237,7 +237,7 @@ export function useMutation(
 export function useAuraManifest() {
   return useTanStackQuery({
     queryKey: ["aura", "_manifest"],
-    queryFn: ({ signal }) => fetchAuraManifest<AuraClientManifest>(signal),
+    queryFn: ({ signal }) => fetchManifest<AuraClientManifest>(signal),
     staleTime: 5 * 60_000,
   });
 }

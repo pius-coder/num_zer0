@@ -9,7 +9,7 @@
 
 import { useState, useCallback, type ReactNode } from "react";
 import type { OperationRef } from "@/aura/core/types";
-import { useAuraPaginatedQuery } from "@/aura/client/paginated-query";
+import { usePaginatedQuery } from "@/aura/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/aura/ui/table";
 import { Input } from "@/aura/ui/input";
 import { Button } from "@/aura/ui/button";
@@ -57,7 +57,7 @@ export function AuraDataTable<T extends Record<string, unknown>>({
   const [search, setSearch] = useState("");
 
   const queryInput = searchable && search ? { ...input, search } : input;
-  const { items, isDone, isLoading, loadMore, isFetchingNextPage } = useAuraPaginatedQuery(
+  const { items, isDone, isLoading, loadMore, isFetchingNextPage } = usePaginatedQuery(
     query as OperationRef<
       "query",
       Record<string, unknown>,

@@ -10,7 +10,7 @@ import {
 } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
-import { useAuraMutation, type UseMutationOptions_ as UseAuraMutationOptions } from "./hooks";
+import { useMutation, type UseMutationOptions_ as UseMutationOpts } from "./hooks";
 import { AuraClientError } from "./transport";
 
 export interface UseAuraFormOptions<
@@ -19,7 +19,7 @@ export interface UseAuraFormOptions<
 > extends Omit<UseFormProps<TValues>, "resolver"> {
   operationName: string;
   schema: z.ZodType<TValues, TValues>;
-  mutation?: UseAuraMutationOptions<TValues, TData>;
+  mutation?: UseMutationOpts<TValues, TData>;
 }
 
 export function useAuraForm<TValues extends FieldValues, TData = unknown>(
@@ -36,7 +36,7 @@ export function useAuraForm<TValues extends FieldValues, TData = unknown>(
     resolver: zodResolver(schema as never) as Resolver<TValues>,
   });
 
-  const mutation = useAuraMutation<TValues, TData>(operationName, {
+  const mutation = useMutation<TValues, TData>(operationName, {
     ...mutationOptions,
     onError(error, variables, onMutateResult, context) {
       if (mutationOptions?.showBumps !== false) {
