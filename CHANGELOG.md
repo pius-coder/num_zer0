@@ -189,3 +189,16 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 **Motivation :**
 > Phase 1 avait une SPA minimale (tableau brut, prompt() pour run). Phase 2 ajoute les graphiques, le drill-down par fonction, le regroupement par request ID, l'éditeur JSON, le run history, et le trending des erreurs. Chart.js en CDN, zéro build step.
+
+---
+
+## 2026-05-24 | Thème 3 — Middleware Hono (cors, logging) | Ajouté/Modifié
+
+**CRÉÉ :**
+- `middleware/logger.ts` — `requestLogger()` middleware Hono : log `[aura] METHOD /path STATUS DURATIONms`
+
+**MODIFIÉ :**
+- `hono-app.ts` — CORS global via `hono/cors` (`AURA_APP_URL` ou `localhost:3000`) ; logger global `app.use("*", requestLogger())`
+
+**Motivation :**
+> La stack middleware Hono était incomplète. CORS et logging sont nécessaires pour le dashboard et le backend standalone. Les middlewares sont globaux (appliqués à toutes les routes). L'auth middleware reste à faire (internal secret / api key).

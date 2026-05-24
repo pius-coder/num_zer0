@@ -172,8 +172,10 @@ num_zer0/                                  ← Monorepo racine
 - [x] Factory Hono (hono-app.ts) ✅
 - [x] Routes bridge, internal, files, health, http-actions ✅
 - [x] Broadcast WebSocket ✅
-- [ ] Middleware stack (auth, cors, rate-limit, logging)
-- [ ] Routes dashboard
+- [x] CORS middleware (global, hono/cors) ✅
+- [x] Logger middleware (request/response logging) ✅
+- [ ] Auth middleware (internal secret, api key)
+- [x] Routes dashboard ✅ (Thème 2)
 
 ### Thème 4 — Standardisation DX (PLAN.md)
 - [x] Phase 1: Builders — defineAgent, defineDbReadFn, defineSearchIndex, defineVectorIndex ✅
@@ -202,12 +204,15 @@ num_zer0/                                  ← Monorepo racine
 | 2026-05-24 | Thème 4: Standardisation DX (Phases 1-3) | ✅ | `62cb64d` |
 | 2026-05-24 | Thème 4: Audit rewrite fixes | ✅ | `ff9c690` |
 | 2026-05-24 | Thème 2: Dashboard MVP (Phase 1) | ✅ | `57b80bb` |
-| 2026-05-24 | Thème 2: Dashboard MVP (Phase 2) | ✅ | *(courant)* |
+| 2026-05-24 | Thème 2: Dashboard MVP (Phase 2) | ✅ | `5773e68` |
+| 2026-05-24 | AGENTS.md | ✅ | `c96ca81` |
+| 2026-05-24 | Thème 3: Middleware stack Hono | ✅ | *(courant)* |
 
 ## Prochaine action
 
 - [x] Dashboard Phase 2: Graphiques metrics (Chart.js), vue request ID, JSON éditeur, run history, détail fonction, error trending ✅
-- [ ] Thème 3: Middleware stack Hono (auth, cors, rate-limit, logging)
+- [x] Thème 3: Middleware stack Hono (cors, logging) ✅
+- [ ] Thème 3: Auth middleware (internal secret, api key)
 
 ---
 

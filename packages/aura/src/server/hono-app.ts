@@ -1,12 +1,14 @@
 
 
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { auraBridgeRouter } from "./routes/bridge";
 import { auraInternalRouter } from "./routes/internal";
 import { auraFilesRouter } from "./routes/files";
 import { auraHealthRouter } from "./routes/health";
 import { auraHttpActionsRouter } from "./routes/http-actions";
 import { auraDashboardRouter } from "./dashboard/routes";
+import { requestLogger } from "./middleware/logger";
 
 /**
  * `createAuraHonoApp()` — single Hono app factory that exposes every Aura
@@ -35,6 +37,12 @@ import { auraDashboardRouter } from "./dashboard/routes";
  */
 export function createAuraHonoApp() {
   const app = new Hono();
+
+  app.use("*", cors({
+    origin: process.env.AURA_APP_URL ?? "http://localhost:3000",
+    credentials: true,
+  }));
+  app.use("*", requestLogger());
 
   // CSRF and rate-limit middleware are scoped to the bridge router itself,
   // not applied at the top level — the internal/files/health/http-actions
