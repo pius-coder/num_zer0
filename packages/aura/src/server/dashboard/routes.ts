@@ -26,20 +26,23 @@ function getSpaHtml(): string | null {
 export function auraDashboardRouter(): Hono {
   const router = new Hono();
 
+  function getOpMeta(name: string) {
+    return getClientOperationManifest().operations.find((o) => o.name === name) ?? null;
+  }
+
   router.get("/api/functions", (c) => {
-    const manifest = getClientOperationManifest();
-    const functions = Object.entries(manifest).map(([name, meta]) => ({
-      name,
-      type: meta.type,
-      metrics: metricsStore.getForFunction(name),
+    const ops = getClientOperationManifest().operations;
+    const functions = ops.map((op) => ({
+      name: op.name,
+      type: op.type,
+      metrics: metricsStore.getForFunction(op.name),
     }));
     return c.json({ functions });
   });
 
   router.get("/api/functions/:name", (c) => {
     const name = c.req.param("name");
-    const manifest = getClientOperationManifest();
-    const meta = manifest[name];
+    const meta = getOpMeta(name);
     if (!meta) return c.json({ error: "not found" }, 404);
     return c.json({
       name,

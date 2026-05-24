@@ -134,7 +134,7 @@ export async function runAuraOperation<TData = unknown>(
       consoleLogs,
     });
 
-    const isMutating = opType === "mutate" || opType === "action";
+    const isMutating = opType === "mutation" || opType === "action";
     // Static entities declared on the operation + dynamic invalidations
     // queued via `ctx.invalidate(...)` during the handler execution.
     const invalidates = isMutating

@@ -1,13 +1,10 @@
-"use client";
-
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   useForm,
   type FieldValues,
   type Path,
   type Resolver,
-  type UseFormProps,
 } from "react-hook-form";
 import type { z } from "zod";
 import { create } from "zustand";
@@ -53,21 +50,32 @@ export interface UseStepperFormOptions<
   stepperKey: string;
   steps: Array<{
     name: string;
-    schema: z.ZodType<TValues, TValues>;
+    schema: z.ZodType<TValues>;
     defaultValues?: Partial<TValues>;
   }>;
   mutation?: UseMutationOpts<TValues, TData>;
-
-  constructor(values: Partial<TValues>) {
-    this.step = 0;
-    this.values = values;
-  }
 }
 
-function createStepperForm<TValues extends FieldValues, TData = unknown>(
-  ...
+export function useStepperForm<TValues extends FieldValues, TData = unknown>(
+  options: UseStepperFormOptions<TValues, TData>,
 ) {
-  ...
+  const { operationName, stepperKey, steps, mutation: mutationOptions } = options;
+  const useStore = createStepperStore<TValues>(stepperKey);
+  const step = useStore((s) => s.step);
+  const values = useStore((s) => s.values);
+  const completedSteps = useStore((s) => s.completedSteps);
+  const setStep = useStore((s) => s.setStep);
+  const setValues = useStore((s) => s.setValues);
+  const markStepCompleted = useStore((s) => s.markStepCompleted);
+  const resetStore = useStore((s) => s.reset);
+
+  const isLastStep = step === steps.length - 1;
+  const schema = steps[step]?.schema;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<TValues>({ resolver: schema ? (zodResolver(schema as any) as any) : undefined });
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { setHydrated(true); }, []);
+
   const mutation = useMutation<TValues, TData>(operationName, {
     ...mutationOptions,
     onError(error, variables, onMutateResult, context) {
@@ -79,57 +87,53 @@ function createStepperForm<TValues extends FieldValues, TData = unknown>(
   });
 
   const goToStep = useCallback(
-    (step: number) => {
-      if (step < 0 || step >= steps.length) return;
-      store.setStep(step);
+    (s: number) => {
+      if (s < 0 || s >= steps.length) return;
+      setStep(s);
     },
-    [store, steps.length],
+    [setStep, steps.length],
   );
 
   const nextStep = useCallback(
-    async (values: TValues) => {
-      store.setValues(values as Partial<TValues>);
-      store.markStepCompleted(currentStep);
+    async (formValues: TValues) => {
+      setValues(formValues as Partial<TValues>);
+      markStepCompleted(step);
 
       if (isLastStep) {
-        const allValues = { ...store.values, ...values } as TValues;
+        const allValues = { ...values, ...formValues } as TValues;
         mutation.mutate(allValues);
         return;
       }
 
-      store.setStep(currentStep + 1);
+      setStep(step + 1);
     },
-    [store, currentStep, isLastStep, mutation],
+    [setValues, markStepCompleted, step, isLastStep, values, mutation, setStep],
   );
 
   const prevStep = useCallback(() => {
-    if (currentStep > 0) store.setStep(currentStep - 1);
-  }, [store, currentStep]);
+    if (step > 0) setStep(step - 1);
+  }, [step, setStep]);
 
   const reset = useCallback(() => {
-    store.reset();
+    resetStore();
     form.reset();
     mutation.reset();
-  }, [store, form, mutation]);
-
-  // Hydration guard: ensure localStorage has been read before rendering
-  // to avoid hydration mismatch between server and client.
-  const isHydrated = typeof window !== "undefined" && hydrated;
+  }, [resetStore, form, mutation]);
 
   return {
     form,
     mutation,
-    step: currentStep,
+    step,
     steps,
     isLastStep,
-    isFirstStep: currentStep === 0,
-    completedSteps: store.completedSteps,
+    isFirstStep: step === 0,
+    completedSteps,
     goToStep,
     nextStep,
     prevStep,
     reset,
     handleSubmit: form.handleSubmit(nextStep),
-    hydrated: isHydrated,
+    hydrated: typeof window !== "undefined" && hydrated,
   };
 }
 

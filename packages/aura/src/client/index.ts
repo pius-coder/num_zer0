@@ -1,25 +1,20 @@
 "use client";
 
-export { AuraClientProvider, AuraProvider, useAuraBroadcast, useBroadcast } from "./provider";
-export type { AuraClientProviderProps, AuraProviderProps } from "./provider";
+export { AuraProvider } from "./provider";
+export type { AuraProviderProps } from "./provider";
 export {
   AuraClientError,
-  callAuraOperation,
   callAura,
+  callAuraOperation,
   callAuraOperationWithMeta,
-  configureAuraClient,
   configureAura,
-  fetchAuraManifest,
   fetchManifest,
   getAuraClientConfig,
 } from "./transport";
 export type { AuraClientConfig, CallAuraOperationOptions } from "./transport";
 export {
   auraQueryKey,
-  useAuraManifest,
-  useAuraMutation,
   useMutation,
-  useAuraQuery,
   useQuery,
 } from "./hooks";
 export type {
@@ -36,7 +31,7 @@ export { AuraHydrationBoundary } from "./hydration-boundary";
 export type { AuraHydrationBoundaryProps } from "./hydration-boundary";
 export { AuraGuard } from "./guard";
 export type { AuraGuardProps } from "./guard";
-export { useAuraPaginatedQuery, usePaginatedQuery } from "./paginated-query";
-export type { UseAuraPaginatedQueryOptions, PaginatedResult } from "./paginated-query";
-export { useAuraAgentThread, useAgentThread, useAuraAgentStream, useAgentStream, useAuraAgentSend, useAgentSend } from "./agent";
+export { usePaginatedQuery } from "./paginated-query";
+export type { UseAuraPaginatedQueryOptions as UsePaginatedQueryOptions, PaginatedResult } from "./paginated-query";
+export { useAgentThread, useAgentStream, useAgentSend } from "./agent";
 export type { AgentMessage } from "./agent";

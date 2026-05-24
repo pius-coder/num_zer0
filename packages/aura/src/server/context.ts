@@ -20,17 +20,7 @@ import type {
 import type { NotificationDispatcher } from "./notifications";
 import type { AuraStorage } from "./storage/types";
 
-// Re-export the cross-layer types from `@/aura/core/types` so existing
-// importers of `@/aura/server/context` continue to compile.
-export type {
-  AuraAuditContext,
-  AuraAuthContext,
-  AuraCookieMutation,
-  AuraLogger,
-  AuraRequestMetadata,
-  AuraSessionData,
-  AuraSource,
-};
+export type { AuraLogger, AuraSessionData, AuraSource };
 
 /**
  * Cursor-based pagination helper available on every Aura context.

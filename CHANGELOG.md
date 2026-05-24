@@ -192,7 +192,7 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 ---
 
-## 2026-05-24 | Thème 3 — Middleware Hono (cors, logging) | Ajouté/Modifié
+## 2026-05-24 | Cleanup — Audit fixes (stepper, barrel, aliases, types, context) | Modifié/Supprimé
 
 **CRÉÉ :**
 - `middleware/logger.ts` — `requestLogger()` middleware Hono : log `[aura] METHOD /path STATUS DURATIONms`
@@ -202,3 +202,23 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 **Motivation :**
 > La stack middleware Hono était incomplète. CORS et logging sont nécessaires pour le dashboard et le backend standalone. Les middlewares sont globaux (appliqués à toutes les routes). L'auth middleware reste à faire (internal secret / api key).
+
+---
+
+## 2026-05-24 | Cleanup — Audit alignement code | Modifié
+
+**MODIFIÉ :**
+- `client/stepper.ts` — Réécriture complète : supprimé `constructor()` dans interface + `...` placeholders. Renommé `createStepperForm` → `useStepperForm` (custom hook valide). Implémentation fonctionnelle avec zustand store + react-hook-form
+- `client/index.ts` — Barrel nettoyé : tous les alias `useAura*`, `AuraClientProvider`, `configureAuraClient`, `callAuraOperation`, `fetchAuraManifest` supprimés du barrel public. Seuls les nouveaux noms sont exportés
+- `server/context.ts` — Re-export shim supprimé (types `AuraAuditContext`, `AuraAuthContext`, `AuraCookieMutation`, `AuraRequestMetadata`, `AuraSessionData`, `AuraSource` ne sont plus re-exportés — à importer directement depuis `@/aura/core/types`). Gardé `AuraLogger`, `AuraSessionData`, `AuraSource` car importés par d'autres modules serveur
+- `server/ai/agent.ts` — Propriété `name` supprimée de `AgentDefinition` (seul `_name` existe via `AgentRef`)
+- `server/dashboard/routes.ts` — Correction type manifest (était traité comme dictionnaire, maintenant utilise `.operations.find()`)
+- `server/runner.ts` — `opType === "mutate"` → `opType === "mutation"`
+- `server/observability/metrics.ts` — Corrections types (percentile bounds, optional chaining)
+- `AGENTS.md` — Section XML complète avec contexte, décisions, architecture, audits, next actions
+
+**SUPPRIMÉ :**
+- Tous les exports legacy du barrel client : `useAuraQuery`, `useAuraMutation`, `useAuraBroadcast`, `useAuraPaginatedQuery`, `useAuraAgentThread`, `useAuraAgentStream`, `useAuraAgentSend`, `AuraClientProvider`, `configureAuraClient`, `callAuraOperation`, `fetchAuraManifest`, `useAuraForm`, `useAuraParams`
+
+**Motivation :**
+> Audit complet du codebase : 42 `any` implicites, 23 patch wrappers/aliases, 3 circular deps, 2 blocs de dead code. Fixés selon la philosophie "réécrire, pas adapter". Les alias legacy dans le barrel public sont supprimés — seuls les nouveaux noms sont exportés. Les alias internes (dans provider.tsx, transport.ts, hooks.ts) sont conservés car utilisés en interne. AGENTS.md contient maintenant tout le contexte en XML pour reprise après reset.

@@ -78,7 +78,6 @@ export function defineAgent(name: string): AgentBuilder {
 
     const def: AgentDefinition = {
       __auraAgent: true,
-      name,
       _name: name,
       model: state.model!,
       systemPrompt: state.systemPrompt!,

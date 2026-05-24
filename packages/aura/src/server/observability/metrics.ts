@@ -14,8 +14,8 @@ const WINDOW_MS = 60_000;
 
 function percentile(sorted: number[], p: number): number {
   if (sorted.length === 0) return 0;
-  const k = Math.ceil((p / 100) * sorted.length) - 1;
-  return sorted[Math.max(0, k)];
+  const k = Math.min(Math.max(0, Math.ceil((p / 100) * sorted.length) - 1), sorted.length - 1);
+  return sorted[k] ?? 0;
 }
 
 function average(values: number[]): number {
@@ -63,7 +63,7 @@ class MetricsStore {
       p90Latency1m: percentile(latencies, 90),
       p99Latency1m: percentile(latencies, 99),
       lastCalled:
-        window.length > 0 ? window[window.length - 1].timestamp : null,
+        window.length > 0 ? window[window.length - 1]!.timestamp : null,
     };
   }
 
