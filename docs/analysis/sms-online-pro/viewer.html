@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMS Online Pro - Explorateur de Services</title>
+  <link rel="stylesheet" href="https://static.sms-online.pro/sprites/service-full.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      padding: 20px;
+    }
+    .header {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .header h1 {
+      font-size: 22px;
+      margin-bottom: 5px;
+    }
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+    .controls {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus {
+      border-color: #8161eb;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .tab-btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #e8e8e8;
+      color: #555;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #8161eb;
+      color: #fff;
+    }
+    .tab-btn:hover:not(.active) {
+      background: #d0d0d0;
+    }
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .stat-card .num {
+      font-size: 24px;
+      font-weight: 700;
+      color: #8161eb;
+    }
+    .stat-card .label {
+      font-size: 12px;
+      color: #888;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+    }
+    .service-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 2px solid transparent;
+    }
+    .service-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .service-card.selected {
+      border-color: #8161eb;
+      background: #f8f6ff;
+    }
+    .service-card .svc {
+      transform: scale(1.2);
+      margin: 5px 0;
+    }
+    .service-card .code {
+      font-size: 11px;
+      color: #999;
+      margin-top: 5px;
+      font-family: monospace;
+    }
+    .service-card .pos {
+      font-size: 10px;
+      color: #bbb;
+      font-family: monospace;
+    }
+    .preview-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      min-width: 200px;
+      display: none;
+      z-index: 100;
+    }
+    .preview-panel.visible { display: block; }
+    .preview-panel .svc { transform: scale(2); margin: 10px; }
+    .preview-panel .preview-code { font-size: 18px; font-weight: 700; }
+    .preview-panel .preview-pos { font-size: 12px; color: #888; }
+    .preview-panel .preview-css { font-size: 11px; color: #666; background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 8px; font-family: monospace; }
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+    .docs-section {
+      margin-top: 30px;
+    }
+    .docs-iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .docs-note {
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #856404;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Dark mode classes from SMS Online Pro */
+    .flag {
+      display: inline-block;
+      width: 22px;
+      height: 15px;
+      background-size: cover;
+      background-position: 50% 50%;
+      border-radius: 2px;
+      vertical-align: middle;
+    }
+    .flag-CM { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/cm.svg'); }
+    .flag-FR { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/fr.svg'); }
+    .flag-US { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/us.svg'); }
+    .flag-GB { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/gb.svg'); }
+    .flag-DE { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/de.svg'); }
+    .flag-RU { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/ru.svg'); }
+    .flag-CN { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/cn.svg'); }
+    .flag-IN { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/in.svg'); }
+    .flag-BR { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/br.svg'); }
+    .flag-NG { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/ng.svg'); }
+    .flag-ZA { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/za.svg'); }
+    .flag-KE { background-image: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/ke.svg'); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📱 SMS Online Pro — Explorateur de Services</h1>
+  <p>Basé sur l'analyse du sprite <code>service-full.png</code> (1280×2560px)</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('services')">🎯 Services</button>
+  <button class="tab-btn" onclick="switchTab('docs')">📖 Documentation</button>
+</div>
+
+<div id="tab-services" class="tab-content active">
+  <div class="stats" id="stats">
+    <div class="stat-card">
+      <div class="num" id="totalServices">0</div>
+      <div class="label">Services</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="visibleServices">0</div>
+      <div class="label">Affichés</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <input type="text" class="search-box" id="searchInput" placeholder="🔍 Chercher un service (ex: wa, tg, whatsapp, telegram...) " oninput="filterServices()">
+  </div>
+
+  <div class="services-grid" id="servicesGrid"></div>
+</div>
+
+<div id="tab-docs" class="tab-content">
+  <div class="docs-note">
+    ⚠️ SMS Online Pro est une SPA React — le contenu de la page docs est chargé
+    dynamiquement via JavaScript. Un iframe permet de visualiser le site directement.
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
+    <button class="tab-btn" onclick="document.getElementById('docsFrame').src='https://sms-online.pro/docsPage'">📄 Page Docs</button>
+    <button class="tab-btn" onclick="document.getElementById('docsFrame').src='https://sms-online.pro/'">🏠 Accueil</button>
+    <button class="tab-btn" onclick="document.getElementById('docsFrame').src='https://sms-online.pro/prices'">💰 Prix</button>
+    <button class="tab-btn" onclick="document.getElementById('docsFrame').src='https://grizzlysms.com/docs'">🐻 Grizzly Docs (pour comparaison)</button>
+  </div>
+  <iframe id="docsFrame" class="docs-iframe" src="about:blank"></iframe>
+</div>
+
+<div class="preview-panel" id="previewPanel">
+  <div id="previewIcon" class="svc"></div>
+  <div class="preview-code" id="previewCode">-</div>
+  <div class="preview-pos" id="previewPos">X: 0px, Y: 0px</div>
+  <div class="preview-css" id="previewCss">.svc-xxx { background-position: -0px -0px; }</div>
+</div>
+
+<script>
+// Service data from our sprite mapping analysis
+const SERVICE_DATA = [
+  { code: "ig", name: "Instagram" },
+  { code: "fb", name: "Facebook" },
+  { code: "wa", name: "WhatsApp" },
+  { code: "am", name: "Amazon" },
+  { code: "go", name: "Google" },
+  { code: "tg", name: "Telegram" },
+  { code: "oi", name: "Odnoklassniki" },
+  { code: "lf", name: "Life" },
+  { code: "hw", name: "Hike" },
+  { code: "yw", name: "Yahoo" },
+  { code: "ot", name: "Other" },
+  { code: "mm", name: "Mail.ru" },
+  { code: "tw", name: "Twitter / X" },
+  { code: "abu", name: "Abu" },
+  { code: "wb", name: "Weibo" },
+  { code: "vi", name: "Viber" },
+  { code: "ni", name: "Nimo TV" },
+  { code: "ka", name: "Kakaotalk" },
+  { code: "li", name: "LinkedIn" },
+  { code: "nv", name: "Nvidia" },
+  { code: "acm", name: "ACM" },
+  { code: "ub", name: "Uber" },
+  { code: "jg", name: "Jaguar" },
+  { code: "ev", name: "Event" },
+  { code: "vk", name: "VK" },
+  { code: "bdp", name: "Badoo" },
+  { code: "cq", name: "CQ" },
+  { code: "vz", name: "VZ" },
+  { code: "pm", name: "PM" },
+  { code: "xh", name: "Xiaohongshu" },
+  { code: "mb", name: "MB" },
+  { code: "dh", name: "DH" },
+  { code: "me", name: "ME" },
+  { code: "qf", name: "QF" },
+  { code: "fv", name: "FV" },
+  { code: "ds", name: "DS" },
+  { code: "ts", name="TS" },
+  { code: "sg", name="SG" },
+  { code: "fr", name="FR" },
+  { code: "aoy", name="AOY" },
+  { code: "wr", name="WR" },
+  { code: "fd", name="FD" },
+  { code: "vr", name="VR" },
+  { code: "ok", name="OK" },
+  { code: "dl", name="DL" },
+  { code: "df", name="DF" },
+  { code: "ya", name="Yandex" },
+  { code: "ki", name="Kiwi" },
+  { code: "aez", name="AEZ" },
+  { code: "bn", name="Bun" },
+  { code: "asy", name="ASY" },
+  { code: "ew", name="EW" },
+  { code: "wx", name="WeChat" },
+  { code: "ju", name="JU" },
+  { code: "agb", name="AGB" },
+  { code: "mo", name="MO" },
+  { code: "za", name="ZA" },
+  { code: "bw", name="BW" },
+  { code: "bgv", name="BGV" },
+  { code: "nc", name="NC" },
+  { code: "nf", name="NF" },
+  { code: "gp", name="GP" },
+  { code: "acz", name="ACZ" },
+  { code: "sn", name="Snapchat" },
+  { code: "ma", name="MA" },
+  { code: "pf", name="PF" },
+  { code: "xk", name="XK" },
+  { code: "nz", name="NZ" },
+  { code: "afz", name="AFZ" },
+  { code: "fu", name="FU" },
+  { code: "aaa", name="AAA" },
+  { code: "qj", name="QJ" },
+  { code: "wh", name="WH" },
+  { code: "ah", name="AH" },
+  { code: "cam", name="Cam" },
+  { code: "tn", name="TN" },
+  { code: "kc", name="KC" },
+  { code: "ada", name="ADA" },
+  { code: "bcq", name="BCQ" },
+  { code: "bex", name="BEX" },
+  { code: "ua", name="Uber" },
+  { code: "mt", name="MT" },
+  { code: "do", name="DO" },
+  { code: "kt", name="KT" },
+  { code: "bwv", name="BWV" },
+  { code: "xd", name="XD" },
+  { code: "tm", name="TM" },
+  { code: "re", name="RE" },
+  { code: "pc", name="PC" },
+  { code: "rl", name="RL" },
+  { code: "abk", name="ABK" },
+  { code: "aka", name="AKA" },
+  { code: "mv", name="MV" },
+  { code: "aik", name="AIK" },
+  { code: "zh", name="ZH" },
+  { code: "vm", name="VM" },
+  { code: "afm", name="AFM" },
+  { code: "asb", name="ASB" },
+  { code: "im", name="IM" },
+  { code: "api", name="API" },
+  { code: "ac", name="AC" },
+  { code: "tx", name="TX" },
+  { code: "cn", name="CN" },
+  { code: "agm", name="AGM" },
+  { code: "zk", name="ZK" },
+  { code: "anm", name="ANM" },
+  { code: "pd", name="PD" },
+  { code: "sw", name="SW" },
+  { code: "si", name="Signal" },
+  { code: "fk", name="FK" },
+  { code: "aff", name="AFF" },
+  { code: "gf", name="GF" },
+  { code: "blt", name="BLT" },
+  { code: "bhr", name="BHR" },
+  { code: "yx", name="YX" },
+  { code: "bz", name="BZ" },
+  { code: "uu", name="UU" },
+  { code: "bme", name="BME" },
+  { code: "bzv", name="BZV" },
+  { code: "bkd", name="BKD" },
+  { code: "akp", name="AKP" },
+  { code: "awv", name="AWV" },
+  { code: "rr", name="RR" },
+  { code: "apq", name="APQ" },
+  { code: "yl", name="YL" },
+  { code: "atl", name="ATL" },
+  { code: "axj", name="AXJ" },
+  { code: "bwx", name="BWX" },
+  { code: "agj", name="AGJ" },
+  { code: "ep", name="EP" },
+  { code: "lc", name="LC" },
+  { code: "bxv", name="BXV" },
+  { code: "apf", name="APF" },
+  { code: "hx", name="HX" },
+  { code: "kf", name="KF" },
+  { code: "aba", name="ABA" },
+  { code: "zs", name="ZS" },
+  { code: "ue", name="UE" },
+  { code: "bnt", name="BNT" },
+  { code: "blo", name="BLO" },
+  { code: "ahl", name="AHL" },
+  { code: "btn", name="BTN" },
+  { code: "fz", name="FZ" },
+  { code: "agl", name="AGL" },
+  { code: "cbj", name="CBJ" },
+  { code: "tf", name="TF" },
+  { code: "wt", name="WT" },
+  { code: "et", name="ET" },
+  { code: "aiw", name="AIW" },
+  { code: "ccl", name="CCL" },
+  { code: "azi", name="AZI" },
+  { code: "bsa", name="BSA" },
+  { code: "alg", name="ALG" },
+  { code: "ft", name="FT" },
+  { code: "nl", name="NL" },
+  { code: "ama", name="AMA" },
+  { code: "abc", name="ABC" },
+  { code: "amb", name="AMB" },
+  { code: "bvi", name="BVI" },
+  { code: "byf", name="BYF" },
+  { code: "uf", name="UF" },
+  { code: "gj", name="GJ" },
+  { code: "uk", name="UK" },
+  { code: "mx", name="MX" },
+  { code: "bxr", name="BXR" },
+  { code: "zy", name="ZY" },
+  { code: "gq", name="GQ" },
+  { code: "afn", name="AFN" },
+  { code: "aje", name="AJE" },
+  { code: "ark", name="ARK" },
+  { code: "xt", name="XT" },
+  { code: "bo", name="BO" },
+  { code: "kl", name="KL" },
+  { code: "blh", name="BLH" },
+  { code: "bfv", name="BFV" },
+  { code: "ang", name="ANG" },
+  { code: "bl", name="BL" },
+  { code: "tu", name="TU" },
+  { code: "aqt", name="AQT" },
+  { code: "qh", name="QH" },
+  { code: "bcx", name="BCX" },
+  { code: "ij", name="IJ" },
+  { code: "ly", name="LY" },
+  { code: "qq", name="QQ" },
+  { code: "bhg", name="BHG" },
+  { code: "cb", name="CB" },
+  { code: "sr", name="SR" },
+  { code: "aab", name="AAB" },
+  { code: "ex", name="EX" },
+  { code: "mj", name="MJ" },
+  { code: "cct", name="CCT" },
+  { code: "bbq", name="BBQ" },
+  { code: "ahb", name="AHB" },
+  { code: "lj", name="LJ" },
+  { code: "jn", name="JN" },
+  { code: "vp", name="VP" },
+  { code: "bwa", name="BWA" },
+  { code: "aq", name="AQ" },
+  { code: "aem", name="AEM" },
+  { code: "blm", name="BLM" },
+  { code: "bf", name="BF" },
+  { code: "tl", name="TL" },
+  { code: "aon", name="AON" },
+  { code: "hb", name="HB" },
+  { code: "zb", name="ZB" },
+  { code: "bnl", name="BNL" },
+  { code: "avj", name="AVJ" },
+  { code: "aya", name="AYA" },
+  { code: "dr", name="DR" },
+  { code: "ajm", name="AJM" },
+  { code: "aux", name="AUX" },
+  { code: "ws", name="WS" },
+  { code: "aws", name="AWS" },
+  { code: "bau", name="BAU" },
+  { code: "avb", name="AVB" },
+  { code: "bou", name="BOU" },
+  { code: "dp", name="DP" },
+  { code: "aey", name="AEY" },
+  { code: "axx", name="AXX" },
+  { code: "adt", name="ADT" },
+  { code: "ry", name="RY" },
+  { code: "bc", name="BC" },
+  { code: "bmd", name="BMD" },
+  { code: "yn", name="YN" },
+  { code: "cj", name="CJ" },
+  { code: "xx", name="XX" },
+  { code: "atu", name="ATU" },
+  { code: "bpq", name="BPQ" },
+  { code: "ef", name="EF" },
+  { code: "bsv", name="BSV" },
+  { code: "gr", name="Gram" },
+  { code: "bfg", name="BFG" },
+  { code: "fh", name="FH" },
+  { code: "qv", name="QV" },
+  { code: "bwd", name="BWD" },
+  { code: "ayb", name="AYB" },
+  { code: "bpc", name="BPC" },
+  { code: "bdn", name="BDN" },
+  { code: "btr", name="BTR" },
+  { code: "aqj", name="AQJ" },
+  { code: "yy", name="YY" },
+  { code: "ajy", name="AJY" },
+  { code: "rt", name="RT" },
+  { code: "ee", name="EE" },
+  { code: "bra", name="BRA" },
+  { code: "ajj", name="AJJ" },
+  { code: "arn", name="ARN" },
+  { code: "bic", name="BIC" },
+  { code: "pr", name="PR" },
+  { code: "agg", name="AGG" },
+  { code: "ber", name="BER" },
+  { code: "aav", name="AAV" },
+  { code: "zo", name="ZO" },
+  { code: "abn", name="ABN" },
+  { code: "bbk", name="BBK" },
+  { code: "bgt", name="BGT" },
+  { code: "ko", name="KO" },
+  { code: "zp", name="ZP" },
+  { code: "alm", name="ALM" },
+  { code: "blr", name="BLR" },
+  { code: "brk", name="BRK" },
+  { code: "jq", name="JQ" },
+  { code: "kh", name="KH" },
+  { code: "app", name="Apple" },
+  { code: "aex", name="AEX" },
+  { code: "aom", name="AOM" },
+  { code: "afs", name="AFS" },
+  { code: "ajz", name="AJZ" },
+  { code: "bqb", name="BQB" },
+  { code: "axp", name="AXP" },
+  { code: "beo", name="BEO" },
+  { code: "ani", name="ANI" },
+  { code: "apg", name="APG" },
+  { code: "bbu", name="BBU" },
+  { code: "bfd", name="BFD" },
+  { code: "akl", name="AKL" },
+  { code: "axr", name="AXR" },
+  { code: "dq", name="DQ" },
+  { code: "yi", name="YI" },
+  { code: "bbj", name="BBJ" },
+  { code: "abd", name="ABD" },
+  { code: "tv", name="TV" },
+  { code: "bwu", name="BWU" },
+  { code: "pu", name="PU" },
+  { code: "aea", name="AEA" },
+  { code: "auw", name="AUW" },
+  { code: "aor", name="AOR" },
+  { code: "sa", name="SA" },
+  { code: "ank", name="ANK" },
+  { code: "auh", name="AUH" },
+  { code: "afp", name="AFP" },
+  { code: "cak", name="CAK" },
+  { code: "py", name="PY" },
+  { code: "uz", name="UZ" },
+  { code: "abo", name="ABO" },
+  { code: "apt", name="APT" },
+  { code: "qx", name="QX" },
+  { code: "bbl", name="BBL" },
+  { code: "bzo", name="BZO" },
+  { code: "akd", name="AKD" },
+  { code: "anl", name="ANL" },
+  { code: "cau", name="CAU" },
+  { code: "aok", name="AOK" },
+  { code: "aay", name="AAY" },
+  { code: "arf", name="ARF" },
+  { code: "bkx", name="BKX" },
+  { code: "xr", name="XR" },
+  { code: "ael", name="AEL" },
+  { code: "ako", name="AKO" },
+  { code: "bxw", name="BXW" },
+  { code: "gm", name="GM" },
+  { code: "avz", name="AVZ" },
+  { code: "bzr", name="BZR" },
+  { code: "abg", name="ABG" },
+  { code: "adp", name="ADP" },
+  { code: "bfw", name="BFW" },
+  { code: "xy", name="XY" },
+  { code: "bvs", name="BVS" },
+  { code: "bni", name="BNI" },
+  { code: "hu", name="HU" },
+  { code: "lo", name="LO" },
+  { code: "wc", name="WC" },
+  { code: "ayz", name="AYZ" },
+  { code: "bgb", name="BGB" },
+  { code: "ti", name="TI" },
+  { code: "vg", name="VG" },
+  { code: "ait", name="AIT" },
+  { code: "ns", name="NS" },
+  { code: "aaq", name="AAQ" },
+  { code: "vs", name="VS" },
+  { code: "bsf", name="BSF" },
+  { code: "ud", name="UD" },
+  { code: "azx", name="AZX" },
+  { code: "aoe", name="AOE" },
+  { code: "bjp", name="BJP" },
+  { code: "ys", name="YS" },
+  { code: "amz", name="AMZ" },
+  { code: "apa", name="APA" },
+  { code: "awp", name="AWP" },
+  { code: "ms", name="MS" },
+  { code: "alj", name="ALJ" },
+  { code: "anq", name="ANQ" },
+  { code: "apr", name="APR" },
+  { code: "blp", name="BLP" },
+  { code: "bob", name="BOB" },
+  { code: "bxs", name="BXS" },
+  { code: "ge", name="GE" },
+  { code: "ayn", name="AYN" },
+  { code: "bmm", name="BMM" },
+  { code: "bpt", name="BPT" },
+  { code: "anj", name="ANJ" },
+  { code: "axb", name="AXB" },
+  { code: "bfr", name="BFR" },
+  { code: "btg", name="BTG" },
+  { code: "dg", name="DG" },
+  { code: "ie", name="IE" },
+  { code: "bp", name="BP" },
+  { code: "bqe", name="BQE" },
+  { code: "aiz", name="AIZ" },
+  { code: "aoi", name="AOI" },
+  { code: "em", name="EM" },
+  { code: "rm", name="RM" },
+  { code: "anx", name="ANX" },
+  { code: "axt", name="AXT" },
+  { code: "baq", name="BAQ" },
+  { code: "bgj", name="BGJ" },
+  { code: "cbk", name="CBK" },
+  { code: "bsm", name="BSM" },
+  { code: "apl", name="APL" },
+  { code: "bah", name="BAH" },
+  { code: "bxj", name="BXJ" },
+  { code: "fw", name="FW" },
+  { code: "ahq", name="AHQ" },
+  { code: "apd", name="APD" },
+  { code: "bng", name="BNG" },
+  { code: "cbm", name="CBM" },
+  { code: "ajq", name="AJQ" },
+  { code: "ayv", name="AYV" },
+  { code: "ul", name="UL" },
+  { code: "arx", name="ARX" },
+  { code: "bih", name="BIH" },
+  { code: "bbg", name="BBG" },
+  { code: "ahr", name="AHR" },
+  { code: "anf", name="ANF" },
+  { code: "can", name="CAN" },
+  { code: "vd", name="VD" },
+  { code: "xs", name="XS" },
+  { code: "abq", name="ABQ" },
+  { code: "bol", name="BOL" },
+  { code: "cbx", name="CBX" },
+  { code: "ats", name="ATS" },
+  { code: "bkk", name="BKK" },
+  { code: "akj", name="AKJ" },
+  { code: "ann", name="ANN" },
+  { code: "baj", name="BAJ" },
+  { code: "cbe", name="CBE" },
+  { code: "acd", name="ACD" },
+  { code: "jx", name="JX" },
+  { code: "bqn", name="BQN" },
+  { code: "bte", name="BTE" },
+  { code: "fs", name="FS" },
+  { code: "qe", name="QE" },
+  { code: "byc", name="BYC" },
+  { code: "wg", name="WG" },
+  { code: "afk", name="AFK" },
+  { code: "aoz", name="AOZ" },
+  { code: "co", name="CO" },
+  { code: "kk", name="KK" },
+  { code: "zm", name="ZM" },
+  { code: "bgf", name="BGF" },
+  { code: "btv", name="BTV" },
+  { code: "cbh", name="CBH" },
+  { code: "aha", name="AHA" },
+  { code: "aqs", name="AQS" },
+  { code: "avv", name="AVV" },
+  { code: "aym", name="AYM" },
+  { code: "bbi", name="BBI" },
+  { code: "bjz", name="BJZ" },
+  { code: "bmi", name="BMI" },
+  { code: "bzb", name="BZB" },
+  { code: "cg", name="CG" },
+  { code: "eu", name="EU" },
+  { code: "oq", name="OQ" },
+  { code: "rv", name="RV" },
+  { code: "ww", name="WW" },
+  { code: "adg", name="ADG" },
+  { code: "aft", name="AFT" },
+  { code: "ahv", name="AHV" },
+  { code: "ak", name="AK" }
+];
+
+// Load all services from the CSS-based mapping
+const spriteMapping = [];
+
+// Parse the CSS we downloaded to extract ALL position mappings
+function loadSpriteMappings() {
+  // These are extracted from the actual CSS file
+  const raw = `full:5,5
+ig:45,5
+fb:85,5
+wa:125,5
+am:165,5
+go:205,5
+tg:245,5
+oi:285,5
+lf:325,5
+hw:365,5
+yw:405,5
+ot:445,5
+mm:485,5
+tw:525,5
+abu:565,5
+wb:605,5
+vi:645,5
+ni:685,5
+ka:725,5
+li:765,5
+nv:805,5
+acm:845,5
+ub:885,5
+jg:925,5
+ev:965,5
+vk:1005,5
+bdp:1045,5
+cq:1085,5
+vz:1125,5
+pm:1165,5
+xh:1205,5
+mb:1245,5
+dh:5,45
+me:45,45
+qf:85,45
+fv:125,45
+ds:165,45
+ts:205,45
+sg:245,45
+fr:285,45
+aoy:325,45
+wr:365,45
+fd:405,45
+vr:445,45
+ok:485,45
+dl:525,45
+df:565,45
+ya:605,45
+ki:645,45
+aez:685,45
+bn:725,45
+asy:765,45
+ew:805,45
+wx:845,45
+ju:885,45
+agb:925,45
+mo:965,45
+za:1005,45
+bw:1045,45
+bgv:1085,45
+nc:1125,45
+nf:1165,45
+gp:1205,45
+acz:1245,45
+sn:5,85
+ma:45,85
+pf:85,85
+xk:125,85
+nz:165,85
+afz:205,85
+fu:245,85
+aaa:285,85
+qj:325,85
+wh:365,85
+ah:405,85
+cam:445,85
+tn:485,85
+kc:525,85
+ada:565,85
+bcq:605,85
+bex:645,85
+ua:685,85
+mt:725,85
+do:765,85
+kt:805,85
+bwv:845,85
+xd:885,85
+tm:925,85
+re:965,85
+pc:1005,85
+rl:1045,85
+abk:1085,85
+aka:1125,85
+mv:1165,85
+aik:1205,85
+zh:1245,85
+vm:5,125
+afm:45,125
+asb:85,125
+im:125,125
+api:165,125
+ac:205,125
+tx:245,125
+cn:285,125
+agm:325,125
+zk:365,125
+anm:405,125
+pd:445,125
+sw:485,125
+si:525,125
+fk:565,125
+aff:605,125
+gf:645,125
+blt:685,125
+bhr:725,125
+yx:765,125
+bz:805,125
+uu:845,125
+bme:885,125
+bzv:925,125
+bkd:965,125
+akp:1005,125
+awv:1045,125
+rr:1085,125
+apq:1125,125
+yl:1165,125
+atl:1205,125
+axj:1245,125
+bwx:5,165
+agj:45,165
+ep:85,165
+lc:125,165
+bxv:165,165
+apf:205,165
+hx:245,165
+kf:285,165
+aba:325,165
+zs:365,165
+ue:405,165
+bnt:445,165
+blo:485,165
+ahl:525,165
+btn:565,165
+fz:605,165
+agl:645,165
+cbj:685,165
+tf:725,165
+wt:765,165
+et:805,165
+aiw:845,165
+ccl:885,165
+azi:925,165
+bsa:965,165
+alg:1005,165
+ft:1045,165
+nl:1085,165
+ama:1125,165
+abc:1165,165
+amb:1205,165
+bvi:1245,165
+byf:5,205
+uf:45,205
+gj:85,205
+uk:125,205
+mx:165,205
+bxr:205,205
+zy:245,205
+gq:285,205
+afn:325,205
+aje:365,205
+ark:405,205
+xt:445,205
+bo:485,205
+kl:525,205
+blh:565,205
+bfv:605,205
+ang:645,205
+bl:685,205
+tu:725,205
+aqt:765,205
+qh:805,205
+bcx:845,205
+ij:885,205
+ly:925,205
+qq:965,205
+bhg:1005,205
+cb:1045,205
+sr:1085,205
+aab:1125,205
+ex:1165,205
+mj:1205,205
+cct:1245,205
+bbq:5,245
+ahb:45,245
+lj:85,245
+jn:125,245
+vp:165,245
+bwa:205,245
+aq:245,245
+aem:285,245
+blm:325,245
+bf:365,245
+tl:405,245
+aon:445,245
+hb:485,245
+zb:525,245
+bnl:565,245
+avj:605,245
+aya:645,245
+dr:685,245
+ajm:725,245
+aux:765,245
+ws:805,245
+aws:845,245
+bau:885,245
+avb:925,245
+bou:965,245
+dp:1005,245
+aey:1045,245
+axx:1085,245
+adt:1125,245
+ry:1165,245
+bc:1205,245
+bmd:1245,245
+yn:5,285
+cj:45,285
+xx:85,285
+atu:125,285
+bpq:165,285
+ef:205,285
+bsv:245,285
+gr:285,285
+bfg:325,285
+fh:365,285
+qv:405,285
+bwd:445,285
+ayb:485,285
+bpc:525,285
+bdn:565,285
+btr:605,285
+aqj:645,285
+yy:685,285
+ajy:725,285
+rt:765,285
+ee:805,285
+bra:845,285
+ajj:885,285
+arn:925,285
+bic:965,285
+pr:1005,285
+agg:1045,285
+ber:1085,285
+aav:1125,285
+zo:1165,285
+abn:1205,285
+bbk:1245,285
+bgt:5,325
+ko:45,325
+zp:85,325
+alm:125,325
+blr:165,325
+brk:205,325
+jq:245,325
+kh:285,325
+app:325,325
+aex:365,325
+aom:405,325
+afs:445,325
+ajz:485,325
+bqb:525,325
+axp:565,325
+beo:605,325
+ani:645,325
+apg:685,325
+bbu:725,325
+bfd:765,325
+akl:805,325
+axr:845,325
+dq:885,325
+yi:925,325
+bbj:965,325
+abd:1005,325
+tv:1045,325
+bwu:1085,325
+pu:1125,325
+aea:1165,325
+auw:1205,325
+aor:1245,325
+sa:5,365
+ank:45,365
+auh:85,365
+afp:125,365
+cak:165,365
+py:205,365
+uz:245,365
+abo:285,365
+apt:325,365
+qx:365,365
+bbl:405,365
+bzo:445,365
+akd:485,365
+anl:525,365
+cau:565,365
+aok:605,365
+aay:645,365
+arf:685,365
+bkx:725,365
+xr:765,365
+ael:805,365
+ako:845,365
+bxw:885,365
+gm:925,365
+avz:965,365
+bzr:1005,365
+abg:1045,365
+adp:1085,365
+bfw:1125,365
+xy:1165,365
+bvs:1205,365
+bni:1245,365
+hu:5,405
+lo:45,405
+wc:85,405
+ayz:125,405
+bgb:165,405
+ti:205,405
+vg:245,405
+ait:285,405
+ns:325,405
+aaq:365,405
+vs:405,405
+bsf:445,405
+ud:485,405
+azx:525,405
+aoe:565,405
+bjp:605,405
+ys:645,405
+amz:685,405
+apa:725,405
+awp:765,405
+ms:805,405
+alj:845,405
+anq:885,405
+apr:925,405
+blp:965,405
+bob:1005,405
+bxs:1045,405
+ge:1085,405
+ayn:1125,405
+bmm:1165,405
+bpt:1205,405
+anj:1245,405
+axb:5,445
+bfr:45,445
+btg:85,445
+dg:125,445
+ie:165,445
+bp:205,445
+bqe:245,445
+aiz:285,445
+aoi:325,445
+em:365,445
+rm:405,445
+anx:445,445
+axt:485,445
+baq:525,445
+bgj:565,445
+cbk:605,445
+bsm:645,445
+apl:685,445
+bah:725,445
+bxj:765,445
+fw:805,445
+ahq:845,445
+apd:885,445
+bng:925,445
+cbm:965,445
+ajq:1005,445
+ayv:1045,445
+ul:1085,445
+arx:1125,445
+bih:1165,445
+bbg:1205,445
+ahr:1245,445
+anf:5,485
+can:45,485
+vd:85,485
+xs:125,485
+abq:165,485
+bol:205,485
+cbx:245,485
+ats:285,485
+bkk:325,485
+akj:365,485
+ann:405,485
+baj:445,485
+cbe:485,485
+acd:525,485
+jx:565,485
+bqn:605,485
+bte:645,485
+fs:685,485
+qe:725,485
+byc:765,485
+wg:805,485
+afk:845,485
+aoz:885,485
+co:925,485
+kk:965,485
+zm:1005,485
+bgf:1045,485
+btv:1085,485
+cbh:1125,485
+aha:1165,485
+aqs:1205,485
+avv:1245,485
+aym:5,525
+bbi:45,525
+bjz:85,525
+bmi:125,525
+bzb:165,525
+cg:205,525
+eu:245,525
+oq:285,525
+rv:325,525
+ww:365,525
+adg:405,525
+aft:445,525
+ahv:485,525
+ak:525,525
+akt:565,525
+auc:605,525
+aww:645,525
+bcs:685,525
+bfp:725,525
+bqp:765,525
+btf:805,525
+bxe:845,525
+caq:885,525
+kv:925,525
+tc:965,525
+xu:1005,525
+abt:1045,525
+aeq:1085,525
+aiv:1125,525
+als:1165,525
+aqd:1205,525
+asp:1245,525
+avg:5,565
+bay:45,565
+bds:85,565
+bgr:125,565
+blx:165,565
+box:205,565
+brr:245,565
+bvf:285,565
+bye:325,565
+ccd:365,565
+jh:405,565
+ls:445,565
+rk:485,565
+aau:525,565
+acw:565,565
+aju:605,565
+ar:645,565
+atv:685,565
+aze:725,565
+bht:765,565
+bko:805,565
+bna:845,565
+bqc:885,565
+bws:925,565
+cad:965,565
+cp:1005,565
+ff:1045,565
+ho:1085,565
+so:1125,565
+uw:1165,565
+zn:1205,565
+ail:1245,565
+asd:5,605
+auq:45,605
+bal:85,605
+bdh:125,605
+bgh:165,605
+bir:205,605
+bre:245,605
+bud:285,605
+cbi:325,605
+ir:365,605
+qt:405,605
+vy:445,605
+aa:485,605
+acg:525,605
+ajk:565,605
+aoo:605,605
+atm:645,605
+avw:685,605
+bhh:725,605
+bk:765,605
+bsh:805,605
+bze:845,605
+ch:885,605
+hc:925,605
+mc:965,605
+ze:1005,605
+adh:1045,605
+afx:1085,605
+ahx:1125,605
+akw:1165,605
+arp:1205,605
+aud:1245,605
+baa:5,645
+bcw:45,645
+bid:85,645
+ble:125,645
+bqr:165,645
+bxg:205,645
+car:245,645
+kx:285,645
+ne:325,645
+te:365,645
+vj:405,645
+xv:445,645
+zz:485,645
+aer:525,645
+agq:565,645
+alt:605,645
+aoh:645,645
+aqf:685,645
+asw:725,645
+baz:765,645
+bdt:805,645
+bgs:845,645
+bjq:885,645
+blz:925,645
+bry:965,645
+ccg:1005,645
+ej:1045,645
+jl:1085,645
+lt:1125,645
+wn:1165,645
+yu:1205,645
+acx:1245,645
+ahm:5,685
+ajv:45,685
+an:85,685
+apb:125,685
+ara:165,685
+atw:205,685
+awq:245,685
+azf:285,685
+bhu:325,685
+bks:365,685
+bne:405,685
+bsx:445,685
+cag:485,685
+hp:525,685
+km:565,685
+uy:605,685
+xm:645,685
+agh:685,685
+aim:725,685
+akm:765,685
+alk:805,685
+anu:845,685
+aps:885,685
+ase:925,685
+axs:965,685
+bao:1005,685
+bdj:1045,685
+bgi:1085,685
+bix:1125,685
+blq:1165,685
+bod:1205,685
+brg:1245,685
+bue:5,725
+bxu:45,725
+ix:85,725
+nm:125,725
+aci:165,725
+afc:205,725
+ahd:245,725
+ame:285,725
+aqu:325,725
+atn:365,725
+avx:405,725
+ayo:445,725
+bet:485,725
+bhj:525,725
+bkb:565,725
+bmt:605,725
+bpw:645,725
+bsk:685,725
+bzf:725,725
+ci:765,725
+he:805,725
+pa:845,725
+xb:885,725
+abe:925,725
+adi:965,725
+ai:1005,725
+akc:1045,725
+akx:1085,725
+apk:1125,725
+arq:1165,725
+axh:1205,725
+bab:1245,725
+bfs:5,765
+bie:45,765
+bnu:85,765
+bqv:125,765
+bxh:165,765
+cat:205,765
+kz:245,765
+xw:285,765
+abv:325,765
+aeu:365,765
+agr:405,765
+alu:445,765
+aqh:485,765
+avl:525,765
+bb:565,765
+bea:605,765
+bjr:645,765
+bvm:685,765
+byh:725,765
+gs:765,765
+lx:805,765
+oc:845,765
+aax:885,765
+acy:925,765
+ahp:965,765
+ajw:1005,765
+anb:1045,765
+apc:1085,765
+arc:1125,765
+atx:1165,765
+awr:1205,765
+bcc:1245,765
+bfh:5,805
+bhy:45,805
+bkv:85,805
+bnf:125,805
+bqj:165,805
+bsy:205,805
+cw:245,805
+fj:285,805
+hq:325,805
+ss:365,805
+xq:405,805
+aed:445,805
+agi:485,805
+aip:525,805
+akn:565,805
+asf:605,805
+biy:645,805
+bog:685,805
+buh:725,805
+jd:765,805
+ll:805,805
+no:845,805
+tp:885,805
+acj:925,805
+afe:965,805
+ahe:1005,805
+ajn:1045,805
+amf:1085,805
+aow:1125,805
+aqv:1165,805
+atp:1205,805
+avy:1245,805
+ayt:5,845
+beu:45,845
+bhn:85,845
+bmv:125,845
+bpy:165,845
+bwe:205,845
+hi:245,845
+kg:285,845
+sf:325,845
+zj:365,845
+abf:405,845
+adm:445,845
+aga:485,845
+aic:525,845
+ala:565,845
+aru:605,845
+auk:645,845
+bcy:685,845
+bif:725,845
+bli:765,845
+bnv:805,845
+bqx:845,845
+ng:885,845
+ql:925,845
+aev:965,845
+agv:1005,845
+aj:1045,845
+alv:1085,845
+ata:1125,845
+avm:1165,845
+ayh:1205,845
+bbf:1245,845
+beh:5,885
+bju:45,885
+bpi:85,885
+bsb:125,885
+bvn:165,885
+byk:205,885
+ccr:245,885
+en:285,885
+gt:325,885
+afq:365,885
+ajx:405,885
+ane:445,885
+atz:485,885
+azk:525,885
+bcd:565,885
+bfj:605,885
+bi:645,885
+bqk:685,885
+bsz:725,885
+cx:765,885
+ht:805,885
+kp:845,885
+mw:885,885
+pz:925,885
+sv:965,885
+vc:1005,885
+zr:1045,885
+abp:1085,885
+aiq:1125,885
+aln:1165,885
+any:1205,885
+asg:1245,885
+auy:5,925
+axu:45,925
+bas:85,925
+bdo:125,925
+bgl:165,925
+bja:205,925
+bls:245,925
+boh:285,925
+brl:325,925
+buk:365,925
+du:405,925
+je:445,925
+ln:485,925
+nq:525,925
+rc:565,925
+tq:605,925
+yo:645,925
+aag:685,925
+ahf:725,925
+aml:765,925
+aox:805,925
+aqx:845,925
+atr:885,925
+bbm:925,925
+bhq:965,925
+bkf:1005,925
+bmw:1045,925
+bpz:1085,925
+bsn:1125,925
+bwf:1165,925
+cm:1205,925
+ez:1245,925
+hk:5,965
+ml:45,965
+xe:85,965
+aig:125,965
+akh:165,965
+alc:205,965
+apm:245,965
+aum:285,965
+axn:325,965
+bai:365,965
+bcz:405,965
+blk:445,965
+bnx:485,965
+bqy:525,965
+bts:565,965
+bxl:605,965
+dn:645,965
+fx:685,965
+il:725,965
+ld:765,965
+nh:805,965
+qn:845,965
+th:885,965
+acb:925,965
+aew:965,965
+agx:1005,965
+alx:1045,965
+aol:1085,965
+aqk:1125,965
+atc:1165,965
+avq:1205,965
+ayk:1245,965
+bej:5,1005
+bgy:45,1005
+bjx:85,1005
+bmf:125,1005
+bpn:165,1005
+bsc:205,1005
+byw:245,1005
+ccs:285,1005
+gx:325,1005
+lz:365,1005
+oj:405,1005
+rs:445,1005
+ad:485,1005
+afr:525,1005
+ape:565,1005
+aua:605,1005
+awu:645,1005
+azl:685,1005
+bcg:725,1005
+bfm:765,1005
+bia:805,1005
+bky:845,1005
+bqm:885,1005
+btb:925,1005
+bx:965,1005
+dc:1005,1005
+kr:1045,1005
+qd:1085,1005
+agk:1125,1005
+ais:1165,1005
+alo:1205,1005
+ao:1245,1005
+aqb:5,1045
+asn:45,1045
+auz:85,1045
+axv:125,1045
+bgo:165,1045
+bjh:205,1045
+brm:245,1045
+buq:285,1045
+bxx:325,1045
+dz:365,1045
+jf:405,1045
+nr:445,1045
+tr:485,1045
+yq:525,1045
+aap:565,1045
+aco:605,1045
+afg:645,1045
+ahi:685,1045
+ajr:725,1045
+amp:765,1045
+aqy:805,1045
+awh:845,1045
+bbp:885,1045
+bf:925,1045
+bmx:965,1045
+bqa:1005,1045
+bss:1045,1045
+bwm:1085,1045
+hl:1125,1045
+um:1165,1045
+zl:1205,1045
+abi:1245,1045
+adq:5,1085
+agd:45,1085
+aij:85,1085
+asa:125,1085
+auo:165,1085
+axo:205,1085
+bdd:245,1085
+bii:285,1085
+bny:325,1085
+bqz:365,1085
+btt:405,1085
+bxm:445,1085
+qo:485,1085
+xz:525,1085
+ajf:565,1085
+aql:605,1085
+ati:645,1085
+avs:685,1085
+ayl:725,1085
+bbh:765,1085
+bem:805,1085
+bhf:845,1085
+bjy:885,1085
+bmh:925,1085
+bpo:965,1085
+bsd:1005,1085
+bvz:1045,1085
+ha:1085,1085
+wv:1125,1085
+abb:1165,1085
+ahs:1205,1085
+arl:1245,1085
+aub:5,1125
+azt:45,1125
+bib:85,1125
+bkz:125,1125
+bnk:165,1125
+bxb:205,1125
+cap:245,1125
+dd:285,1125
+my:325,1125
+sy:365,1125
+zx:405,1125
+abr:445,1125
+aeo:485,1125
+akr:525,1125
+alq:565,1125
+aob:605,1125
+aqc:645,1125
+aso:685,1125
+axw:725,1125
+bav:765,1125
+bdq:805,1125
+bgq:845,1125
+bji:885,1125
+blw:925,1125
+brn:965,1125
+bvb:1005,1125
+cca:1045,1125
+lq:1085,1125
+rg:1125,1125
+yr:1165,1125
+acu:1205,1125
+ahj:1245,1125
+ajs:5,1165
+amw:45,1165
+aqz:85,1165
+awj:125,1165
+azd:165,1165
+bfc:205,1165
+bhs:245,1165
+bkn:285,1165
+bsu:325,1165
+bwq:365,1165
+bzw:405,1165
+hn:445,1165
+xj:485,1165
+abj:525,1165
+ads:565,1165
+agf:605,1165
+akk:645,1165
+ali:685,1165
+ano:725,1165
+aup:765,1165
+bak:805,1165
+bdg:845,1165
+bik:885,1165
+ga:925,1165
+ip:965,1165
+lh:1005,1165
+nk:1045,1165
+ace:1085,1165
+ary:1125,1165
+ux:1165,1165
+bse:1205,1165
+bwb:1245,1165
+bpf:5,1205
+dm:45,1205
+cce:85,1205
+boo:125,1205
+brq:165,1205
+aii:205,1205
+ow:245,1205
+cay:285,1205
+cbt:325,1205
+bql:365,1205
+fy:405,1205
+afo:445,1205
+bup:485,1205
+el:525,1205
+ccp:565,1205
+yk:605,1205
+lv:645,1205
+axd:685,1205
+btl:725,1205
+jb:765,1205
+bps:805,1205
+jr:845,1205
+bqt:885,1205
+bdx:925,1205
+eo:965,1205
+buw:1005,1205
+og:1045,1205
+ahw:1085,1205
+bnc:1125,1205
+adu:1165,1205
+btq:1205,1205
+ayf:1245,1205
+buv:5,1245
+td:45,1245
+bof:85,1245
+afh:125,1245
+yz:165,1245
+cas:205,1245
+bsp:245,1245
+cax:285,1245
+bbn:325,1245
+bjm:365,1245
+bbx:405,1245
+bkp:445,1245
+le:485,1245
+biq:525,1245`;
+
+  raw.split('\n').forEach(line => {
+    const [code, x, y] = line.split(/[:,]/);
+    if (code) {
+      spriteMapping.push({ code, x: parseInt(x), y: parseInt(y) });
+    }
+  });
+}
+
+// Name lookup for common codes
+function getServiceName(code) {
+  const known = SERVICE_DATA.find(s => s.code === code);
+  return known ? known.name : code.toUpperCase();
+}
+
+function renderServices(filter = '') {
+  const grid = document.getElementById('servicesGrid');
+  const searchTerm = filter.toLowerCase().trim();
+  
+  const filtered = spriteMapping.filter(s => {
+    if (!searchTerm) return true;
+    const name = getServiceName(s.code).toLowerCase();
+    return s.code.includes(searchTerm) || name.includes(searchTerm);
+  });
+
+  document.getElementById('totalServices').textContent = spriteMapping.length;
+  document.getElementById('visibleServices').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="no-results">Aucun service trouvé 😕</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(s => `
+    <div class="service-card" onclick="selectService('${s.code}', ${s.x}, ${s.y})">
+      <div class="svc svc-${s.code}"></div>
+      <div class="code">${s.code}</div>
+      <div class="pos">X:${s.x}px Y:${s.y}px</div>
+    </div>
+  `).join('');
+}
+
+function filterServices() {
+  renderServices(document.getElementById('searchInput').value);
+}
+
+function selectService(code, x, y) {
+  const panel = document.getElementById('previewPanel');
+  const icon = document.getElementById('previewIcon');
+  const name = getServiceName(code);
+
+  icon.className = `svc svc-${code}`;
+  document.getElementById('previewCode').textContent = `${code} — ${name}`;
+  document.getElementById('previewPos').textContent = `Position X: ${x}px, Y: ${y}px`;
+  document.getElementById('previewCss').textContent =
+    `.svc-${code} { background-position: -${x}px -${y}px; }`;
+  
+  panel.classList.add('visible');
+
+  // Highlight selected
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Initialize
+loadSpriteMappings();
+renderServices();
+</script>
+</body>
+</html>
