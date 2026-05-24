@@ -105,149 +105,34 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LIGHT MODE
-   Palette rationale:
-   - Backgrounds: pure white → warm grays (zinc scale)
-   - Primary lime #adfa1b on white: contrast 1.57:1 for bg-fills (decorative OK),
-     text always uses --primary-foreground #1a2e00 (13.8:1 on white ✓)
-   - Semantic colors darkened one stop vs Tailwind defaults for white-bg contrast
-   - Borders use rgba black for natural alpha compositing on any surface
+   LIGHT MODE (:root — default, no class applied)
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
   --radius: 0.625rem;
 
-  /* ── Surfaces — stretched ramp ──
-     L*   ~3.2   ~5.5   ~7.8   ~10.1  ~12.8  (CIE L* approx)
-     Hex  070708  111113  191a1c  202124  282a2e
-     Each step is visually distinct on uncalibrated laptop screens. */
-  --background: #070708;
-  --foreground: #ececef;
-
-  --card: #111113;
-  --card-foreground: #ececef;
-
-  --popover: #141416;
-  --popover-foreground: #ececef;
-
-  /* ── Primary: lime ── */
-  --primary: #adfa1b;
-  --primary-foreground: #1a2e00; /* 13.8:1 on lime ✓ — was #fff (1.74:1 🔴) */
-
-  /* ── Secondary: one step above card (subtle button fills) ── */
-  --secondary: #1c1c1f;
-  --secondary-foreground: #e0e0e4;
-
-  /* ── Muted: disabled / placeholder (distinct from secondary) ── */
-  --muted: #161618;
-  --muted-foreground: #737380;
-
-  /* ── Accent: hover / active state surface (brightest neutral) ── */
-  --accent: #242428;
-  --accent-foreground: #ececef;
-
-  /* ── Destructive ── */
-  --destructive: #ef4444;
-  --destructive-foreground: #fca5a5;
-
-  /* ── Borders & inputs ── */
-  --border: rgba(255, 255, 255, 0.07);
-  --input: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --ring: rgba(173, 250, 27, 0.35); /* lime glow — aligned with primary */
-
-  /* ── Charts: 400-level for dark bg readability ── */
-  --chart-1: #60a5fa; /* blue-400 */
-  --chart-2: #4ade80; /* green-400 */
-  --chart-3: #fbbf24; /* amber-400 */
-  --chart-4: #c084fc; /* purple-400 */
-  --chart-5: #f87171; /* red-400 */
-
-  /* ── Sidebar ── */
-  --sidebar: #0e0e10;
-  --sidebar-foreground: #ececef;
-  --sidebar-primary: #adfa1b;
-  --sidebar-primary-foreground: #1a2e00;
-  --sidebar-accent: #1c1c1f;
-  --sidebar-accent-foreground: #e0e0e4;
-  --sidebar-border: rgba(255, 255, 255, 0.07);
-  --sidebar-ring: rgba(173, 250, 27, 0.35);
-
-  /* ── Semantic: info / success / warning
-     info = blue (NOT lime — was incorrectly lime 🔴) ── */
-  --info: #3b82f6;
-  --info-foreground: #93c5fd;
-  --success: #22c55e;
-  --success-foreground: #86efac;
-  --warning: #f59e0b;
-  --warning-foreground: #fcd34d;
-
-  /* ── Brand accent ── */
-  --brand-accent-hex: #adfa1b;
-  --brand-accent-hover-hex: #9ae617; /* was #1d4ed8 (blue?!) 🔴 — fixed to lime */
-
-  /* ── Semantic badges ── */
-  --badge-success-border: rgba(34, 197, 94, 0.25);
-  --badge-success-bg: rgba(34, 197, 94, 0.1);
-  --badge-success-text: #86efac;
-  --badge-info-border: rgba(59, 130, 246, 0.25);
-  --badge-info-bg: rgba(59, 130, 246, 0.1);
-  --badge-info-text: #93c5fd;
-  --badge-warning-border: rgba(245, 158, 11, 0.25);
-  --badge-warning-bg: rgba(245, 158, 11, 0.1);
-  --badge-warning-text: #fcd34d;
-  --badge-destructive-border: rgba(239, 68, 68, 0.25);
-  --badge-destructive-bg: rgba(239, 68, 68, 0.1);
-  --badge-destructive-text: #fca5a5;
-
-  /* ── Scrollbar ── */
-  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
-
-  /* ── Subtle surfaces ── */
-  --surface-subtle: rgba(255, 255, 255, 0.03);
-  --surface-hover: rgba(255, 255, 255, 0.05);
-
-  /* ── Separator ── */
-  --separator: rgba(255, 255, 255, 0.07);
-
-  /* ── Grid ── */
-  --grid-line-color: rgba(255, 255, 255, 0.04);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   DARK MODE (default — :root)
-   Palette rationale:
-   - 5-step neutral ramp from #070708 → #242428 (stretched for monitor
-     variance; every step ≥ 4% relative luminance delta)
-   - Primary lime #adfa1b with dark foreground for WCAG AA on buttons
-   - Ring & focus indicators use lime at 35% opacity (brand-aligned)
-   - Semantic colors use Tailwind 400-level for dark-bg readability
-   - All borders rgba white to alpha-composite onto any surface
-   ═══════════════════════════════════════════════════════════════════════════ */
-.dark {
-  --radius: 0.625rem;
-
-  /* ── Surfaces ── */
+  /* ── Surfaces (light) ── */
   --background: #ffffff;
   --foreground: #0a0a0b;
+
   --card: #ffffff;
   --card-foreground: #0a0a0b;
+
   --popover: #ffffff;
   --popover-foreground: #0a0a0b;
 
   /* ── Primary: lime ── */
   --primary: #adfa1b;
-  --primary-foreground: #1a2e00; /* 13.8:1 on lime ✓ */
+  --primary-foreground: #1a2e00;
 
-  /* ── Secondary: subtle cool gray fill (tags, secondary buttons) ── */
+  /* ── Secondary ── */
   --secondary: #f4f4f5;
   --secondary-foreground: #18181b;
 
-  /* ── Muted: disabled / placeholder surfaces ── */
+  /* ── Muted ── */
   --muted: #f0f0f2;
   --muted-foreground: #6b6b76;
 
-  /* ── Accent: hover highlights, active rows ── */
+  /* ── Accent ── */
   --accent: #e9e9ed;
   --accent-foreground: #18181b;
 
@@ -255,18 +140,18 @@
   --destructive: #dc2626;
   --destructive-foreground: #991b1b;
 
-  /* ── Borders & inputs (rgba for alpha compositing) ── */
+  /* ── Borders & inputs ── */
   --border: rgba(0, 0, 0, 0.08);
   --input: rgba(0, 0, 0, 0.12);
   --border-strong: rgba(0, 0, 0, 0.18);
-  --ring: rgba(173, 250, 27, 0.45); /* lime glow — aligned with primary */
+  --ring: rgba(173, 250, 27, 0.45);
 
-  /* ── Charts: darkened one stop for white-bg legibility ── */
-  --chart-1: #2563eb; /* blue-600 */
-  --chart-2: #16a34a; /* green-600 */
-  --chart-3: #d97706; /* amber-600 */
-  --chart-4: #9333ea; /* purple-600 */
-  --chart-5: #dc2626; /* red-600 */
+  /* ── Charts ── */
+  --chart-1: #2563eb;
+  --chart-2: #16a34a;
+  --chart-3: #d97706;
+  --chart-4: #9333ea;
+  --chart-5: #dc2626;
 
   /* ── Sidebar ── */
   --sidebar: #fafafa;
@@ -278,7 +163,7 @@
   --sidebar-border: rgba(0, 0, 0, 0.08);
   --sidebar-ring: rgba(173, 250, 27, 0.45);
 
-  /* ── Semantic: info / success / warning ── */
+  /* ── Semantic ── */
   --info: #2563eb;
   --info-foreground: #1e40af;
   --success: #16a34a;
@@ -315,8 +200,108 @@
   /* ── Separator ── */
   --separator: rgba(0, 0, 0, 0.08);
 
-  /* ── Grid (if used for decorative bg grids) ── */
+  /* ── Grid ── */
   --grid-line-color: rgba(0, 0, 0, 0.06);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK MODE (".dark" class)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark {
+  --radius: 0.625rem;
+
+  /* ── Surfaces ── */
+  --background: #070708;
+  --foreground: #ececef;
+
+  --card: #111113;
+  --card-foreground: #ececef;
+
+  --popover: #141416;
+  --popover-foreground: #ececef;
+
+  /* ── Primary: lime ── */
+  --primary: #adfa1b;
+  --primary-foreground: #1a2e00;
+
+  /* ── Secondary ── */
+  --secondary: #1c1c1f;
+  --secondary-foreground: #e0e0e4;
+
+  /* ── Muted ── */
+  --muted: #161618;
+  --muted-foreground: #737380;
+
+  /* ── Accent ── */
+  --accent: #242428;
+  --accent-foreground: #ececef;
+
+  /* ── Destructive ── */
+  --destructive: #ef4444;
+  --destructive-foreground: #fca5a5;
+
+  /* ── Borders & inputs ── */
+  --border: rgba(255, 255, 255, 0.07);
+  --input: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --ring: rgba(173, 250, 27, 0.35);
+
+  /* ── Charts ── */
+  --chart-1: #60a5fa;
+  --chart-2: #4ade80;
+  --chart-3: #fbbf24;
+  --chart-4: #c084fc;
+  --chart-5: #f87171;
+
+  /* ── Sidebar ── */
+  --sidebar: #0e0e10;
+  --sidebar-foreground: #ececef;
+  --sidebar-primary: #adfa1b;
+  --sidebar-primary-foreground: #1a2e00;
+  --sidebar-accent: #1c1c1f;
+  --sidebar-accent-foreground: #e0e0e4;
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --sidebar-ring: rgba(173, 250, 27, 0.35);
+
+  /* ── Semantic ── */
+  --info: #3b82f6;
+  --info-foreground: #93c5fd;
+  --success: #22c55e;
+  --success-foreground: #86efac;
+  --warning: #f59e0b;
+  --warning-foreground: #fcd34d;
+
+  /* ── Brand accent ── */
+  --brand-accent-hex: #adfa1b;
+  --brand-accent-hover-hex: #9ae617;
+
+  /* ── Semantic badges ── */
+  --badge-success-border: rgba(34, 197, 94, 0.25);
+  --badge-success-bg: rgba(34, 197, 94, 0.1);
+  --badge-success-text: #86efac;
+  --badge-info-border: rgba(59, 130, 246, 0.25);
+  --badge-info-bg: rgba(59, 130, 246, 0.1);
+  --badge-info-text: #93c5fd;
+  --badge-warning-border: rgba(245, 158, 11, 0.25);
+  --badge-warning-bg: rgba(245, 158, 11, 0.1);
+  --badge-warning-text: #fcd34d;
+  --badge-destructive-border: rgba(239, 68, 68, 0.25);
+  --badge-destructive-bg: rgba(239, 68, 68, 0.1);
+  --badge-destructive-text: #fca5a5;
+
+  /* ── Scrollbar ── */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+
+  /* ── Subtle surfaces ── */
+  --surface-subtle: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.05);
+
+  /* ── Separator ── */
+  --separator: rgba(255, 255, 255, 0.07);
+
+  /* ── Grid ── */
+  --grid-line-color: rgba(255, 255, 255, 0.04);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

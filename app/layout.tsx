@@ -42,8 +42,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       >
         <ThemeProvider
           attribute='class'
-          defaultTheme='light'
-          enableSystem={false}
+          defaultTheme='system'
+          enableSystem={true}
           value={{ light: 'light', dark: 'dark' }}
         >
           <QueryProvider>{children}</QueryProvider>

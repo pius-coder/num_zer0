@@ -2,6 +2,7 @@
 
 import { Link } from 'react-router-dom'
 import { PixelHeading } from '@/component/ui/pixel-heading'
+import { ThemeSwitcher } from '@/component/ui/theme-switcher'
 import { RechargeTriggerButton } from '@/component/recharge/recharge-trigger-button'
 
 interface MobileHeaderLogoProps {
@@ -22,6 +23,7 @@ export function MobileHeaderLogo({ isWallet, credits }: MobileHeaderLogoProps) {
           NumZero
         </PixelHeading>
       </Link>
+      <ThemeSwitcher />
       <div className='ml-auto inline-flex flex-col justify-end shrink-0 items-end gap-2 rounded-full px-2 py-1 text-sm font-semibold text-primary'>
         <RechargeTriggerButton notShowOnWalletPage={isWallet} credits={credits} />
         <p className='text-xs text-end leading-none font-thin font-cursive'>buy</p>

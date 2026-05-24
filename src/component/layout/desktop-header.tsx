@@ -3,6 +3,7 @@
 import { Link } from 'react-router-dom'
 import { Coins } from 'lucide-react'
 import { useBalance } from '@/hooks/use-credits'
+import { ThemeSwitcher } from '@/component/ui/theme-switcher'
 import { RechargeTriggerButton } from '@/component/recharge/recharge-trigger-button'
 import { LogoApp } from './logo-app'
 import { DesktopHeaderNav } from './desktop-header-nav'
@@ -20,7 +21,10 @@ export function DesktopHeader() {
 
       <DesktopHeaderNav />
 
-      <div className='ml-auto inline-flex shrink-0 items-center gap-2 rounded-full bg-primary/10 px-2 py-1 text-sm font-semibold text-primary'>
+      <div className='ml-auto inline-flex shrink-0 items-center gap-2'>
+        <ThemeSwitcher />
+      </div>
+      <div className='inline-flex shrink-0 items-center gap-2 rounded-full bg-primary/10 px-2 py-1 text-sm font-semibold text-primary'>
         <Coins className='h-4 w-4' />
         <RechargeTriggerButton credits={credits} className='border-primary/40 p-1.5' />
       </div>
