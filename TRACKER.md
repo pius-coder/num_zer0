@@ -207,7 +207,8 @@ num_zer0/                                  ← Monorepo racine
 | 2026-05-24 | Thème 2: Dashboard MVP (Phase 2) | ✅ | `5773e68` |
 | 2026-05-24 | AGENTS.md | ✅ | `c96ca81` |
 | 2026-05-24 | Thème 3: Middleware stack Hono | ✅ | `1208606` |
-| 2026-05-24 | Cleanup: Audit fixes (stepper, barrel, aliases, types, AGENTS.md) | ✅ | *(courant)* |
+| 2026-05-24 | Cleanup: Audit fixes (stepper, barrel, aliases, types, AGENTS.md) | ✅ | `0d00130` |
+| 2026-05-24 | Cleanup: Re-audit final (bridge.ts any, doc comments, AGENTS.md) | ✅ | *(courant)* |
 
 ## Prochaine action
 

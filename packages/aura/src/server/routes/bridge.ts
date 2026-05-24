@@ -55,8 +55,7 @@ function serializeCookie(mutation: AuraCookieMutation): string {
  * appending `Set-Cookie` headers. Hono supports multiple `Set-Cookie` headers
  * via `c.header("Set-Cookie", value, { append: true })`.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function applyCookieMutations(c: Context<any, any, any>, cookies: AuraCookieMutation[]): void {
+function applyCookieMutations(c: Context, cookies: AuraCookieMutation[]): void {
   for (const mutation of cookies) {
     c.header("Set-Cookie", serializeCookie(mutation), { append: true });
   }

@@ -2,7 +2,7 @@
  * `<AuraDataTable>` — server-paginated, sortable, filterable data table.
  * Resolves: Requirements 38.3, 38.10.
  *
- * Uses shadcn Table + Input + Button primitives, wired to useAuraPaginatedQuery.
+ * Uses shadcn Table + Input + Button primitives, wired to usePaginatedQuery.
  */
 
 "use client";

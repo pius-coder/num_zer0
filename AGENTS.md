@@ -149,36 +149,47 @@
       </pitfall>
     </pitfalls>
 
-    <audit_results>
+    <audit_results date="2026-05-24" tool="madge+manual">
       <circular_deps>
-        <dep files="server/context.ts, server/notifications.ts" severity="low">
-          <note>import type only — pas de cycle runtime. Les deux sont des imports de type.</note>
+        <dep files="server/context.ts ↔ server/notifications.ts" severity="low" status="false_positive">
+          <note>import type only — les deux modules n'échangent que des types. Effacé à la compilation.</note>
         </dep>
-        <dep files="server/operation.ts, server/registry.ts" severity="low">
-          <note>operation.ts importe registerOperation (valeur) de registry.ts ; registry.ts importe type RegisteredAuraOperation. Pas de cycle runtime car l'import type est effacé.</note>
+        <dep files="server/operation.ts ↔ server/registry.ts" severity="low" status="false_positive">
+          <note>operation.ts importe registerOperation (valeur) ; registry.ts importe type RegisteredAuraOperation (effacé). Pas de cycle runtime.</note>
         </dep>
-        <dep files="server/ai/agent.ts, server/create-context.ts, server/ai/context-binding.ts" severity="medium">
-          <note>agent.ts utilise await import() dynamique pour create-context.ts. Pas de cycle module-level, mais madge le détecte. À refactoriser si problème.</note>
+        <dep files="server/ai/agent.ts → create-context.ts → context-binding.ts → agent.ts" severity="low" status="false_positive">
+          <note>agent.ts utilise await import() dynamique. Pas de cycle module-level. madge le détecte via l'import dynamique.</note>
         </dep>
       </circular_deps>
       <any_types>
-        <finding file="server/routes/bridge.ts" line="59">Context&lt;any, any, any&gt; — remplacer par Context</finding>
-        <finding file="server/ai/agent.ts" lines="222-229">3 as unknown as casts pour LangChain model binding</finding>
-        <finding file="server/operation.ts" lines="296-310">6 as unknown as casts dans le builder pattern (nécessaire pour TS génériques)</finding>
-        <finding file="server/entity-tracker.ts" lines="42-67">4 casts pour Prisma Proxy (dynamic dispatch)</finding>
-        <finding file="server/broadcast.ts" lines="193-247">4 as unknown as casts pour WS client attachment</finding>
-        <note>42 findings total. La plupart sont des as unknown as nécessaires (builder pattern, dynamic dispatch, Prisma). Un seul : any vrai (bridge.ts:59).</note>
+        <finding file="server/routes/bridge.ts:59" status="fixed">
+          <code>Context&lt;any, any, any&gt;</code>
+          <note>Remplacé par Context (sans generics). Hono accepte Context par défaut.</note>
+        </finding>
+        <finding file="client/stepper.ts:75" status="kept">
+          <code>as any</code>
+          <note>zodResolver générique complexe — cast nécessaire. eslint-disable no-explicit-any présent.</note>
+        </finding>
+        <note>0 violations restantes (bridge.ts fixé, stepper.ts est un cas légitime). Tous les autres as unknown as sont des casts nécessaires pour builder pattern, dynamic dispatch, Prisma proxying.</note>
       </any_types>
       <patch_wrappers>
-        <finding status="fixed">client/index.ts — tous les alias useAura* et AuraClientProvider retirés du barrel public</finding>
-        <finding status="kept">provider.tsx, transport.ts, hooks.ts — les alias internes (export const Foo = Bar) conservés pour usage interne</finding>
-        <finding status="kept">server/context.ts — re-export shim partiellement supprimé (AuraLogger, AuraSessionData, AuraSource conservés car importés par d'autres modules)</finding>
+        <finding status="fixed">client/index.ts — useAuraForm et useAuraParams conservés (pas d'alias court possible — useForm conflit avec react-hook-form, useParams avec React Router). Tout le reste est nettoyé.</finding>
+        <finding status="kept">provider.tsx, transport.ts, hooks.ts, paginated-query.ts, agent.ts — alias internes (export const Foo = Bar) conservés. Le barrel n'exporte que les nouveaux noms.</finding>
+        <finding status="kept">ui/aura-form.tsx, ui/aura-data-table.tsx — doc comments mis à jour (useMutation, usePaginatedQuery au lieu de useAura*).</finding>
       </patch_wrappers>
       <legacy_branches>
-        <finding file="client/stepper.ts" status="fixed">Dead code: constructor dans interface + ... placeholders → réécrit en useStepperForm fonctionnel</finding>
-        <finding file="server/routes/files.ts" line="54" status="kept">Mode 2 legacy free-path serving — gardé pour backward compat</finding>
-        <finding file="server/middleware/rate-limit.ts" status="kept">Commentaires references legacy transport layer — documentation uniquement</finding>
+        <finding file="client/stepper.ts" status="fixed">Dead code supprimé (constructor dans interface + ... placeholders). useStepperForm fonctionnel.</finding>
+        <finding file="server/routes/files.ts:54" status="kept">Mode 2 legacy free-path serving — gardé car les projets utilisateurs peuvent avoir des fichiers en filesystem.</finding>
+        <finding file="server/middleware/rate-limit.ts" status="kept">Commentaires references legacy — documentation uniquement, pas de code actif.</finding>
       </legacy_branches>
+      <summary>
+        <item>0 any types réels (bridge.ts:59 fixé)</item>
+        <item>3 circular deps — toutes false positives (type-only ou dynamic import)</item>
+        <item>0 patch wrappers dans le barrel public (useAuraForm/useAuraParams conservés car pas d'alias possible)</item>
+        <item>0 dead code actif (stepper.ts fixé, files.ts légitime)</item>
+        <item>1 eslint-disable no-explicit-any (stepper.ts:75 — zodResolver générique)</item>
+        <item>0 dépendances circulaires runtime</item>
+      </summary>
     </audit_results>
 
     <next_actions>

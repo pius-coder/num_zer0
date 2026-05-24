@@ -222,3 +222,16 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 **Motivation :**
 > Audit complet du codebase : 42 `any` implicites, 23 patch wrappers/aliases, 3 circular deps, 2 blocs de dead code. Fixés selon la philosophie "réécrire, pas adapter". Les alias legacy dans le barrel public sont supprimés — seuls les nouveaux noms sont exportés. Les alias internes (dans provider.tsx, transport.ts, hooks.ts) sont conservés car utilisés en interne. AGENTS.md contient maintenant tout le contexte en XML pour reprise après reset.
+
+---
+
+## 2026-05-24 | Cleanup — Re-audit final | Fixé
+
+**MODIFIÉ :**
+- `server/routes/bridge.ts:59` — `Context<any, any, any>` → `Context` (dernier `any` réel)
+- `ui/aura-form.tsx` — doc comment `useAuraMutation` → `useMutation`
+- `ui/aura-data-table.tsx` — doc comment `useAuraPaginatedQuery` → `usePaginatedQuery`
+- `AGENTS.md` — Section audit_results mise à jour avec les résultats frais (0 any, 0 wrappers, 0 dead code)
+
+**Motivation :**
+> Re-audit après fixes. Résultat : 0 `any` réel, 3 circular deps (toutes false-positives type-only), 0 patch wrappers dans le barrel, 0 dead code. useAuraForm/useAuraParams conservés car pas d'alias court possible (conflit avec react-hook-form et React Router).

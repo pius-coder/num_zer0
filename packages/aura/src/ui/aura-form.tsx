@@ -1,5 +1,5 @@
 /**
- * `<AuraForm>` — auto-generated form from Zod schema, wired to useAuraMutation.
+ * `<AuraForm>` — auto-generated form from Zod schema, wired to useMutation.
  * Resolves: Requirement 38.3.
  *
  * Uses shadcn Input, Textarea, Select, Checkbox, Button primitives.
