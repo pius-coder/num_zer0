@@ -190,6 +190,14 @@
         <item>1 eslint-disable no-explicit-any (stepper.ts:75 — zodResolver générique)</item>
         <item>0 dépendances circulaires runtime</item>
       </summary>
+      <critical_fixes>
+        <fix date="2026-05-24" severity="critical">
+          <issue>runner.ts:105 cast + line 137 comparison — "mutation" vs "mutate"</issue>
+          <impact>ALL mutations dispatched through bridge path had isMutating=false. Entity invalidation silently broken. Introduced by my previous "fix" — the actual runtime OperationType is "query" | "mutate" | "action" (not "mutation").</impact>
+          <resolution>Removed the incorrect cast (operation.type is already properly typed as OperationType). Changed comparison from "mutation" back to "mutate". Fixed event-bus.ts ExecutionEvent.type to use "mutate" for consistency.</resolution>
+        </fix>
+        <note>Always verify OperationType before changing type comparisons. The registry uses "mutate" not "mutation".</note>
+      </critical_fixes>
     </audit_results>
 
     <next_actions>

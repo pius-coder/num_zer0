@@ -5,7 +5,7 @@ export interface ConsoleLog {
 }
 
 export interface ExecutionEvent {
-  type: "query" | "mutation" | "action";
+  type: "query" | "mutate" | "action";
   name: string;
   status: "success" | "error";
   durationMs: number;
