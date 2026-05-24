@@ -7,22 +7,18 @@ import { RechargeTriggerButton } from '@/component/recharge/recharge-trigger-but
 import { LogoApp } from './logo-app'
 import { DesktopHeaderNav } from './desktop-header-nav'
 
-interface DesktopHeaderProps {
-  locale: string
-}
-
-export function DesktopHeader({ locale }: DesktopHeaderProps) {
+export function DesktopHeader() {
   const { data: balance } = useBalance()
   const credits = balance?.available ?? 0
 
   return (
     <header className='relative isolate overflow-hidden hidden h-32 shrink-0 items-center gap-32 border-b justify-between bg-background mx-auto px-6 md:flex'>
       <div className='pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--brand-accent-hex)]/30 to-transparent' />
-      <Link to={`/${locale}/my-space`} className='shrink-0'>
+      <Link to='/my-space' className='shrink-0'>
         <LogoApp className='text-6xl' />
       </Link>
 
-      <DesktopHeaderNav locale={locale} />
+      <DesktopHeaderNav />
 
       <div className='ml-auto inline-flex shrink-0 items-center gap-2 rounded-full bg-primary/10 px-2 py-1 text-sm font-semibold text-primary'>
         <Coins className='h-4 w-4' />

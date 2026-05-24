@@ -6,7 +6,6 @@ import { MobileHeaderMenu } from './mobile-header-menu'
 
 interface MobileHeaderTitleBarProps {
   title: string
-  locale: string
   isMenuOpen: boolean
   onToggleMenu: () => void
   onSignOut: () => void
@@ -14,7 +13,6 @@ interface MobileHeaderTitleBarProps {
 
 export function MobileHeaderTitleBar({
   title,
-  locale,
   isMenuOpen,
   onToggleMenu,
   onSignOut,
@@ -44,7 +42,7 @@ export function MobileHeaderTitleBar({
           >
             <div className='overflow-hidden'>
               <div className='p-1 grid grid-cols-1 gap-1'>
-                <MobileHeaderMenu locale={locale} onSignOut={onSignOut} />
+                <MobileHeaderMenu onSignOut={onSignOut} />
               </div>
             </div>
           </div>

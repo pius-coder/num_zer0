@@ -5,15 +5,14 @@ import { PixelHeading } from '@/component/ui/pixel-heading'
 import { RechargeTriggerButton } from '@/component/recharge/recharge-trigger-button'
 
 interface MobileHeaderLogoProps {
-  locale: string
   isWallet: boolean
   credits: number
 }
 
-export function MobileHeaderLogo({ locale, isWallet, credits }: MobileHeaderLogoProps) {
+export function MobileHeaderLogo({ isWallet, credits }: MobileHeaderLogoProps) {
   return (
     <div className='flex h-14 mx-7 mt-6.5 items-center justify-between bg-transparent'>
-      <Link to={`/${locale}/my-space`} className='flex items-center gap-2.5'>
+      <Link to='/my-space' className='flex items-center gap-2.5'>
         <PixelHeading
           as='h1'
           initialFont='line'

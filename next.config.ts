@@ -3,6 +3,8 @@ import createNextIntlPlugin from 'next-intl/plugin'
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
+const SPA_PATHS = ['my-space', 'wallet', 'account', 'numbers', 'recharge', 'support']
+
 const nextConfig: NextConfig = {
   output: 'standalone',
 
@@ -15,6 +17,15 @@ const nextConfig: NextConfig = {
         hostname: 'numzero.globalimex.online',
       },
     ],
+  },
+
+  async rewrites() {
+    const spaRewrites = SPA_PATHS.map((path) => ({
+      source: `/:locale/${path}`,
+      destination: `/:locale/${path}`,
+    }))
+
+    return spaRewrites
   },
 
   // Security headers for production

@@ -3,28 +3,22 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Home, Wallet } from 'lucide-react'
 
-interface DesktopHeaderNavProps {
-  locale: string
-}
-
 const NAV_ITEMS = [
-  { href: '/my-space', label: 'Home', icon: Home },
-  { href: '/wallet', label: 'Wallet', icon: Wallet },
+  { path: '/my-space', label: 'Home', icon: Home },
+  { path: '/wallet', label: 'Wallet', icon: Wallet },
 ]
 
-export function DesktopHeaderNav({ locale }: DesktopHeaderNavProps) {
+export function DesktopHeaderNav() {
   const { pathname } = useLocation()
 
   return (
     <nav className='flex items-center gap-1'>
-      {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-        const fullHref = `/${locale}${href}`
-        const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`)
-
+      {NAV_ITEMS.map(({ path, label, icon: Icon }) => {
+        const isActive = pathname === path || pathname.startsWith(path + '/')
         return (
           <Link
-            key={href}
-            to={fullHref}
+            key={path}
+            to={path}
             className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
               isActive
                 ? 'bg-muted text-foreground'
