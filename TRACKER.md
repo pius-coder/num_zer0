@@ -13,11 +13,14 @@
 
 **Routing :** File-based avec `createFileRoute` dans `src/routes/`, `routeTree.gen.ts` généré par Vite. TanStack Start impose ça pour le SSR.
 
-**Dernier commit :** `ce3e460` "brain update 1" (Thème 1 split déploiement terminé).
+**Dernier commit :** `62cb64d` "theme 4: standardisation DX (builders + client hooks + cleanup)" (Thème 4 Phases 1-3 terminé).
 
-**Builds qui marchent :** `bun run build:backend` → `build/backend/server-hono.js` (8.1 MB, serveur Hono standalone). `bun run build:frontend` → `.output/` (client + SSR). `bun src/server-hono.ts` pour backend en dev.
+**Thème 4 terminé :**
+- **Phase 1** — Tous les artefacts en builder chainable : `defineDbReadFn("name").input(z).output(z).handler(fn)`, `defineSearchIndex("Model").fields(f).filterFields(ff).language(l).handler(fn)`, `defineVectorIndex("Model").vectorField(v).dimensions(d).filterFields(ff).indexType(t).handler(fn)`, `defineAgent("name").model(m).systemPrompt(s).tools(t).maxSteps(n).rag(r).handler(fn)`
+- **Phase 2** — Client DX : `useQuery(ref, flatArgs, opts?)`, `useMutation(ref, opts?)` callable, `AuraProvider`, `useBroadcast`, etc. Anciens noms conservés comme alias.
+- **Phase 3** — `ref/` supprimé.
 
-**Prochaine action :** Thème 4 — Phase 2 skip support + tests. Puis Thème 2 — Dashboard MVP.
+**Prochaine action :** Thème 4 — Phase 2 (skip support + tests). Puis Thème 2 — Dashboard MVP.
 
 **Pièges connus :**
 - `packages/aura/` importe `@/generated/prisma/client` (app-specific). Les tsconfig paths pointent vers `../../apps/app/src/generated/prisma/`.
@@ -26,7 +29,7 @@
 - `packages/aura/package.json` a TOUTES les dépendances déclarées (plus de 30) — ne pas hésiter à en ajouter si manquantes, sinon Vite 8/Rolldown échoue.
 
 **Fichiers clés :**
-- `PLAN.md` = standardisation DX (builders, hooks)
+- `PLAN.md` = standardisation DX (builders, hooks) — Phase 1-3 complété
 - `PLAN_THEMATIQUE.md` = split, dashboard, Hono (3 thèmes)
 - `CHANGELOG.md` = log de chaque modif avec old/new motivation
 
@@ -187,6 +190,7 @@ num_zer0/                                  ← Monorepo racine
 | 2026-05-24 | Phase 4: wiring + test dev server | ✅ | `93dfc0c` |
 | 2026-05-24 | Phase 5: cleanup gitignore | ✅ | `2d46633` |
 | 2026-05-24 | Thème 1: Split Déploiement | ✅ | `2958dc9` |
+| 2026-05-24 | Thème 4: Standardisation DX (Phases 1-3) | ✅ | `62cb64d` |
 
 ## Prochaine action
 
