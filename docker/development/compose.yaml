@@ -1,8 +1,0 @@
-services:
-  shipfree-development:
-    build:
-      context: ../../
-      dockerfile: docker/development/Dockerfile
-    image: shipfree-development
-    ports:
-      - "3001:3000"

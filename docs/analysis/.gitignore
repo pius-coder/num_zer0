@@ -1,6 +1,0 @@
-# Ignore large sprite files
-*.png
-*.css
-# Keep the reference files
-!*.md
-!*.txt
