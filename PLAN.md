@@ -1,232 +1,278 @@
-# Plan Auria — Uniformisation API (inspiré Convex)
+# Plan Auria — Standardisation Complète de la DX
 
-## Problème
+## Objectif
 
-Le code actuel a **3 patterns** différents pour définir des artefacts :
-
-| Pattern | Exemple | Statut |
-|---------|---------|--------|
-| Builder chainable | `defineOperationFn("x").query().input(...).entities(...).public().handler(fn)` | ✅ Opérations seulement |
-| Objet config | `defineAgent("x", { model, ... })`, `defineDbReadFn({ name, input, ... })` | ❌ Inconsistant |
-| Mini-builder | `defineWorkflow("x").handler(fn)`, `defineCommonFn("x").run(fn)` | ⚠️ Pas assez riche |
-
-**Objectif** : TOUTES les fonctions de définition utilisent le même builder pattern, et le client s'inspire de la DX Convex (args plats, mutations callables).
+Toutes les fonctions `define*` utilisent le **même pattern builder chainable**. Plus d'objets config, plus de signatures inconsistantes. Le client s'inspire de la DX Convex (args plats, callables).
 
 ---
 
-## 1. Uniformisation Server — Builder Unique
-
-Tous les artefacts Auria suivent le même pattern :
+## Partie 1 — Règle Unique : Le Builder Standard
 
 ```
-defineXXX("domain.name")
-  .optionalConfig()
-  .optionalMeta()
-  .define(fn)        // ← toujours .define() à la fin
+defineX("domain.name")
+  .optionA(...)       // 0..N options (ordre libre)
+  .optionB(...)
+  .handler(fn)        // TOUJOURS .handler(fn) à la fin
 ```
 
-### Operations (query/mutation/action) — INCHANGÉ
+- Le nom est TOUJOURS le premier argument (string)
+- Les options sont TOUJOURS chainées (`.option().option()`)
+- Le handler est TOUJOURS `.handler(fn)` à la fin
+- Si un artefact a un type (query/mutate/action), le type vient juste après le nom
+
+---
+
+## Partie 2 — Inventaire Complet de Tous les Artefacts
+
+### 2.1 — DÉJÀ CONFORMES (builder chainable) — Aucun changement
+
+| Fonction | Signature | Handler |
+|----------|-----------|---------|
+| `defineOperationFn(name)` | `.query()\|.mutate()\|.action().input(z).entities([]).auth()\|.public()\|.internal().use(...).handler(fn)` | `({ ctx, input, params }) => T` |
+| `defineHttpAction(path, method)` | `.auth()\|.public()\|.internal().csrf(bool).handler(fn)` | `(ctx, request) => Response` |
+| `defineWorkflow(name)` | `.handler(fn)` | `({ ctx, input, step, sleep }) => T` |
+| `defineCommonFn(name)` | `.run(fn)` | `({ ctx, input, params, operation }) => void` |
+| `defineCronFn(name)` | `.schedule(cron).handler(fn)` | `(ctx) => Promise<void>` |
+| `defineNotificationFn(name)` | `.payload(z).handler(fn)` | `({ ctx, payload }) => void` |
+
+### 2.2 — OBJECT CONFIG (à migrer en builder)
+
+| Fonction | Actuel (objet) | Cible (builder) |
+|----------|---------------|-----------------|
+| `defineAgent(name, { model, systemPrompt, tools, maxSteps, rag })` | 2e arg = objet | `.model(m).systemPrompt(s).tools(t).maxSteps(n).rag(r).handler(fn)` |
+| `defineDbReadFn({ name, input, output, execute })` | 1 seul objet | `defineDbReadFn(name).input(z).output(z).handler(fn)` |
+| `defineSearchIndex(name, { fields, filterFields, language })` | 2e arg = objet | `.fields(f).filterFields(ff).language(l).handler(fn)` |
+| `defineVectorIndex(name, { vectorField, dimensions, filterFields, indexType })` | 2e arg = objet | `.vectorField(v).dimensions(d).filterFields(ff).indexType(t).handler(fn)` |
+| `defineComponent(name, { schema, operations, config })` | 2e arg = objet + factory | `.schema(s).operations(o).config(c).handler()` (à définir) |
+| `defineAuraParams({ schema, parsers })` | 1 seul objet, pas de nom | `defineAuraParams("name").schema(z).parsers(p)` |
+
+### 2.3 — CLIENT HOOKS (à migrer)
+
+| Actuel | Cible | Changement |
+|--------|-------|------------|
+| `useAuraQuery(ref, { input, params, ...opts })` | `useQuery(ref, flatArgs, opts?)` | args plats, plus de `{ input }` |
+| `useAuraMutation(ref, opts)` → `{ mutate(args) }` | `useMutation(ref, opts?)` → `(args) => Promise<T>` | callable directe |
+| `useAuraPaginatedQuery(ref, input, opts?)` | `usePaginatedQuery(ref, flatArgs, opts?)` | Args plats |
+| `useAuraAgentThread(threadId)` | `useAgentThread(threadId)` | Renommer |
+| `useAuraAgentStream(threadId)` | `useAgentStream(threadId)` | Renommer |
+| `useAuraAgentSend(agentName)` | `useAgentSend(agentName)` | Renommer |
+| `useAuraForm(opts)` | `useAuraForm(opts)` | ✅ Inchangé |
+| `useAuraParams(def)` | `useAuraParams(def)` | ✅ Inchangé |
+| `useAuraStepper(opts)` | `useStepperForm(opts)` | Renommer |
+| `useAuraManifest()` | `useAuraManifest()` | ✅ Inchangé |
+| `useAuraBroadcast()` | `useBroadcast()` | Renommer (pas de `Aura`) |
+| `AuraClientProvider` | `AuraProvider` | Renommer |
+| `AuraHydrationBoundary` | `AuraHydrationBoundary` | ✅ Inchangé |
+| `AuraGuard` | `AuraGuard` | ✅ Inchangé |
+| `callAuraOperation(opts)` | `callAura(opts)` | Renommer |
+| `configureAuraClient(config)` | `configureAura(config)` | Renommer |
+| `fetchAuraManifest()` | `fetchManifest()` | Renommer |
+| `AuraClientError` | `AuraError` (ou garder) | ✅ |
+
+### 2.4 — CONTEXTE (inchangé)
+
+Toutes les propriétés de `ctx` restent identiques :
 
 ```typescript
-// On garde EXACTEMENT notre pattern actuel
-export default defineOperationFn("todos.list")
-  .query()
-  .input(z.object({ status: z.string().optional() }))
-  .entities(["Todo"])
-  .public()
-  .handler(async ({ ctx, input }) => {
-    return ctx.db.todo.findMany({ where: input.status ? { status: input.status } : undefined })
-  })
+interface AuraContext {
+  db, session, user, auth, notify, bump, log, audit
+  requestId, source, request, cookies
+  storage, scheduler, agent
+  runQuery(ref, input), runMutation(ref, input), runAction(ref, input)
+  paginate(model, opts), invalidate(target), fetch
+}
 ```
 
-Le builder `defineOperationFn("x").query()|.mutate()|.action()` reste. Pas de `defineQuery`/`defineMutation`/`defineAction` séparés.
+### 2.5 — EXPORTS SERVER (inchangés)
 
-### Agent
+| Export | Usage |
+|--------|-------|
+| `createAuraHonoApp()` | Crée l'app Hono |
+| `createAuraContext(opts)` | Crée le contexte |
+| `runAuraOperation(opts)` | Exécute une opération |
+| `callAuraServer(opts)` | Appel in-process |
+| `runAuraServer(opts)` | Appel in-process avec cache |
+| `publishInvalidation(keys)` | Broadcast invalidation |
+| `createTrackedPrismaClient(db)` | Entity tracker |
+| `createReadOnlyDb(db)` | DB read-only |
+| `paginate(model, opts)` | Pagination |
+| `encodeCursor(data)`, `decodeCursor(cursor)` | Curseurs |
+| `processOutboxEvents()` | Outbox |
+| `createAuraScheduler(db)` | Scheduler |
+| `runAuraCron(name)` | Cron runner |
+| `registerOperation(op)`, `getOperation(name)`, `listOperations()` | Registry |
+| `getClientOperationManifest()` | Manifeste |
+| `discoverArtifacts()`, `deriveNameFromPath()`, `validateStructure()` | Discovery |
+| `defineSearchIndex(name)`, `search(model, opts)` | Full-text search |
+| `defineVectorIndex(name)`, `vectorSearch(model, opts)` | Vector search |
+| `defineWorkflow(name)`, `startWorkflow()`, `executeWorkflowRun()` | Workflows |
+| `defineHttpAction(path, method)`, `runHttpAction()` | HTTP actions |
+| `defineDbReadFn(name)`, `defineCronFn(name)`, `defineCommonFn(name)` | Helpers |
+| `enforceRateLimit()`, `createAuraLogger()`, `createBumpStore()` | Utilitaires |
+| `AuraError`, `AuraClientError`, `successEnvelope`, `errorEnvelope` | Errors |
+| `auraQueryKey`, `AuraQueryKey` | Query keys |
+
+### 2.6 — UI COMPONENTS (inchangés)
+
+Tous les composants UI gardent leurs noms actuels (`AuraDataTable`, `AuraForm`, `AuraAuthCard`, etc.)
+
+---
+
+## Partie 3 — Exemples Concrets des Migrations
+
+### 3.1 — Agent : objet → builder
 
 ```typescript
-// Avant : defineAgent("x", { model, systemPrompt, tools })  ← objet
-// Après : même pattern que les opérations (builder chainable)
+// AVANT
+export default defineAgent("ai.todo-planner", {
+  model: new ChatOpenRouter({ apiKey: "...", model: "gpt-4o-mini" }),
+  systemPrompt: "Tu es un assistant...",
+  tools: [tool1, tool2],
+  maxSteps: 5,
+})
+
+// APRÈS — même pattern que defineOperationFn
 export default defineAgent("ai.todo-planner")
-  .model(new ChatOpenRouter({ model: "gpt-4o-mini" }))
-  .systemPrompt("Tu es un assistant qui décompose des objectifs en tâches.")
-  .tools([operationAsTool(api.todos.create, { description: "..." })])
+  .model(new ChatOpenRouter({ apiKey: "...", model: "gpt-4o-mini" }))
+  .systemPrompt("Tu es un assistant...")
+  .tools([tool1, tool2])
   .maxSteps(5)
   .handler(async ({ ctx, input }) => {
-    // ...
+    const thread = await ctx.agent.createThread(ctx.thisAgent, { userId: ctx.user?.id })
+    return ctx.agent.generateText(thread, { prompt: input.prompt })
   })
 ```
 
-### DbReadFn
+### 3.2 — DbReadFn : objet → builder
 
 ```typescript
-// Avant : defineDbReadFn({ name, input, output, execute })  ← objet
-// Après : builder chainable
+// AVANT
+export default defineDbReadFn({
+  name: "users.active",
+  input: z.object({ days: z.number() }),
+  output: z.array(userSchema),
+  execute: async ({ db, input }) => {
+    return db.$queryRaw`...`
+  },
+})
+
+// APRÈS
 export default defineDbReadFn("users.active")
   .input(z.object({ days: z.number() }))
   .output(z.array(userSchema))
   .handler(async ({ db, input }) => {
-    return db.$queryRaw`SELECT * FROM "AuraUser" WHERE ...`
+    return db.$queryRaw`...`
   })
 ```
 
-### Workflow
+### 3.3 — SearchIndex : objet → builder
 
 ```typescript
-// Avant : defineWorkflow("x").handler(fn)  ← pas de .define()
-// Après : builder avec plus de config
-export default defineWorkflow("orders.fulfill")
-  .handler(async ({ ctx, input, step, sleep }) => {
-    const payment = await step("charge-payment", () => ...)
-    await step("send-email", () => ...)
-  })
-```
+// AVANT
+export default defineSearchIndex("Todo", {
+  fields: ["title", "description"],
+  filterFields: ["status"],
+  language: "french",
+})
 
-### Search Index
-
-```typescript
-// Avant : defineSearchIndex("model", { fields })  ← objet
-// Après : builder chainable
+// APRÈS
 export default defineSearchIndex("Todo")
   .fields(["title", "description"])
+  .filterFields(["status"])
   .language("french")
-  .handler(async ({ ctx, query }) => {
-    return ctx.search("Todo", { query })
+  .handler(async ({ ctx, query, filters }) => {
+    return ctx.search("Todo", { query, filter: filters })
   })
 ```
 
-### Vector Index
+### 3.4 — VectorIndex : objet → builder
 
 ```typescript
-// Avant : defineVectorIndex("model", { vectorField })  ← objet
-// Après : builder chainable
+// AVANT
+export default defineVectorIndex("Product", {
+  vectorField: "embedding",
+  dimensions: 1536,
+  indexType: "hnsw",
+})
+
+// APRÈS
 export default defineVectorIndex("Product")
   .vectorField("embedding")
   .dimensions(1536)
   .indexType("hnsw")
-  .handler(async ({ ctx, vector }) => {
-    return ctx.vectorSearch("Product", { vector })
+  .handler(async ({ ctx, vector, filters }) => {
+    return ctx.vectorSearch("Product", { vector, filter: filters })
   })
 ```
 
-### HttpAction
+### 3.5 — Client : args plats + callables
 
 ```typescript
-// Déjà bon (builder) — rien à changer
-export default defineHttpAction("/webhook/stripe")
-  .method("POST")
-  .public()
-  .handler(async (ctx, request) => {
-    return new Response("ok")
-  })
-```
-
----
-
-## 2. Client DX — Inspiré Convex
-
-### useQuery — args plats
-
-```typescript
-// AVANT :
-const { data } = useAuraQuery(api.todos.list, { input: { status: "PENDING" } })
-
-// APRÈS :
-const data = useQuery(api.todos.list, { status: "PENDING" })
-```
-
-- Plus de `{ input: {...} }` wrapper
-- Args passés directement (plats, comme Convex)
-- Retourne `undefined` pendant le chargement (plus `{ data, isLoading }`)
-- `"skip"` pour désactiver (comme Convex)
-
-### useMutation — callable directe
-
-```typescript
-// AVANT :
+// AVANT
+const { data } = useAuraQuery(api.todos.list, {
+  input: { status: "PENDING" },
+  params: { page: "1" },
+})
 const create = useAuraMutation(api.todos.create)
 create.mutate({ title: "..." })
 
-// APRÈS :
+// APRÈS
+const data = useQuery(api.todos.list, { status: "PENDING" })
 const create = useMutation(api.todos.create)
 create({ title: "..." })
 ```
 
-- `useMutation(ref)` retourne une **fonction async** `(args) => Promise<T>`
-- Plus de `.mutate()`, `.isPending`, etc.
-- `onSuccess`, `onError`, `invalidate` via options séparées si besoin :
-  ```typescript
-  const create = useMutation(api.todos.create, {
-    onSuccess: (data) => { ... },
-    invalidate: ["Todo"],
-  })
-  ```
-  Mais par défaut les entités sont déduites du manifeste (auto-invalidation).
-
-### useAction
+### 3.6 — Pagination
 
 ```typescript
-const doAction = useAction(api.todos.doSomething)
-doAction({ url: "..." })
+// AVANT
+const { items, loadMore } = useAuraPaginatedQuery(api.todos.list, { status: "PENDING" })
+
+// APRÈS
+const { items, loadMore } = usePaginatedQuery(api.todos.list, { status: "PENDING" })
 ```
 
-Même pattern que `useMutation`.
-
-### Gestion d'état
+### 3.7 — Agent hooks
 
 ```typescript
-// Loading : data est undefined
-const data = useQuery(api.todos.list, params)
-if (data === undefined) return <Loading />
+// AVANT
+const { data: messages } = useAuraAgentThread(threadId)
+const { isStreaming, streamingContent } = useAuraAgentStream(threadId)
+const send = useAuraAgentSend("ai.todo-planner")
 
-// Error : try/catch ou error boundary
-// Skip : "skip"
-const data = useQuery(api.todos.list, shouldFetch ? params : "skip")
+// APRÈS
+const { data: messages } = useAgentThread(threadId)
+const { isStreaming, streamingContent } = useAgentStream(threadId)
+const send = useAgentSend("ai.todo-planner")
 ```
 
 ---
 
-## 3. Changements Concrets
+## Partie 4 — Plan d'Implémentation
 
-### Fichiers à modifier
+### Phase 1 — Migrer les 4 fonctions objet en builder
 
-| Fichier | Changement |
-|---------|-----------|
-| `src/aura/server/agent.ts` | `defineAgent(name, obj)` → builder chainable `.model().systemPrompt().tools().handler()` |
-| `src/aura/server/db-read.ts` | `defineDbReadFn({ object })` → builder chainable `.input().output().handler()` |
-| `src/aura/server/search.ts` | `defineSearchIndex(name, obj)` → builder chainable `.fields().language().handler()` |
-| `src/aura/server/vector.ts` | `defineVectorIndex(name, obj)` → builder chainable `.vectorField().dimensions().indexType().handler()` |
-| `src/aura/client/hooks.ts` | `useAuraQuery` → `useQuery`. `useAuraMutation` → `useMutation`. Args plats. Callables. |
-| `src/aura/client/index.ts` | Mettre à jour les exports |
-| `src/operations/ai/todo-planner.agent.ts` | Migrer vers builder chainable |
-| `src/aura/_generated/api.ts` | Rien (le pattern d'export ne change pas) |
+Modifier dans l'ordre :
+1. `defineDbReadFn` — le plus simple (input + output + handler)
+2. `defineSearchIndex` — fields, filterFields, language, handler
+3. `defineVectorIndex` — vectorField, dimensions, filterFields, indexType, handler
+4. `defineAgent` — le plus complexe (model, systemPrompt, tools, maxSteps, rag, handler)
 
-### Rien à changer
+### Phase 2 — Client DX
 
-| Fichier | Raison |
-|---------|--------|
-| `src/aura/server/operation.ts` | `defineOperationFn` reste exactement comme il est |
-| `src/aura/server/workflow.ts` | Déjà un builder, juste retoucher |
-| `src/aura/server/http-action.ts` | Déjà un builder, rien à faire |
-| `src/operations/**/*.operation.ts` | Le pattern `defineOperationFn("x").query().input().handler()` ne change pas |
-
----
-
-## 4. Plan d'Implémentation
-
-### Phase 1 — Builder uniforme pour defineAgent, defineDbReadFn, defineSearchIndex, defineVectorIndex
-- `defineAgent` : passer d'objet `(name, { model, ... })` à builder `.model().systemPrompt().tools().handler()`
-- `defineDbReadFn` : idem, objet → builder `.input().output().handler()`
-- `defineSearchIndex` : idem
-- `defineVectorIndex` : idem
-- Rien ne change pour `defineOperationFn`, `defineWorkflow`, `defineHttpAction` (déjà des builders)
-
-### Phase 2 — Client DX (inspiré Convex)
-- `useQuery(ref, flatArgs)` au lieu de `useAuraQuery(ref, { input })`
-- `useMutation(ref)` → `(args) => Promise<T>` au lieu de `{ mutate }`
-- `useAction(ref)` → `(args) => Promise<T>`
-- Option `"skip"` pour désactiver les queries
-- Auto-invalidation via entités du manifeste (déjà existant)
+1. Renommer `useAuraQuery` → `useQuery`, args plats
+2. Renommer `useAuraMutation` → `useMutation`, callable directe
+3. Renommer `useAuraPaginatedQuery` → `usePaginatedQuery`
+4. Ajouter `"skip"` support
+5. Renommer les hooks agent
+6. Renommer `AuraClientProvider` → `AuraProvider`
+7. Mettre à jour `client/index.ts`
+8. Mettre à jour `app/routes/todos.tsx` (exemple)
 
 ### Phase 3 — Nettoyage
-- Retirer les anciens exports (`useAuraQuery`, `useAuraMutation`)
-- Mettre à jour les tests
+
+1. Retirer les anciens exports (`useAuraQuery`, `useAuraMutation`, etc.)
+2. Mettre à jour tous les imports dans l'app
+3. Mettre à jour les tests
+4. Mettre à jour la documentation
+5. Mettre à jour le template create-app
