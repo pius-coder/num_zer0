@@ -66,3 +66,25 @@
 - `bun run build:frontend` → `.output/` (client + ssr) ✅
 - `bun src/server-hono.ts` → serveur Hono standalone sur :3001 ✅
 - `bun dev` → serveur de dev unifié (TanStack + Hono) ✅
+
+---
+
+## 2026-05-24 | Brain Update 1 | Modifié
+
+**Mise à jour post-session des fichiers de tracking**
+
+- `TRACKER.md` — Architecture: ajout Dockerfiles, server-hono.ts, .env.production.example ; root passe de pnpm à Bun workspaces ; suppression pnpm-workspace.yaml ; router passe de code-based à file-based
+- `TRACKER.md` — Décisions D1 et D2 marquées **DEPRECATED** avec nouvelle motivation conservée
+- `TRACKER.md` — Table État actuel: commit `2958dc9` pour Thème 1
+
+**Ancienne décision D1 :**
+> Monorepo pnpm workspaces — Léger, natif, pas de dépendance build.
+
+**Nouvelle motivation D1 :**
+> `bun` est le runtime unique, pas besoin de pnpm. `bun install` + `bun build` remplacent pnpm et tsup. Déduplication automatique dans le monorepo.
+
+**Ancienne décision D2 :**
+> Routes code-based — Choix utilisateur, contrôle total.
+
+**Nouvelle motivation D2 :**
+> TanStack Start nécessite la génération du route tree pour le SSR bundling. Routes en `src/routes/` avec `createFileRoute`. Génération automatique via le plugin Vite.

@@ -9,6 +9,8 @@
 
 ```
 num_zer0/                                  ← Monorepo racine
+├── Dockerfile.backend                    ← Build image backend Hono
+├── Dockerfile.frontend                   ← Build image frontend TanStack Start
 ├── packages/
 │   └── aura/                              ← Framework Aura (package réutilisable)
 │       ├── src/
@@ -43,7 +45,7 @@ num_zer0/                                  ← Monorepo racine
 │       │   │   ├── params.ts              ← Paramètres
 │       │   │   ├── hydration.tsx          ← SSR hydration
 │       │   │   ├── manifest-injector.tsx  ← Manifest injection
-│       │   │   ├── index.ts               ← Exports publics
+│       │   │   ├── index.ts               ← Exports publics (+ createAuraHonoApp)
 │       │   │   └── ...
 │       │   ├── client/                    ← Runtime client (React hooks)
 │       │   │   ├── hooks.ts               ← useQuery, useMutation, useAction
@@ -66,13 +68,12 @@ num_zer0/                                  ← Monorepo racine
 │       │   └── _generated/                ← Types générés (api.ts)
 │       ├── prisma/                        ← Schéma Prisma aura
 │       ├── aura.config.ts                 ← Config aura par défaut
-│       ├── package.json                   ← @aura-js/core
+│       ├── package.json                   ← @aura-js/core (dépendances complètes)
 │       └── tsconfig.json
 ├── apps/
 │   └── app/                              ← Projet utilisateur (num_zer0)
 │       ├── src/
-│       │   ├── app/
-│       │   │   └── routes/               ← Routes TanStack (code-based)
+│       │   ├── routes/                   ← Routes TanStack (file-based, generate routeTree.gen.ts)
 │       │   ├── components/               ← Composants spécifiques app
 │       │   ├── lib/                      ← Utilitaires app
 │       │   ├── hooks/                    ← Hooks app
@@ -82,8 +83,9 @@ num_zer0/                                  ← Monorepo racine
 │       │   │   ├── todos/
 │       │   │   ├── ai/
 │       │   │   └── catalog/
-│       │   ├── server.ts                 ← Entry point
-│       │   ├── router.tsx                ← Router (code-based, PAS file-based)
+│       │   ├── server.ts                 ← Entrypoint TanStack Start (SSR)
+│       │   ├── server-hono.ts            ← Entrypoint Hono standalone (backend)
+│       │   ├── router.tsx                ← Router (importe routeTree.gen.ts)
 │       │   ├── client.tsx                ← Client entry
 │       │   ├── aura.registry.ts          ← Registry Aura
 │       │   └── styles.css
@@ -91,10 +93,10 @@ num_zer0/                                  ← Monorepo racine
 │       ├── components.json               ← shadcn config
 │       ├── package.json
 │       ├── tsconfig.json
-│       ├── vite.config.ts
+│       ├── vite.config.ts                ← RouteRules, alias #/aura/, @/aura/, @/
+│       ├── .env.production.example       ← Template variables prod
 │       └── tailwind.config.ts
-├── package.json                          ← Root workspace (pnpm workspaces)
-├── pnpm-workspace.yaml                   ← Workspace config
+├── package.json                          ← Root workspace (Bun workspaces)
 ├── PLAN.md                               ← Plan DX standardisation
 ├── PLAN_THEMATIQUE.md                    ← Plan thématique (split, dashboard, hono)
 ├── CHANGELOG.md                          ← Log incrémental de chaque modification
@@ -157,7 +159,7 @@ num_zer0/                                  ← Monorepo racine
 | 2026-05-24 | Phase 1-3: monorepo + migration framework + app | ✅ | `1550ab3` |
 | 2026-05-24 | Phase 4: wiring + test dev server | ✅ | `93dfc0c` |
 | 2026-05-24 | Phase 5: cleanup gitignore | ✅ | `2d46633` |
-| 2026-05-24 | Thème 1: Split Déploiement | ✅ | *(en cours)* |
+| 2026-05-24 | Thème 1: Split Déploiement | ✅ | `2958dc9` |
 
 ## Prochaine action
 
@@ -173,9 +175,8 @@ num_zer0/                                  ← Monorepo racine
 ## Décisions d'architecture (contraignantes)
 
 | # | Décision | Raison |
-|---|----------|--------|
-| D1 | Monorepo pnpm workspaces (pas npm/nx/turborepo) | Léger, natif, pas de dépendance build |
-| D2 | Routes code-based (pas file-based) | Choix utilisateur |
+| D1 | ~~Monorepo pnpm workspaces~~ → **DEPRECATED** Utiliser Bun workspaces | `bun` est le runtime unique, pas besoin de pnpm. `bun install` + `bun build` remplacent pnpm et tsup. Déduplication automatique dans le monorepo. |
+| D2 | ~~Routes code-based (pas file-based)~~ → **DEPRECATED** Utiliser file-based avec routeTree.gen.ts | TanStack Start nécessite la génération du route tree pour le SSR bundling. Les routes sont en `src/routes/` avec `createFileRoute`. La génération est automatique via le plugin Vite. |
 | D3 | Aura est un workspace package (pas npm publish) | Dev local, pas de registre |
 | D4 | Hono est le socle HTTP | Portable, standard Web, déjà existant |
 | D5 | Dashboard = SPA servie par Hono | Indépendant du frontend principal |
