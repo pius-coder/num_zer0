@@ -10,6 +10,14 @@ const NAV_ITEMS = [
   { path: '/account', label: 'Account', icon: UserCircle },
 ] as const
 
+/**
+ * Renders a fixed mobile-only bottom navigation bar with three route items.
+ *
+ * The component reads the current location to highlight the active route (including subroutes),
+ * displays an icon and label for each item, and shows a small active indicator dot.
+ *
+ * @returns The mobile bottom navigation JSX element.
+ */
 export function MobileBottomNav() {
   const { pathname } = useLocation()
 

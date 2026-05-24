@@ -1,5 +1,12 @@
 'use client'
 
+/**
+ * Renders the mobile-only "My Space" hero section with decorative background accents and primary copy.
+ *
+ * The section contains the "My Space" heading and a short description: "Buy virtual numbers in seconds and verify your accounts with confidence."
+ *
+ * @returns The JSX element for the mobile hero section.
+ */
 export function MySpaceHeroMobile() {
   return (
     <section className='relative isolate overflow-hidden border border-border bg-card px-5 py-6 lg:hidden'>

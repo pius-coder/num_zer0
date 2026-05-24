@@ -6,6 +6,12 @@ interface MobileHeaderMenuProps {
   onSignOut: () => void
 }
 
+/**
+ * Render a mobile header menu with navigation links and a logout button.
+ *
+ * @param onSignOut - Callback invoked when the "Logout" button is clicked
+ * @returns A JSX fragment containing links to `/recharge` and `/support` and a "Logout" button that triggers `onSignOut`
+ */
 export function MobileHeaderMenu({ onSignOut }: MobileHeaderMenuProps) {
   return (
     <>

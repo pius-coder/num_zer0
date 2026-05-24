@@ -3,6 +3,13 @@
 import { Suspense } from 'react'
 import { WalletPageShell } from '@/component/wallet/wallet-page-shell'
 
+/**
+ * Render the wallet page UI wrapped in a Suspense boundary.
+ *
+ * The Suspense fallback displays a skeleton/loading layout until WalletPageShell finishes loading.
+ *
+ * @returns The React element for the wallet page including its loading fallback.
+ */
 export function WalletPage() {
   return (
     <Suspense

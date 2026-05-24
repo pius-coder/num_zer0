@@ -8,6 +8,13 @@ const NAV_ITEMS = [
   { path: '/wallet', label: 'Wallet', icon: Wallet },
 ]
 
+/**
+ * Render the desktop header navigation with primary nav links and active-state styling.
+ *
+ * The link whose path matches the current location (or is a subpath) is styled as active.
+ *
+ * @returns A <nav> element containing links for the primary navigation items; the active link is visually highlighted.
+ */
 export function DesktopHeaderNav() {
   const { pathname } = useLocation()
 

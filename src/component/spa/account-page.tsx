@@ -5,6 +5,13 @@ import { ProfileForm } from '@/component/account/profile-form'
 import { DeleteAccount } from '@/component/account/delete-account'
 import { LogoutButton } from '@/component/account/logout-button'
 
+/**
+ * Render the account settings page with profile, delete account, and logout sections.
+ *
+ * Reads the current route `locale` from route parameters and passes it to `DeleteAccount` and `LogoutButton`.
+ *
+ * @returns The account settings page JSX element.
+ */
 export function AccountPage() {
   const params = useParams()
   const locale = params.locale as string
