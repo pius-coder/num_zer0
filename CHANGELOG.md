@@ -172,3 +172,20 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 **Motivation :**
 > Connexion avec le dashboard. Le runner émet des events à chaque exécution. L'EventBus les distribue aux subscribers (API REST). Le MetricsStore agrège en fenêtre glissante. La SPA interroge l'API en polling et affiche logs/erreurs/metrics en temps quasi-réel. Aucune dépendance externe (pas de Redis, pas de DB).
+
+---
+
+## 2026-05-24 | Thème 2 — Dashboard Phase 2 | Modifié
+
+**MODIFIÉ :**
+- `dashboard/frontend/index.html` — SPA complète Phase 2 :
+  - Graphiques metrics via Chart.js (error frequency bar chart, 5-min buckets)
+  - Vue request ID (click sur request ID → modal avec tous les events d'une même requête)
+  - Run function modal avec éditeur JSON textarea + résultat formaté
+  - Détail par fonction (click → grid latence, logs récents, run history)
+  - Error trending (total, affected functions, top error, bar chart frequency)
+  - Auto-refresh 3s, debounced filters, responsive layout
+- `dashboard/routes.ts` — Nouveau filtre `requestId` sur `/api/logs` ; nouvel endpoint `/api/functions/:name/history` ; run history in-memory (200 entries)
+
+**Motivation :**
+> Phase 1 avait une SPA minimale (tableau brut, prompt() pour run). Phase 2 ajoute les graphiques, le drill-down par fonction, le regroupement par request ID, l'éditeur JSON, le run history, et le trending des erreurs. Chart.js en CDN, zéro build step.

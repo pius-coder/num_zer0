@@ -13,14 +13,18 @@
 
 **Routing :** File-based avec `createFileRoute` dans `src/routes/`, `routeTree.gen.ts` généré par Vite. TanStack Start impose ça pour le SSR.
 
-**Dernier commit :** `62cb64d` "theme 4: standardisation DX (builders + client hooks + cleanup)" (Thème 4 Phases 1-3 terminé).
+**Dernier commit :** `57b80bb` "theme 2: dashboard MVP (event-bus, metrics, API routes, SPA frontend)".
 
 **Thème 4 terminé :**
-- **Phase 1** — Tous les artefacts en builder chainable : `defineDbReadFn("name").input(z).output(z).handler(fn)`, `defineSearchIndex("Model").fields(f).filterFields(ff).language(l).handler(fn)`, `defineVectorIndex("Model").vectorField(v).dimensions(d).filterFields(ff).indexType(t).handler(fn)`, `defineAgent("name").model(m).systemPrompt(s).tools(t).maxSteps(n).rag(r).handler(fn)`
-- **Phase 2** — Client DX : `useQuery(ref, flatArgs, opts?)`, `useMutation(ref, opts?)` callable, `AuraProvider`, `useBroadcast`, etc. Anciens noms conservés comme alias.
-- **Phase 3** — `ref/` supprimé.
+- **Phase 1** — Tous les artefacts en builder chainable.
+- **Phase 2** — Client DX : `useQuery`, `useMutation`, `AuraProvider`, etc. Anciens noms conservés comme alias.
+- **Phase 3** — `ref/` supprimé, audit rewrite (barrel exports, stubs, types).
+- **Phase 2 skip + tests** — pas commencé.
 
-**Prochaine action :** Thème 4 — Phase 2 (skip support + tests). Puis Thème 2 — Dashboard MVP.
+**Thème 2 commencé :**
+- **Phase 1** — EventBus, MetricsStore, intégration runner, API REST `/dashboard/api/*`, SPA vanilla JS.
+
+**Prochaine action :** soit Dashboard Phase 2 (graphiques metrics, filtres logs, historique des runs) soit Thème 3 (middleware stack Hono).
 
 **Pièges connus :**
 - `packages/aura/` importe `@/generated/prisma/client` (app-specific). Les tsconfig paths pointent vers `../../apps/app/src/generated/prisma/`.
@@ -51,7 +55,12 @@ num_zer0/                                  ← Monorepo racine
 │       │   │   ├── auth/                  ← Auth
 │       │   │   ├── transport/             ← Transport serveur
 │       │   │   ├── storage/               ← File storage
-│       │   │   ├── dashboard/             ← Dashboard (logs, metrics, event-bus)
+│   │   │   ├── dashboard/             ← Dashboard MVP (routes, SPA frontend)
+│   │   │   │   ├── routes.ts          ← API REST `/dashboard/api/*`
+│   │   │   │   └── frontend/          ← Vanilla JS SPA (Logs, Functions, Errors, Metrics)
+│   │   │   ├── observability/         ← EventBus + MetricsStore (in-memory)
+│   │   │   │   ├── event-bus.ts       ← In-memory event bus (subscribers, ring buffer 1000)
+│   │   │   │   └── metrics.ts         ← Per-function metrics (p50/p90/p99, fenêtre 1m)
 │       │   │   ├── hono-app.ts            ← Factory Hono
 │       │   │   ├── operation.ts           ← defineOperationFn
 │       │   │   ├── agent.ts               ← defineAgent
@@ -192,11 +201,12 @@ num_zer0/                                  ← Monorepo racine
 | 2026-05-24 | Thème 1: Split Déploiement | ✅ | `2958dc9` |
 | 2026-05-24 | Thème 4: Standardisation DX (Phases 1-3) | ✅ | `62cb64d` |
 | 2026-05-24 | Thème 4: Audit rewrite fixes | ✅ | `ff9c690` |
-| 2026-05-24 | Thème 2: Dashboard MVP (Phase 1) | ✅ | *(courant)* |
+| 2026-05-24 | Thème 2: Dashboard MVP (Phase 1) | ✅ | `57b80bb` |
+| 2026-05-24 | Thème 2: Dashboard MVP (Phase 2) | ✅ | *(courant)* |
 
 ## Prochaine action
 
-- [ ] Dashboard Phase 2: Graphiques metrics, filtres logs, historique des runs
+- [x] Dashboard Phase 2: Graphiques metrics (Chart.js), vue request ID, JSON éditeur, run history, détail fonction, error trending ✅
 - [ ] Thème 3: Middleware stack Hono (auth, cors, rate-limit, logging)
 
 ---
@@ -210,6 +220,7 @@ num_zer0/                                  ← Monorepo racine
 | D4 | Hono est le socle HTTP | Portable, standard Web, déjà existant |
 | D5 | Dashboard = SPA servie par Hono | Indépendant du frontend principal |
 | D6 | EventBus in-memory (pas de DB) | Assez pour MVP, pas de surcharge |
+| D7 | Dashboard frontend = vanilla JS (pas React build séparé) | MVP : zéro build step, servie directement par Hono. React sera ajouté si le dashboard devient complexe. ~~Mini-app React build séparé~~ → **DEPRECATED** |
 
 ---
 

@@ -7,6 +7,8 @@ import { getClientOperationManifest } from "../registry";
 import { runAuraOperation } from "../runner";
 
 let spaHtml: string | null = null;
+const runHistory: Array<{ name: string; input: unknown; result: unknown; timestamp: Date; status: number }> = [];
+const MAX_RUN_HISTORY = 200;
 function getSpaHtml(): string | null {
   if (spaHtml !== null) return spaHtml;
   try {
@@ -61,16 +63,25 @@ export function auraDashboardRouter(): Hono {
       request: c.req.raw,
       source: "internal",
     });
+    runHistory.push({ name, input, result: result.envelope, timestamp: new Date(), status: result.status });
+    if (runHistory.length > MAX_RUN_HISTORY) runHistory.shift();
     return c.json(result.envelope, result.status as 200);
   });
 
+  router.get("/api/functions/:name/history", (c) => {
+    const name = c.req.param("name");
+    return c.json({ runs: runHistory.filter((r) => r.name === name).slice(-50).reverse() });
+  });
+
   router.get("/api/logs", (c) => {
-    const limit = Math.min(Number(c.req.query("limit")) || 100, 1000);
+    const limit = Math.min(Number(c.req.query("limit")) || 200, 1000);
     const name = c.req.query("name");
     const status = c.req.query("status") as "success" | "error" | undefined;
+    const requestId = c.req.query("requestId");
     let logs = eventBus.getRecent();
     if (name) logs = logs.filter((e) => e.name === name);
     if (status) logs = logs.filter((e) => e.status === status);
+    if (requestId) logs = logs.filter((e) => e.requestId === requestId);
     return c.json({ logs: logs.slice(-limit) });
   });
 
