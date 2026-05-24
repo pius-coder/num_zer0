@@ -6,6 +6,7 @@ import { auraInternalRouter } from "./routes/internal";
 import { auraFilesRouter } from "./routes/files";
 import { auraHealthRouter } from "./routes/health";
 import { auraHttpActionsRouter } from "./routes/http-actions";
+import { auraDashboardRouter } from "./dashboard/routes";
 
 /**
  * `createAuraHonoApp()` — single Hono app factory that exposes every Aura
@@ -43,6 +44,7 @@ export function createAuraHonoApp() {
   app.route("/files", auraFilesRouter());
   app.route("/health", auraHealthRouter());
   app.route("/aura-http", auraHttpActionsRouter());
+  app.route("/dashboard", auraDashboardRouter());
 
   return app;
 }

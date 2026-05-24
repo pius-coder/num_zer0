@@ -148,3 +148,27 @@
 
 ### Ancienne API conservée :
 Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent encore comme alias. Les composants UI qui les importent continuent de fonctionner sans changement.
+
+---
+
+## 2026-05-24 | Thème 2 — Dashboard MVP (Phase 1) | Ajouté/Modifié
+
+**CRÉÉ :**
+- `packages/aura/src/server/observability/event-bus.ts` — EventBus in-memory (subscribers, ring buffer 1000 events)
+- `packages/aura/src/server/observability/metrics.ts` — MetricsStore (p50/p90/p99, fenêtre 1m, par function)
+- `packages/aura/src/server/dashboard/routes.ts` — Routes API dashboard :
+  - `GET /dashboard/api/functions` — Liste + metrics
+  - `GET /dashboard/api/functions/:name` — Détail + logs
+  - `POST /dashboard/api/functions/:name/run` — Exécuter une op
+  - `GET /dashboard/api/logs` — Logs récents (filtre name/status)
+  - `GET /dashboard/api/errors` — Erreurs récentes
+  - `GET /dashboard/api/metrics` — Toutes les métriques agrégées
+- `packages/aura/src/server/dashboard/frontend/index.html` — SPA vanilla JS (Logs, Functions, Errors, Metrics)
+
+**MODIFIÉ :**
+- `packages/aura/src/server/runner.ts` — Capture `console.log/warn/error/debug` + émission EventBus + MetricsStore
+- `packages/aura/src/server/hono-app.ts` — Montage de `/dashboard` dans `createAuraHonoApp()`
+- `packages/aura/src/server/index.ts` — Exports `eventBus`, `metricsStore`, `auraDashboardRouter`
+
+**Motivation :**
+> Connexion avec le dashboard. Le runner émet des events à chaque exécution. L'EventBus les distribue aux subscribers (API REST). Le MetricsStore agrège en fenêtre glissante. La SPA interroge l'API en polling et affiche logs/erreurs/metrics en temps quasi-réel. Aucune dépendance externe (pas de Redis, pas de DB).

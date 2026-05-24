@@ -191,15 +191,13 @@ num_zer0/                                  ← Monorepo racine
 | 2026-05-24 | Phase 5: cleanup gitignore | ✅ | `2d46633` |
 | 2026-05-24 | Thème 1: Split Déploiement | ✅ | `2958dc9` |
 | 2026-05-24 | Thème 4: Standardisation DX (Phases 1-3) | ✅ | `62cb64d` |
+| 2026-05-24 | Thème 4: Audit rewrite fixes | ✅ | `ff9c690` |
+| 2026-05-24 | Thème 2: Dashboard MVP (Phase 1) | ✅ | *(courant)* |
 
 ## Prochaine action
 
-**Thème 2** : Dashboard MVP
-1. EventBus (logs/metrics in-memory)
-2. MetricsStore
-3. Routes API dashboard
-4. WebSocket logs temps réel
-5. Frontend MVP (Logs, Run function, Erreurs)
+- [ ] Dashboard Phase 2: Graphiques metrics, filtres logs, historique des runs
+- [ ] Thème 3: Middleware stack Hono (auth, cors, rate-limit, logging)
 
 ---
 

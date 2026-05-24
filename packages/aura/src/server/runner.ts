@@ -12,6 +12,8 @@ import { createReadOnlyDb } from "./db-readonly";
 import type { AuraContext } from "./context";
 import { publishInvalidation } from "./invalidate";
 import { v4 as uuidv4 } from "uuid";
+import { eventBus, type ConsoleLog } from "./observability/event-bus";
+import { metricsStore } from "./observability/metrics";
 
 export interface RunAuraOperationOptions {
   operationName: string;
@@ -77,6 +79,32 @@ export async function runAuraOperation<TData = unknown>(
   //   - actions get a tombstoned db that throws on every property
   const handlerCtx = withTypedDb(ctx, operation.type);
 
+  const consoleLogs: ConsoleLog[] = [];
+  const originalLog = console.log;
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  const originalDebug = console.debug;
+
+  console.log = (...args) => {
+    consoleLogs.push({ level: "info", message: args.join(" "), timestamp: new Date() });
+    originalLog(...args);
+  };
+  console.warn = (...args) => {
+    consoleLogs.push({ level: "warn", message: args.join(" "), timestamp: new Date() });
+    originalWarn(...args);
+  };
+  console.error = (...args) => {
+    consoleLogs.push({ level: "error", message: args.join(" "), timestamp: new Date() });
+    originalError(...args);
+  };
+  console.debug = (...args) => {
+    consoleLogs.push({ level: "debug", message: args.join(" "), timestamp: new Date() });
+    originalDebug(...args);
+  };
+
+  const opType = operation.type as "query" | "mutation" | "action";
+  const startTime = performance.now();
+
   try {
     const data = (await operation.execute({
       ctx: handlerCtx,
@@ -85,7 +113,28 @@ export async function runAuraOperation<TData = unknown>(
       req: options.request,
     })) as TData;
 
-    const isMutating = operation.type === "mutate" || operation.type === "action";
+    const durationMs = performance.now() - startTime;
+
+    eventBus.emit({
+      type: opType,
+      name: operation.name,
+      status: "success",
+      durationMs,
+      timestamp: new Date(),
+      requestId: ctx.requestId,
+      consoleLogs,
+    });
+    metricsStore.record({
+      type: opType,
+      name: operation.name,
+      status: "success",
+      durationMs,
+      timestamp: new Date(),
+      requestId: ctx.requestId,
+      consoleLogs,
+    });
+
+    const isMutating = opType === "mutate" || opType === "action";
     // Static entities declared on the operation + dynamic invalidations
     // queued via `ctx.invalidate(...)` during the handler execution.
     const invalidates = isMutating
@@ -113,7 +162,30 @@ export async function runAuraOperation<TData = unknown>(
       cookies: ctx.cookies.set,
     };
   } catch (error) {
+    const durationMs = performance.now() - startTime;
     const auraError = toPublicAuraError(error);
+
+    eventBus.emit({
+      type: opType,
+      name: operation.name,
+      status: "error",
+      durationMs,
+      error: error instanceof Error ? (error.stack ?? error.message) : String(error),
+      timestamp: new Date(),
+      requestId: ctx.requestId,
+      consoleLogs,
+    });
+    metricsStore.record({
+      type: opType,
+      name: operation.name,
+      status: "error",
+      durationMs,
+      error: error instanceof Error ? (error.stack ?? error.message) : String(error),
+      timestamp: new Date(),
+      requestId: ctx.requestId,
+      consoleLogs,
+    });
+
     if (!(error instanceof AuraError)) {
       ctx.log.error("Unhandled Aura operation error", {
         operation: operation.name,
@@ -129,6 +201,11 @@ export async function runAuraOperation<TData = unknown>(
       status: auraError.status,
       cookies: ctx.cookies.set,
     };
+  } finally {
+    console.log = originalLog;
+    console.warn = originalWarn;
+    console.error = originalError;
+    console.debug = originalDebug;
   }
 }
 
