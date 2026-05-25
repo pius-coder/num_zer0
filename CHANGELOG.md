@@ -436,6 +436,23 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 ## 2026-05-25 | Phase 3 | Ajouté
 
+**Plugin officiel `@aura/workflows`**
+
+### `@aura/workflows`
+- `package.json` / `tsconfig.json` — Nouveau workspace plugin
+- `types.ts` — `WorkflowContext`, `WorkflowDefinition`, `WorkflowStepResult`, `WorkflowDb`, `WorkflowSleepError`
+- `workflow.ts` — `defineWorkflow()`, `getWorkflow()`, `listWorkflows()`, `startWorkflow(db)`, `executeWorkflowRun(db)`
+- `scheduler.ts` — `createAuraScheduler(db)` — durable at-least-once scheduling
+- `scheduler-runner.ts` — `processScheduledJobs({ db, runAuraOperation, batchSize })`
+- `index.ts` — Barrel exports
+
+### Intégration monolithe
+- `workflow.ts` — Ré-exporte depuis `@aura/workflows`
+- `scheduler.ts` — Ré-exporte depuis `@aura/workflows`
+- `scheduler-runner.ts` — Ré-exporte depuis `@aura/workflows`
+- `packages/aura/package.json` — Ajout de `@aura/workflows`
+- `tsconfig.base.json` — Paths ajoutés pour `@aura/workflows`
+
 **Plugin officiel `@aura/dashboard`**
 
 ### `@aura/dashboard`

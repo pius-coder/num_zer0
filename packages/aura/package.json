@@ -46,6 +46,7 @@
     "@aura/http-actions": "workspace:*",
     "@aura/realtime": "workspace:*",
     "@aura/dashboard": "workspace:*",
+    "@aura/workflows": "workspace:*",
     "@prisma/adapter-pg": "^7",
     "@prisma/client": "^7",
     "@smithy/node-http-handler": "^4.0.0",

@@ -136,7 +136,7 @@ num_zer0/
 - [x] `@aura/storage` — Extraction storage (types, filesystem driver) ✅
 - [x] `@aura/cron` — Types et barrel ✅
 - [x] `@aura/notifications` — Registry, dispatcher, `ctx.notify`, outbox worker ✅
-- [ ] Workflows (`@aura/workflows`)
+- [x] `@aura/workflows` — Durable workflows + scheduler + worker ✅
 - [x] `@aura/http-actions` — Builder, registry, webhook dispatch ✅
 - [x] `@aura/realtime` — Invalidation client, types ✅
 - [x] `@aura/observability` — EventBus, MetricsStore, Logger ✅
@@ -175,12 +175,12 @@ num_zer0/
 | 2026-05-25 | Phase 3: Plugin observability (EventBus, Metrics, Logger) | ✅ | *(courant)* |
 | 2026-05-25 | Phase 3: Plugin http-actions (builder, registry) | ✅ | *(courant)* |
 | 2026-05-25 | Phase 3: Plugin realtime (invalidation client) | ✅ | `c8490fe` |
-| 2026-05-25 | Phase 3: Plugin dashboard (SPA + API routes) | ✅ | *(courant)* |
+| 2026-05-25 | Phase 3: Plugin dashboard (SPA + API routes) | ✅ | `59faed1` |
+| 2026-05-25 | Phase 3: Plugin workflows + scheduler | ✅ | *(courant)* |
 
 ## Prochaine action
 
-**Phase 3 suite — Plugins restants :**
-1. Workflows (`@aura/workflows`) — attendre la clarification scheduler/resume
+**Phase 3 est terminée.** Tous les plugins officiels extraits. Prochaine phase : Phase 4 (CLI) ou Phase 5 (nettoyage monolithe).
 
 ---
 

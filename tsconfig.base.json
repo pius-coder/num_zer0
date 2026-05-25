@@ -48,7 +48,9 @@
       "@aura/realtime": ["./packages/plugins/realtime/src/index.ts"],
       "@aura/realtime/*": ["./packages/plugins/realtime/src/*"],
       "@aura/dashboard": ["./packages/plugins/dashboard/src/index.ts"],
-      "@aura/dashboard/*": ["./packages/plugins/dashboard/src/*"]
+      "@aura/dashboard/*": ["./packages/plugins/dashboard/src/*"],
+      "@aura/workflows": ["./packages/plugins/workflows/src/index.ts"],
+      "@aura/workflows/*": ["./packages/plugins/workflows/src/*"]
     }
   }
 }

@@ -88,6 +88,7 @@
         "@aura/notifications": "workspace:*",
         "@aura/observability": "workspace:*",
         "@aura/realtime": "workspace:*",
+        "@aura/workflows": "workspace:*",
         "@aws-sdk/client-s3": "^3.1046.0",
         "@base-ui/react": "^1.4.1",
         "@hono/node-server": "^1.13.2",
@@ -249,6 +250,17 @@
         "typescript": "^6.0.2",
       },
     },
+    "packages/plugins/workflows": {
+      "name": "@aura/workflows",
+      "version": "0.0.0",
+      "dependencies": {
+        "@aura/core": "workspace:*",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+        "uuid": "^10.0.0",
+      },
+    },
     "packages/prisma": {
       "name": "@aura/prisma",
       "version": "0.0.0",
@@ -323,6 +335,8 @@
     "@aura/server-hono": ["@aura/server-hono@workspace:packages/server-hono"],
 
     "@aura/storage": ["@aura/storage@workspace:packages/plugins/storage"],
+
+    "@aura/workflows": ["@aura/workflows@workspace:packages/plugins/workflows"],
 
     "@aws-crypto/crc32": ["@aws-crypto/crc32@5.2.0", "", { "dependencies": { "@aws-crypto/util": "^5.2.0", "@aws-sdk/types": "^3.222.0", "tslib": "^2.6.2" } }, "sha512-nLbCWqQNgUiwwtFsen1AdzAtvuLRsQS8rYgMuxCrdKf9kOssamGLuPwyTY9wyYblNr9+1XM8v6zoDTPPSIeANg=="],
 
