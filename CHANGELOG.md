@@ -250,3 +250,22 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 **Motivation :**
 > Éviter la duplication de la logique de sécurité et préparer l’auth middleware demandé sans casser le mode dev actuel. Le dashboard n’exige la clé API que si `AURA_API_KEY` est configurée.
+
+---
+
+## 2026-05-25 | Restructuration | Ajouté/Modifié
+
+**Audit architectural et nouvelle direction : plateforme runtime modulaire**
+
+- `audit.md` — Audit architectural complet (10 sections, classement feature par feature, risques, décisions, architecture cible).
+- `PLAN.md` → `PROMPT.md` — Renommé car PLAN.md contenait un prompt architecte, pas un plan.
+- `PLAN.md` — Nouveau plan d'exécution en 5 phases (Phase 0-5) pour transformer le monolithe en plateforme modulaire.
+- `PLAN_THEMATIQUE.md` — Réécrit avec les 5 thèmes de la nouvelle architecture (Core, Adapters, Plugins, CLI, Architecture finale).
+- `TRACKER.md` — Mis à jour avec la nouvelle direction, les nouveaux phases, les décisions D8-D13.
+
+**Changement de direction :**
+- **Ancien :** Framework full-stack monolithique `@aura-js/core` avec toutes les features intégrées.
+- **Nouveau :** Plateforme runtime modulaire avec `@aura/core` (minimal) + plugins + adapters.
+- Contrat central : `AuraPlugin` — même mécanisme pour plugins officiels et communautaires.
+- Hono, Prisma, React deviennent des adapters optionnels, pas le socle du core.
+- Breaking changes volontaires et assumés : pas de wrappers legacy, pas d'aliases temporaires.
