@@ -113,7 +113,7 @@ function makeWorkflow(name: string): void {
   const { dir, file } = nameToPath(name);
   const path = dir ? `${OPS_DIR}/${dir}/${file}.workflow.ts` : `${OPS_DIR}/${file}.workflow.ts`;
 
-  ensureWrite(path, `import { defineWorkflow } from "@/aura/server/workflow";
+  ensureWrite(path, `import { defineWorkflow } from "@aura/workflows";
 import { z } from "zod";
 
 export default defineWorkflow("${name}")

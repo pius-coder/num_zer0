@@ -15,7 +15,7 @@ import {
 } from "./transport/cookies";
 import { toPrismaJson } from "./json";
 import { createAuraStorage } from "./storage";
-import { createAuraScheduler } from "./scheduler";
+import { createAuraScheduler } from "@aura/workflows";
 import { createAuraAgent } from "./ai/context-binding";
 import { v4 as uuidv4 } from "uuid";
 

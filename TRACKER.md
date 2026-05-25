@@ -176,7 +176,8 @@ num_zer0/
 | 2026-05-25 | Phase 3: Plugin http-actions (builder, registry) | ✅ | *(courant)* |
 | 2026-05-25 | Phase 3: Plugin realtime (invalidation client) | ✅ | `c8490fe` |
 | 2026-05-25 | Phase 3: Plugin dashboard (SPA + API routes) | ✅ | `59faed1` |
-| 2026-05-25 | Phase 3: Plugin workflows + scheduler | ✅ | *(courant)* |
+| 2026-05-25 | Phase 3: Plugin workflows + scheduler | ✅ | `380ba09` |
+| 2026-05-25 | Phase 5: Nettoyage — wrappers supprimés | ✅ | *(courant)* |
 
 ## Prochaine action
 

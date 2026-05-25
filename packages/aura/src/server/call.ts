@@ -6,7 +6,7 @@ import { AuraError, toPublicAuraError } from "@/aura/core/errors";
 import "@/aura.registry";
 import { createAuraContext } from "./create-context";
 import { getOperation } from "./registry";
-import { publishInvalidation } from "./invalidate";
+import { publishInvalidation } from "@aura/realtime";
 import {
   getAuraRequestHeaders,
   applyAuraCookies,

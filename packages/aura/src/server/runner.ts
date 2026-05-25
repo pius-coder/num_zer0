@@ -10,7 +10,7 @@ import { getOperation } from "./registry";
 import { createAuraContext } from "./create-context";
 import { createReadOnlyDb } from "./db-readonly";
 import type { AuraContext } from "./context";
-import { publishInvalidation } from "./invalidate";
+import { publishInvalidation } from "@aura/realtime";
 import { v4 as uuidv4 } from "uuid";
 import { eventBus, metricsStore } from "@aura/observability";
 import type { ConsoleLog } from "@aura/observability";

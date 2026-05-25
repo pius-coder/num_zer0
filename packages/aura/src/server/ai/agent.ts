@@ -6,7 +6,7 @@ import type { BaseMessage } from "@langchain/core/messages";
 import { z } from "zod";
 import { db } from "../db";
 import type { AuraDb } from "../db";
-import { publishInvalidation } from "../invalidate";
+import { publishInvalidation } from "@aura/realtime";
 import { v4 as uuidv4 } from "uuid";
 import { toPrismaJson } from "../json";
 import type { AgentRef, OperationRef } from "@/aura/core/types";

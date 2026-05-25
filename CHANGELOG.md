@@ -436,6 +436,26 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 ## 2026-05-25 | Phase 3 | Ajouté
 
+## 2026-05-25 | Phase 5 | Nettoyage
+
+**Wrappers de re-export supprimés**
+
+Fichiers supprimés (imports mis à jour vers `@aura/*` direct) :
+- `server/workflow.ts` → imports vers `@aura/workflows`
+- `server/scheduler.ts` → imports vers `@aura/workflows`
+- `server/invalidate.ts` → imports vers `@aura/realtime`
+- `server/scheduler-runner.ts` → supprimé (aucun import)
+- `server/notifications.ts` → supprimé (aucun import, déjà extrait dans `@aura/notifications`)
+
+Imports mis à jour :
+- `server/index.ts` — exporte depuis `@aura/workflows`
+- `server/create-context.ts` — importe depuis `@aura/workflows`
+- `server/runner.ts`, `server/call.ts`, `server/ai/agent.ts` — importent depuis `@aura/realtime`
+- `server/workflow-tracker.test.ts` — importe depuis `@aura/workflows`
+- `cli/make.ts` — template string vers `@aura/workflows`
+
+---
+
 **Plugin officiel `@aura/workflows`**
 
 ### `@aura/workflows`

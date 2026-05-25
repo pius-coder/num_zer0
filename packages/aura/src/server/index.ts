@@ -14,7 +14,8 @@ export { defineDbReadFn } from "./db-read";
 export { defineHttpAction, listHttpActions, runHttpAction } from "./http-action";
 export { defineSearchIndex, search, getSearchIndex, generateSearchIndexSQL } from "./search";
 export { defineVectorIndex, vectorSearch, getVectorIndex, generateVectorIndexSQL } from "./vector";
-export { defineWorkflow, startWorkflow, executeWorkflowRun, getWorkflow } from "./workflow";
+export { defineWorkflow, startWorkflow, executeWorkflowRun, getWorkflow } from "@aura/workflows";
+export { createAuraScheduler } from "@aura/workflows";
 export { defineCronFn, getCronJob, runAuraCron } from "./cron";
 export { defineOperationFn, defineCommonFn } from "./operation";
 export {
@@ -28,7 +29,6 @@ export { paginate, encodeCursor, decodeCursor } from "./pagination";
 export { createTrackedPrismaClient } from "./entity-tracker";
 export { discoverArtifacts, deriveNameFromPath, validateStructure } from "./discovery";
 export { processOutboxEvents } from "./outbox";
-export { createAuraScheduler } from "./scheduler";
 export {
   defineAgent,
   getAgent,

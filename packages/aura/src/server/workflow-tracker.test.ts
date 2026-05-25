@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { defineWorkflow, getWorkflow, listWorkflows } from "./workflow";
+import { defineWorkflow, getWorkflow, listWorkflows } from "@aura/workflows";
 import { createTrackedPrismaClient } from "./entity-tracker";
 
 describe("workflow", () => {
