@@ -39,3 +39,12 @@ export {
 export { eventBus } from "./observability/event-bus";
 export { metricsStore } from "./observability/metrics";
 export { auraDashboardRouter } from "./dashboard/routes";
+export {
+  apiKeyHeaderName,
+  apiKeyMiddleware,
+  internalSecretHeaderName,
+  internalSecretMiddleware,
+  optionalApiKeyMiddleware,
+  verifyApiKey,
+  verifyInternalSecret,
+} from "./middleware/auth";

@@ -1,8 +1,8 @@
 
 
 import { Hono } from "hono";
-import { timingSafeEqual } from "node:crypto";
 import { v4 as uuidv4 } from "uuid";
+import { internalSecretMiddleware } from "../middleware/auth";
 import { runAuraCron } from "../cron";
 
 /**
@@ -24,24 +24,10 @@ import { runAuraCron } from "../cron";
 export function auraInternalRouter(): Hono {
   const router = new Hono();
 
+  router.use("/*", internalSecretMiddleware());
+
   router.post("/:path{.*}", async (c) => {
     const requestId = uuidv4();
-
-    // ── 1. Validate the internal secret ──────────────────────────────────
-    if (!verifyInternalSecret(c.req.header("x-aura-internal-secret"))) {
-      return c.json(
-        {
-          ok: false,
-          error: {
-            code: "FORBIDDEN",
-            message: "Secret interne invalide.",
-            status: 403,
-            requestId,
-          },
-        },
-        403,
-      );
-    }
 
     // ── 2. Parse the request body ─────────────────────────────────────────
     let payload: unknown;
@@ -97,32 +83,4 @@ export function auraInternalRouter(): Hono {
   });
 
   return router;
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Constant-time comparison of the provided header value against
- * `AURA_INTERNAL_SECRET`. Returns `false` if the env var is not set or if
- * the header is missing/mismatched.
- */
-function verifyInternalSecret(headerValue: string | undefined): boolean {
-  const secret = process.env.AURA_INTERNAL_SECRET;
-  if (!secret || !headerValue) return false;
-
-  try {
-    const secretBuf = Buffer.from(secret, "utf8");
-    const headerBuf = Buffer.from(headerValue, "utf8");
-
-    // timingSafeEqual requires same-length buffers; length mismatch is itself
-    // a safe early-return (no timing information leaks from the length check
-    // because the length of the secret is not sensitive — it's a fixed env var).
-    if (secretBuf.length !== headerBuf.length) return false;
-
-    return timingSafeEqual(secretBuf, headerBuf);
-  } catch {
-    return false;
-  }
 }

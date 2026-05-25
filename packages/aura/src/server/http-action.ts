@@ -18,6 +18,7 @@
 import type { AuraContext, AuraSource } from "./context";
 import { createAuraContext } from "./create-context";
 import { AuraError } from "@/aura/core/errors";
+import { internalSecretHeaderName, verifyInternalSecret } from "./middleware/auth";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 export type HttpAccess = "auth" | "public" | "internal";
@@ -118,9 +119,8 @@ export async function runHttpAction(
     throw new AuraError("UNAUTHORIZED", "Authentification requise.");
   }
   if (definition.access === "internal") {
-    const secretHeader = request.headers.get("x-aura-internal-secret");
-    const expected = process.env.AURA_INTERNAL_SECRET;
-    if (!expected || !secretHeader || secretHeader !== expected) {
+    const secretHeader = request.headers.get(internalSecretHeaderName) ?? undefined;
+    if (!verifyInternalSecret(secretHeader)) {
       throw new AuraError("FORBIDDEN", "Endpoint interne.");
     }
   }

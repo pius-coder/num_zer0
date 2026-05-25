@@ -235,3 +235,18 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 **Motivation :**
 > Re-audit après fixes. Résultat : 0 `any` réel, 3 circular deps (toutes false-positives type-only), 0 patch wrappers dans le barrel, 0 dead code. useAuraForm/useAuraParams conservés car pas d'alias court possible (conflit avec react-hook-form et React Router).
+
+---
+
+## 2026-05-25 | Thème 3 | Modifié
+
+**Auth middleware Hono factorisé**
+
+- `packages/aura/src/server/middleware/auth.ts` — middleware commun pour le secret interne et la clé API, avec comparaison constant-time.
+- `packages/aura/src/server/routes/internal.ts` — validation du secret interne déléguée au middleware.
+- `packages/aura/src/server/routes/dashboard/routes.ts` — protection API optionnelle via `AURA_API_KEY`.
+- `packages/aura/src/server/http-action.ts` — réutilise la validation du secret interne.
+- `packages/aura/src/server/index.ts` — exports publics du middleware auth.
+
+**Motivation :**
+> Éviter la duplication de la logique de sécurité et préparer l’auth middleware demandé sans casser le mode dev actuel. Le dashboard n’exige la clé API que si `AURA_API_KEY` est configurée.

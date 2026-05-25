@@ -5,6 +5,7 @@ import { eventBus } from "../observability/event-bus";
 import { metricsStore } from "../observability/metrics";
 import { getClientOperationManifest } from "../registry";
 import { runAuraOperation } from "../runner";
+import { optionalApiKeyMiddleware } from "../middleware/auth";
 
 let spaHtml: string | null = null;
 const runHistory: Array<{ name: string; input: unknown; result: unknown; timestamp: Date; status: number }> = [];
@@ -25,6 +26,8 @@ function getSpaHtml(): string | null {
 
 export function auraDashboardRouter(): Hono {
   const router = new Hono();
+
+  router.use("/api/*", optionalApiKeyMiddleware());
 
   function getOpMeta(name: string) {
     return getClientOperationManifest().operations.find((o) => o.name === name) ?? null;

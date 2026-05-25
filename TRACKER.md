@@ -208,13 +208,14 @@ num_zer0/                                  ← Monorepo racine
 | 2026-05-24 | AGENTS.md | ✅ | `c96ca81` |
 | 2026-05-24 | Thème 3: Middleware stack Hono | ✅ | `1208606` |
 | 2026-05-24 | Cleanup: Audit fixes (stepper, barrel, aliases, types, AGENTS.md) | ✅ | `0d00130` |
-| 2026-05-24 | Cleanup: Re-audit final (bridge.ts any, doc comments, AGENTS.md) | ✅ | *(courant)* |
+| 2026-05-24 | Cleanup: Re-audit final (bridge.ts any, doc comments, AGENTS.md) | ✅ | `c3e4393` |
+| 2026-05-25 | Thème 3: auth middleware Hono (secret interne + api key) | 🚧 | *(courant)* |
 
 ## Prochaine action
 
 - [x] Dashboard Phase 2: Graphiques metrics (Chart.js), vue request ID, JSON éditeur, run history, détail fonction, error trending ✅
 - [x] Thème 3: Middleware stack Hono (cors, logging) ✅
-- [ ] Thème 3: Auth middleware (internal secret, api key)
+- [x] Thème 3: Auth middleware (internal secret, api key) ✅
 
 ---
 
