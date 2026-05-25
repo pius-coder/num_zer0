@@ -9,9 +9,6 @@
 import type { OperationRef, InferOperationInput, InferOperationOutput } from "@/aura/core/types";
 
 export const api = {
-  system: {
-    health: { _name: "system.health", _type: "query" } as OperationRef<"query", InferOperationInput<typeof import("../../operations/system/health.operation")["default"]>, InferOperationOutput<typeof import("../../operations/system/health.operation")["default"]>>,
-  },
   todos: {
     toggle: { _name: "todos.toggle", _type: "mutate" } as OperationRef<"mutate", InferOperationInput<typeof import("../../operations/todos/toggle.operation")["default"]>, InferOperationOutput<typeof import("../../operations/todos/toggle.operation")["default"]>>,
     create: { _name: "todos.create", _type: "mutate" } as OperationRef<"mutate", InferOperationInput<typeof import("../../operations/todos/create.operation")["default"]>, InferOperationOutput<typeof import("../../operations/todos/create.operation")["default"]>>,
