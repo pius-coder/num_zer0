@@ -1,278 +1,242 @@
-# Plan Auria — Standardisation Complète de la DX
+Tu es un architecte logiciel senior spécialisé dans :
+- runtime platforms
+- systèmes plugin
+- frameworks extensibles
+- architecture modulaire
+- refactoring structurel profond
+- monorepos TypeScript
+- runtimes backend
+- DX frameworks
 
-## Objectif
+Tu dois proposer une RESTRUCTURATION TOTALE du projet Aura.
 
-Toutes les fonctions `define*` utilisent le **même pattern builder chainable**. Plus d'objets config, plus de signatures inconsistantes. Le client s'inspire de la DX Convex (args plats, callables).
+IMPORTANT :
+Le but n’est PAS :
+- d’ajouter des wrappers,
+- d’ajouter des couches de compatibilité,
+- d’ajouter des adaptateurs legacy,
+- de préserver l’architecture actuelle,
+- de faire une migration “safe”.
 
----
+Le but est :
+- de REFAIRE l’architecture correctement,
+- de SUPPRIMER les mauvaises abstractions,
+- de CASSER les couplages structurels,
+- de RÉDUIRE le core,
+- de rendre Aura réellement modulaire,
+- de construire une vraie plateforme runtime extensible.
 
-## Partie 1 — Règle Unique : Le Builder Standard
+Philosophie obligatoire :
+- Réécriture > adaptation
+- Contrats stables > backward compatibility
+- Plugins first-class > features hardcodées
+- Composition > barrels géants
+- Runtime minimal > framework monolithique
+- Capacités déclarées > imports directs
+- Extensions officielles et communautaires utilisent EXACTEMENT les mêmes mécanismes
+- Aucun wrapper legacy inutile
+- Aucun alias temporaire “pour compatibilité”
+- Aucun patch architectural
+- Pas de “transitional architecture” permanente
 
-```
-defineX("domain.name")
-  .optionA(...)       // 0..N options (ordre libre)
-  .optionB(...)
-  .handler(fn)        // TOUJOURS .handler(fn) à la fin
-```
+Contexte actuel :
+Aura est un monorepo Bun TypeScript full-stack basé sur :
+- TanStack Start
+- Hono
+- Prisma/Postgres
+- React
+- builders chainables
+- registry d’opérations
+- runtime serveur
+- hooks client
+- dashboard
+- observability
+- AI
+- search
+- vector
+- workflows
+- cron
+- storage
+- realtime
+- invalidation
+- auth
+- hydration
+- pagination
+- UI components
+- CLI
 
-- Le nom est TOUJOURS le premier argument (string)
-- Les options sont TOUJOURS chainées (`.option().option()`)
-- Le handler est TOUJOURS `.handler(fn)` à la fin
-- Si un artefact a un type (query/mutate/action), le type vient juste après le nom
+Problème :
+Le projet est actuellement un framework monolithique.
+Le core connaît toutes les features.
+Les features sont importées directement.
+Le runtime est couplé à Prisma, React, Hono, LangChain, dashboard, etc.
+Les plugins ne sont pas de vrais citoyens de première classe.
 
----
+Nouvelle direction imposée :
+Aura doit devenir :
 
-## Partie 2 — Inventaire Complet de Tous les Artefacts
+“Un runtime platform minimal + système de plugins branchables + adapters officiels + registry communautaire.”
 
-### 2.1 — DÉJÀ CONFORMES (builder chainable) — Aucun changement
+Le runtime doit être capable de fonctionner :
+- sans React
+- sans Prisma
+- sans Hono
+- sans dashboard
+- sans AI
+- sans search
+- sans vector
+- sans storage
+- sans observability
+- sans realtime
 
-| Fonction | Signature | Handler |
-|----------|-----------|---------|
-| `defineOperationFn(name)` | `.query()\|.mutate()\|.action().input(z).entities([]).auth()\|.public()\|.internal().use(...).handler(fn)` | `({ ctx, input, params }) => T` |
-| `defineHttpAction(path, method)` | `.auth()\|.public()\|.internal().csrf(bool).handler(fn)` | `(ctx, request) => Response` |
-| `defineWorkflow(name)` | `.handler(fn)` | `({ ctx, input, step, sleep }) => T` |
-| `defineCommonFn(name)` | `.run(fn)` | `({ ctx, input, params, operation }) => void` |
-| `defineCronFn(name)` | `.schedule(cron).handler(fn)` | `(ctx) => Promise<void>` |
-| `defineNotificationFn(name)` | `.payload(z).handler(fn)` | `({ ctx, payload }) => void` |
+Toutes ces choses doivent devenir :
+- plugins,
+- adapters,
+- packages séparés,
+- ou être supprimées.
 
-### 2.2 — OBJECT CONFIG (à migrer en builder)
+Tu dois proposer :
+1. Une architecture cible COMPLETE
+2. Une restructuration de dossiers COMPLETE
+3. Une nouvelle séparation des packages
+4. Une hiérarchie claire :
+   - core runtime
+   - adapters
+   - plugins officiels
+   - plugins communautaires
+   - app hôte
+5. Une stratégie de migration agressive
+6. Les éléments à supprimer immédiatement
+7. Les éléments à réécrire entièrement
+8. Les éléments à garder
+9. Les contrats stables à définir avant toute migration
+10. Les breaking changes à accepter volontairement
 
-| Fonction | Actuel (objet) | Cible (builder) |
-|----------|---------------|-----------------|
-| `defineAgent(name, { model, systemPrompt, tools, maxSteps, rag })` | 2e arg = objet | `.model(m).systemPrompt(s).tools(t).maxSteps(n).rag(r).handler(fn)` |
-| `defineDbReadFn({ name, input, output, execute })` | 1 seul objet | `defineDbReadFn(name).input(z).output(z).handler(fn)` |
-| `defineSearchIndex(name, { fields, filterFields, language })` | 2e arg = objet | `.fields(f).filterFields(ff).language(l).handler(fn)` |
-| `defineVectorIndex(name, { vectorField, dimensions, filterFields, indexType })` | 2e arg = objet | `.vectorField(v).dimensions(d).filterFields(ff).indexType(t).handler(fn)` |
-| `defineComponent(name, { schema, operations, config })` | 2e arg = objet + factory | `.schema(s).operations(o).config(c).handler()` (à définir) |
-| `defineAuraParams({ schema, parsers })` | 1 seul objet, pas de nom | `defineAuraParams("name").schema(z).parsers(p)` |
+IMPORTANT :
+Tu ne dois PAS chercher à préserver l’API actuelle.
 
-### 2.3 — CLIENT HOOKS (à migrer)
+Tu dois privilégier :
+- simplicité structurelle,
+- cohérence,
+- extensibilité,
+- stabilité long terme,
+- maintenabilité,
+- packaging propre,
+- séparation stricte des responsabilités.
 
-| Actuel | Cible | Changement |
-|--------|-------|------------|
-| `useAuraQuery(ref, { input, params, ...opts })` | `useQuery(ref, flatArgs, opts?)` | args plats, plus de `{ input }` |
-| `useAuraMutation(ref, opts)` → `{ mutate(args) }` | `useMutation(ref, opts?)` → `(args) => Promise<T>` | callable directe |
-| `useAuraPaginatedQuery(ref, input, opts?)` | `usePaginatedQuery(ref, flatArgs, opts?)` | Args plats |
-| `useAuraAgentThread(threadId)` | `useAgentThread(threadId)` | Renommer |
-| `useAuraAgentStream(threadId)` | `useAgentStream(threadId)` | Renommer |
-| `useAuraAgentSend(agentName)` | `useAgentSend(agentName)` | Renommer |
-| `useAuraForm(opts)` | `useAuraForm(opts)` | ✅ Inchangé |
-| `useAuraParams(def)` | `useAuraParams(def)` | ✅ Inchangé |
-| `useAuraStepper(opts)` | `useStepperForm(opts)` | Renommer |
-| `useAuraManifest()` | `useAuraManifest()` | ✅ Inchangé |
-| `useAuraBroadcast()` | `useBroadcast()` | Renommer (pas de `Aura`) |
-| `AuraClientProvider` | `AuraProvider` | Renommer |
-| `AuraHydrationBoundary` | `AuraHydrationBoundary` | ✅ Inchangé |
-| `AuraGuard` | `AuraGuard` | ✅ Inchangé |
-| `callAuraOperation(opts)` | `callAura(opts)` | Renommer |
-| `configureAuraClient(config)` | `configureAura(config)` | Renommer |
-| `fetchAuraManifest()` | `fetchManifest()` | Renommer |
-| `AuraClientError` | `AuraError` (ou garder) | ✅ |
+Tu dois EXPLICITEMENT dire :
+- quels fichiers doivent être supprimés,
+- quels barrels doivent disparaître,
+- quels imports sont interdits,
+- quelles dépendances doivent sortir du core,
+- quels contextes doivent être éclatés,
+- quelles responsabilités doivent être déplacées.
 
-### 2.4 — CONTEXTE (inchangé)
+Tu dois aussi proposer :
+- un vrai contrat `AuraPlugin`,
+- un système de capabilities,
+- un registry unifié,
+- un système d’extension de contexte,
+- un système de mounting de routes,
+- un système de discovery extensible,
+- un système d’introspection runtime,
+- un système de plugins CLI,
+- un système de versioning plugins/core.
 
-Toutes les propriétés de `ctx` restent identiques :
+Tu dois évaluer TOUS les domaines existants :
+- operations
+- query/mutation/action
+- registry
+- runner
+- transport
+- Hono
+- Prisma
+- React
+- hooks
+- hydration
+- auth
+- workflows
+- cron
+- broadcast
+- observability
+- dashboard
+- AI
+- search
+- vector
+- pagination
+- invalidation
+- params
+- storage
+- CLI
+- UI
 
-```typescript
-interface AuraContext {
-  db, session, user, auth, notify, bump, log, audit
-  requestId, source, request, cookies
-  storage, scheduler, agent
-  runQuery(ref, input), runMutation(ref, input), runAction(ref, input)
-  paginate(model, opts), invalidate(target), fetch
-}
-```
+Pour chacun :
+- core ?
+- adapter ?
+- plugin officiel ?
+- package séparé ?
+- supprimer ?
 
-### 2.5 — EXPORTS SERVER (inchangés)
+Tu dois aussi proposer :
+- une structure monorepo finale,
+- des noms de packages cohérents,
+- des boundaries strictes,
+- des règles d’import,
+- une politique de dépendances.
 
-| Export | Usage |
-|--------|-------|
-| `createAuraHonoApp()` | Crée l'app Hono |
-| `createAuraContext(opts)` | Crée le contexte |
-| `runAuraOperation(opts)` | Exécute une opération |
-| `callAuraServer(opts)` | Appel in-process |
-| `runAuraServer(opts)` | Appel in-process avec cache |
-| `publishInvalidation(keys)` | Broadcast invalidation |
-| `createTrackedPrismaClient(db)` | Entity tracker |
-| `createReadOnlyDb(db)` | DB read-only |
-| `paginate(model, opts)` | Pagination |
-| `encodeCursor(data)`, `decodeCursor(cursor)` | Curseurs |
-| `processOutboxEvents()` | Outbox |
-| `createAuraScheduler(db)` | Scheduler |
-| `runAuraCron(name)` | Cron runner |
-| `registerOperation(op)`, `getOperation(name)`, `listOperations()` | Registry |
-| `getClientOperationManifest()` | Manifeste |
-| `discoverArtifacts()`, `deriveNameFromPath()`, `validateStructure()` | Discovery |
-| `defineSearchIndex(name)`, `search(model, opts)` | Full-text search |
-| `defineVectorIndex(name)`, `vectorSearch(model, opts)` | Vector search |
-| `defineWorkflow(name)`, `startWorkflow()`, `executeWorkflowRun()` | Workflows |
-| `defineHttpAction(path, method)`, `runHttpAction()` | HTTP actions |
-| `defineDbReadFn(name)`, `defineCronFn(name)`, `defineCommonFn(name)` | Helpers |
-| `enforceRateLimit()`, `createAuraLogger()`, `createBumpStore()` | Utilitaires |
-| `AuraError`, `AuraClientError`, `successEnvelope`, `errorEnvelope` | Errors |
-| `auraQueryKey`, `AuraQueryKey` | Query keys |
+Tu dois être extrêmement critique.
 
-### 2.6 — UI COMPONENTS (inchangés)
+Tu dois signaler :
+- les anti-patterns,
+- les couplages cachés,
+- les faux plugins,
+- les barrels toxiques,
+- les singletons dangereux,
+- les contextes monstrueux,
+- les registries dispersés,
+- les responsabilités mélangées,
+- les dépendances runtime inutiles,
+- les leaks React/Hono/Prisma dans le core.
 
-Tous les composants UI gardent leurs noms actuels (`AuraDataTable`, `AuraForm`, `AuraAuthCard`, etc.)
+Tu dois produire :
+1. Verdict global
+2. Nouveau modèle mental d’Aura
+3. Architecture cible
+4. Structure packages finale
+5. Contrat AuraPlugin complet
+6. Système de capabilities
+7. Runtime lifecycle
+8. Plugin lifecycle
+9. Context architecture
+10. Registry architecture
+11. Routing architecture
+12. Manifest architecture
+13. Discovery architecture
+14. Observability architecture
+15. Dashboard architecture
+16. Packaging strategy
+17. Versioning strategy
+18. Migration roadmap PHASE PAR PHASE
+19. Breaking changes volontaires
+20. Liste des suppressions immédiates
+21. Liste des réécritures complètes
+22. Les 10 plus gros risques si Aura continue l’architecture actuelle
+23. Les 10 décisions non négociables
+24. Une conclusion directe et brutale
 
----
+IMPORTANT :
+Ne jamais proposer :
+- des wrappers legacy permanents,
+- des alias temporaires longs termes,
+- des couches de compatibilité inutiles,
+- des bridges “magiques”,
+- des adaptateurs pour sauver une mauvaise abstraction.
 
-## Partie 3 — Exemples Concrets des Migrations
+Si une abstraction est mauvaise :
+- supprimer,
+- réécrire,
+- casser la compatibilité,
+- repartir proprement.
 
-### 3.1 — Agent : objet → builder
-
-```typescript
-// AVANT
-export default defineAgent("ai.todo-planner", {
-  model: new ChatOpenRouter({ apiKey: "...", model: "gpt-4o-mini" }),
-  systemPrompt: "Tu es un assistant...",
-  tools: [tool1, tool2],
-  maxSteps: 5,
-})
-
-// APRÈS — même pattern que defineOperationFn
-export default defineAgent("ai.todo-planner")
-  .model(new ChatOpenRouter({ apiKey: "...", model: "gpt-4o-mini" }))
-  .systemPrompt("Tu es un assistant...")
-  .tools([tool1, tool2])
-  .maxSteps(5)
-  .handler(async ({ ctx, input }) => {
-    const thread = await ctx.agent.createThread(ctx.thisAgent, { userId: ctx.user?.id })
-    return ctx.agent.generateText(thread, { prompt: input.prompt })
-  })
-```
-
-### 3.2 — DbReadFn : objet → builder
-
-```typescript
-// AVANT
-export default defineDbReadFn({
-  name: "users.active",
-  input: z.object({ days: z.number() }),
-  output: z.array(userSchema),
-  execute: async ({ db, input }) => {
-    return db.$queryRaw`...`
-  },
-})
-
-// APRÈS
-export default defineDbReadFn("users.active")
-  .input(z.object({ days: z.number() }))
-  .output(z.array(userSchema))
-  .handler(async ({ db, input }) => {
-    return db.$queryRaw`...`
-  })
-```
-
-### 3.3 — SearchIndex : objet → builder
-
-```typescript
-// AVANT
-export default defineSearchIndex("Todo", {
-  fields: ["title", "description"],
-  filterFields: ["status"],
-  language: "french",
-})
-
-// APRÈS
-export default defineSearchIndex("Todo")
-  .fields(["title", "description"])
-  .filterFields(["status"])
-  .language("french")
-  .handler(async ({ ctx, query, filters }) => {
-    return ctx.search("Todo", { query, filter: filters })
-  })
-```
-
-### 3.4 — VectorIndex : objet → builder
-
-```typescript
-// AVANT
-export default defineVectorIndex("Product", {
-  vectorField: "embedding",
-  dimensions: 1536,
-  indexType: "hnsw",
-})
-
-// APRÈS
-export default defineVectorIndex("Product")
-  .vectorField("embedding")
-  .dimensions(1536)
-  .indexType("hnsw")
-  .handler(async ({ ctx, vector, filters }) => {
-    return ctx.vectorSearch("Product", { vector, filter: filters })
-  })
-```
-
-### 3.5 — Client : args plats + callables
-
-```typescript
-// AVANT
-const { data } = useAuraQuery(api.todos.list, {
-  input: { status: "PENDING" },
-  params: { page: "1" },
-})
-const create = useAuraMutation(api.todos.create)
-create.mutate({ title: "..." })
-
-// APRÈS
-const data = useQuery(api.todos.list, { status: "PENDING" })
-const create = useMutation(api.todos.create)
-create({ title: "..." })
-```
-
-### 3.6 — Pagination
-
-```typescript
-// AVANT
-const { items, loadMore } = useAuraPaginatedQuery(api.todos.list, { status: "PENDING" })
-
-// APRÈS
-const { items, loadMore } = usePaginatedQuery(api.todos.list, { status: "PENDING" })
-```
-
-### 3.7 — Agent hooks
-
-```typescript
-// AVANT
-const { data: messages } = useAuraAgentThread(threadId)
-const { isStreaming, streamingContent } = useAuraAgentStream(threadId)
-const send = useAuraAgentSend("ai.todo-planner")
-
-// APRÈS
-const { data: messages } = useAgentThread(threadId)
-const { isStreaming, streamingContent } = useAgentStream(threadId)
-const send = useAgentSend("ai.todo-planner")
-```
-
----
-
-## Partie 4 — Plan d'Implémentation
-
-### Phase 1 — Migrer les 4 fonctions objet en builder
-
-Modifier dans l'ordre :
-1. `defineDbReadFn` — le plus simple (input + output + handler)
-2. `defineSearchIndex` — fields, filterFields, language, handler
-3. `defineVectorIndex` — vectorField, dimensions, filterFields, indexType, handler
-4. `defineAgent` — le plus complexe (model, systemPrompt, tools, maxSteps, rag, handler)
-
-### Phase 2 — Client DX
-
-1. Renommer `useAuraQuery` → `useQuery`, args plats
-2. Renommer `useAuraMutation` → `useMutation`, callable directe
-3. Renommer `useAuraPaginatedQuery` → `usePaginatedQuery`
-4. Ajouter `"skip"` support
-5. Renommer les hooks agent
-6. Renommer `AuraClientProvider` → `AuraProvider`
-7. Mettre à jour `client/index.ts`
-8. Mettre à jour `app/routes/todos.tsx` (exemple)
-
-### Phase 3 — Nettoyage
-
-1. Retirer les anciens exports (`useAuraQuery`, `useAuraMutation`, etc.)
-2. Mettre à jour tous les imports dans l'app
-3. Mettre à jour les tests
-4. Mettre à jour la documentation
-5. Mettre à jour le template create-app
+Le but est :
+“Construire un runtime platform extensible sérieux, pas sauver un framework monolithique.”
