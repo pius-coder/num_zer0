@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from '@/aura/client'
 import { api } from '@/aura/_generated/api'
 
@@ -21,6 +21,17 @@ function HomePage() {
         <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
           {data ? `Last checked: ${new Date(data.ts).toLocaleString()}` : 'Hono + TanStack Start + Aura'}
         </p>
+        <div className="flex flex-wrap gap-4">
+          <Link
+            to="/todos"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--sea-ink)] px-5 py-2.5 text-sm font-semibold text-white no-underline shadow-lg transition hover:opacity-90"
+          >
+            Voir les tâches
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
+        </div>
       </section>
     </main>
   )
