@@ -6,15 +6,11 @@ export interface Registry {
   getOperation(name: string): RegisteredAuraOperation | null;
   listOperations(): RegisteredAuraOperation[];
 
-  registerCapability<T>(name: string, capability: T): void;
-  getCapability<T>(name: string): T | undefined;
-
   getClientManifest(): AuraClientManifest;
 }
 
 export class InMemoryRegistry implements Registry {
   private operations = new Map<string, RegisteredAuraOperation>();
-  private capabilities = new Map<string, unknown>();
 
   registerOperation(operation: RegisteredAuraOperation): void {
     if (this.operations.has(operation.name)) {
@@ -30,14 +26,6 @@ export class InMemoryRegistry implements Registry {
 
   listOperations(): RegisteredAuraOperation[] {
     return [...this.operations.values()];
-  }
-
-  registerCapability<T>(name: string, capability: T): void {
-    this.capabilities.set(name, capability);
-  }
-
-  getCapability<T>(name: string): T | undefined {
-    return this.capabilities.get(name) as T | undefined;
   }
 
   getClientManifest(): AuraClientManifest {

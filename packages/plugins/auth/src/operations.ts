@@ -78,7 +78,7 @@ export function createAuthPluginOperations(db: any) {
     .query()
     .auth()
     .handler(async ({ ctx }: any) => {
-      return { user: ctx.session?.user ?? null, session: ctx.session ?? null };
+      return { user: ctx.user ?? null, session: ctx.session ?? null };
     });
 
   return { authRegister, authLogin, authLogout, authMe };

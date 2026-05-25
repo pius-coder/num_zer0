@@ -1,5 +1,5 @@
 import type { AuraPlugin, AuraPluginSetup } from "./plugin";
-import type { AuraContext, ContextExtension } from "./context";
+import type { AuraContext, AuraContextPatch, ContextExtension } from "./context";
 import type { RegisteredAuraOperation } from "./operation";
 import type { AuraConfig } from "./types";
 import { InMemoryRegistry } from "./registry";
@@ -55,7 +55,7 @@ export class AuraRuntimeImpl implements AuraRuntime {
   private registry: Registry;
 
   private routes: RouteEntry[] = [];
-  private contextExtensions = new Map<string, ContextExtension<unknown>>();
+  private contextExtensions: ContextExtension[] = [];
   private manifestExtensions: AuraManifestExtension[] = [];
   private migrations: MigrationEntry[] = [];
   private generators: GeneratorEntry[] = [];
@@ -103,12 +103,15 @@ export class AuraRuntimeImpl implements AuraRuntime {
         userAgent: args.request?.headers.get("user-agent") ?? undefined,
         origin: args.request?.headers.get("origin") ?? undefined,
       },
+      rawRequest: args.request,
       config: this.config,
-      capabilities: {},
+      cookies: { set: [] },
+      session: null,
+      user: null,
     };
 
-    for (const [key, ext] of this.contextExtensions) {
-      baseCtx.capabilities[key] = ext(baseCtx);
+    for (const ext of this.contextExtensions) {
+      this.applyContextPatch(baseCtx, await ext(baseCtx));
     }
 
     return baseCtx;
@@ -124,7 +127,7 @@ export class AuraRuntimeImpl implements AuraRuntime {
   async stop(): Promise<void> {
     this.plugins.clear();
     this.routes = [];
-    this.contextExtensions.clear();
+    this.contextExtensions = [];
     this.manifestExtensions = [];
     this.migrations = [];
     this.generators = [];
@@ -162,8 +165,8 @@ export class AuraRuntimeImpl implements AuraRuntime {
         getRouter: () => null,
       },
       context: {
-        extend: (key, extension) => {
-          this.contextExtensions.set(key, extension as ContextExtension<unknown>);
+        extend: (extension) => {
+          this.contextExtensions.push(extension);
         },
       },
       manifest: {
@@ -192,5 +195,14 @@ export class AuraRuntimeImpl implements AuraRuntime {
         },
       },
     };
+  }
+
+  private applyContextPatch(ctx: AuraContext, patch: AuraContextPatch): void {
+    for (const [key, value] of Object.entries(patch)) {
+      if (key === "requestId" || key === "source" || key === "log" || key === "request" || key === "rawRequest" || key === "config") {
+        throw new Error(`[aura] Plugin context extension cannot override ctx.${key}.`);
+      }
+      (ctx as unknown as Record<string, unknown>)[key] = value;
+    }
   }
 }

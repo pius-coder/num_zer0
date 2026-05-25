@@ -18,7 +18,10 @@ export type {
   AuraOperation, RegisteredAuraOperation,
 } from "./operation";
 
-export type { AuraContext, ContextExtension } from "./context";
+export type {
+  AuraAuthContext, AuraContext, AuraContextBase, AuraContextExtensions, AuraContextPatch,
+  AuraCookieContext, AuraResolvedSession, ContextExtension,
+} from "./context";
 
 export { InMemoryRegistry } from "./registry";
 export type { Registry } from "./registry";

@@ -356,7 +356,7 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 - `cookies.ts` — `parseCookieHeader`, `sessionCookieName`, `csrfCookieName`, `isSecureCookieEnvironment`
 - `csrf.ts` — `createCsrfToken`, `verifyCsrfToken` (Web Crypto API)
 - `operations.ts` — `createAuthPluginOperations(db)` retourne 4 ops (register, login, logout, me)
-- `index.ts` — `createAuthPlugin(config)` : enregistre les ops + expose `auth.resolveSession`
+- `index.ts` — `createAuthPlugin(config)` : enregistre les ops + expose `ctx.auth`, `ctx.session`, `ctx.user`
 
 ### `@aura/storage` — Plugin storage
 - `types.ts` — `AuraStorageDriver`, `AuraStorageUploadArgs/Result`, `AuraStoreArgs/Result`
@@ -368,3 +368,26 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 ### Infrastructure
 - `package.json` — Workspaces étendus à `packages/plugins/*`
 - `tsconfig.base.json` — Paths ajoutés pour `@aura/auth`, `@aura/storage`, `@aura/cron`
+
+---
+
+## 2026-05-25 | Phase 3 DX | Modifié
+
+**Réécriture propre du contexte plugin façon Convex**
+
+### `@aura/core`
+- `context.ts` — Suppression du champ public `ctx.capabilities`
+- `context.ts` — Ajout d'un contexte direct : `ctx.cookies`, `ctx.auth`, `ctx.session`, `ctx.user`, `ctx.rawRequest`
+- `context.ts` — Ajout des types `AuraContextPatch`, `AuraContextExtensions`, `AuraAuthContext`, `AuraCookieContext`, `AuraResolvedSession`
+- `plugin.ts` — `context.extend(key, fn)` remplacé par `context.extend(fn)` où `fn` retourne un patch de contexte
+- `runtime.ts` — Les extensions sont mergées directement dans `ctx`, sans sac générique intermédiaire
+- `runtime.ts` — Protection contre l'écrasement des clés core (`requestId`, `source`, `log`, `request`, `rawRequest`, `config`)
+- `operation.ts` — `.auth()` vérifie maintenant `ctx.session` + `ctx.user`
+- `registry.ts` — Suppression de `registerCapability/getCapability` devenus inutiles
+
+### `@aura/auth`
+- `index.ts` — Le plugin auth résout la session pendant `createContext()` et injecte directement `ctx.auth`, `ctx.session`, `ctx.user`
+- `operations.ts` — `auth.me` retourne maintenant `ctx.user` au lieu d'une propriété inexistante sur `ctx.session`
+
+### `@aura/server-hono`
+- `routes/bridge.ts` — Sérialise les cookies produits par `ctx.cookies.set` en headers `Set-Cookie`

@@ -22,7 +22,7 @@ export interface AuraPluginSetup {
     getRouter(): unknown;
   };
   context: {
-    extend<T>(key: string, extension: ContextExtension<T>): void;
+    extend(extension: ContextExtension): void;
   };
   manifest: {
     extend(data: AuraManifestExtension): void;

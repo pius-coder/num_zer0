@@ -119,7 +119,7 @@ function zodToFieldErrors(error: z.ZodError): Record<string, string[]> {
 }
 
 function ensureAuthenticated(ctx: AuraContext): AuraContext {
-  if (!ctx.capabilities["session"] || !ctx.capabilities["user"]) {
+  if (!ctx.session || !ctx.user) {
     throw new AuraError("UNAUTHORIZED", "Authentication required.");
   }
   return ctx;

@@ -131,6 +131,7 @@ num_zer0/
 
 ### Phase 3 — Plugins Officiels (PLAN.md §Phase 3)
 - [x] Runtime concret `AuraRuntimeImpl` dans `packages/core/src/runtime.ts` ✅
+- [x] Réécriture DX contexte : suppression de `ctx.capabilities`, extensions directes façon Convex (`ctx.auth`, `ctx.session`, `ctx.user`) ✅
 - [x] `@aura/auth` — Extraction auth monolith (password, phone, otp, session, crypto, csrf, cookies, operations) ✅
 - [x] `@aura/storage` — Extraction storage (types, filesystem driver) ✅
 - [x] `@aura/cron` — Types et barrel ✅
@@ -167,7 +168,8 @@ num_zer0/
 | 2026-05-25 | Phase 0: Contrats + packages/core/ + stubs + stripping imports | ✅ | `d566684` |
 | 2026-05-25 | Phase 1: Core Runtime (operation, registry, runner, config) | ✅ | `34055f9` |
 | 2026-05-25 | Phase 2: Adapters (server-hono, prisma, client-react) | ✅ | `da9c3f7` |
-| 2026-05-25 | Phase 3: Plugins (auth, storage, cron) + AuraRuntimeImpl | ✅ | *(courant)* |
+| 2026-05-25 | Phase 3: Plugins (auth, storage, cron) + AuraRuntimeImpl | ✅ | `bf34371` |
+| 2026-05-25 | Phase 3 DX: Contexte direct sans capabilities | ✅ | *(courant)* |
 
 ## Prochaine action
 
@@ -197,6 +199,7 @@ num_zer0/
 | D11 | **NOUVEAU** Prisma = adapter `@aura/prisma`, pas core | Le core ne connaît pas la DB. |
 | D12 | **NOUVEAU** React = adapter `@aura/client-react`, pas core | Le core ne connaît pas le frontend. |
 | D13 | **NOUVEAU** Runner pur = sans observability, sans invalidation, sans broadcast | Les plugins souscrivent aux événements du runtime. |
+| D14 | **NOUVEAU** Contexte direct façon Convex (`ctx.auth`, `ctx.user`, `ctx.storage`) | `ctx.capabilities.*` est supprimé : DX trop verbeuse, extensions propres via `context.extend(() => ({ ... }))`. |
 
 ---
 
