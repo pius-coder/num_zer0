@@ -137,8 +137,8 @@ num_zer0/
 - [x] `@aura/cron` — Types et barrel ✅
 - [x] `@aura/notifications` — Registry, dispatcher, `ctx.notify`, outbox worker ✅
 - [ ] Workflows (`@aura/workflows`)
-- [ ] HTTP Actions (`@aura/http-actions`)
-- [ ] Realtime (`@aura/realtime`)
+- [x] `@aura/http-actions` — Builder, registry, webhook dispatch ✅
+- [x] `@aura/realtime` — Invalidation client, types ✅
 - [x] `@aura/observability` — EventBus, MetricsStore, Logger ✅
 - [ ] Dashboard (`@aura/dashboard`)
 - [ ] AI (`@aura/ai`)
@@ -173,14 +173,14 @@ num_zer0/
 | 2026-05-25 | Phase 3 DX: Contexte direct sans capabilities | ✅ | `9dea029` |
 | 2026-05-25 | Phase 3: Plugin notifications + outbox | ✅ | `780ef26` |
 | 2026-05-25 | Phase 3: Plugin observability (EventBus, Metrics, Logger) | ✅ | *(courant)* |
+| 2026-05-25 | Phase 3: Plugin http-actions (builder, registry) | ✅ | *(courant)* |
+| 2026-05-25 | Phase 3: Plugin realtime (invalidation client) | ✅ | *(courant)* |
 
 ## Prochaine action
 
 **Phase 3 suite — Plugins restants :**
-1. HTTP Actions (`@aura/http-actions`) — webhook dispatch, access control
-2. Realtime (`@aura/realtime`) — WebSocket, broadcast
-3. Dashboard (`@aura/dashboard`) — SPA, introspection API
-4. Workflows (`@aura/workflows`) — attendre la clarification scheduler/resume
+1. Dashboard (`@aura/dashboard`) — SPA, introspection API
+2. Workflows (`@aura/workflows`) — attendre la clarification scheduler/resume
 
 ---
 

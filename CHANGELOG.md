@@ -431,3 +431,33 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 - `packages/aura/src/server/outbox.ts` — Délègue le traitement à `@aura/notifications`
 - `packages/aura/package.json` — Ajout de `@aura/notifications`
 - `tsconfig.base.json` — Paths ajoutés pour `@aura/notifications`
+
+---
+
+## 2026-05-25 | Phase 3 | Ajouté
+
+**Plugin officiel `@aura/realtime`**
+
+### `@aura/realtime`
+- `package.json` / `tsconfig.json` — Nouveau workspace plugin
+- `types.ts` — `WsClient`, `InvalidatePayload`, `PublishInvalidationOptions`
+- `invalidate.ts` — `signInvalidationPayload()`, `publishInvalidation()` (envoi HMAC-signed POST au broadcast server)
+- `index.ts` — Barrel exports
+
+### Intégration monolithe
+- `invalidate.ts` — Ré-exporte `signInvalidationPayload`, `publishInvalidation` depuis `@aura/realtime`
+- `packages/aura/package.json` — Ajout de `@aura/realtime`
+- `tsconfig.base.json` — Paths ajoutés pour `@aura/realtime`
+
+**Plugin officiel `@aura/http-actions`**
+
+### `@aura/http-actions`
+- `package.json` / `tsconfig.json` — Nouveau workspace plugin
+- `types.ts` — `HttpMethod`, `HttpAccess`, `HttpActionDefinition<TCtx>` types
+- `builder.ts` — `defineHttpAction()` builder pattern, registry, `listHttpActions()`
+- `index.ts` — Barrel exports
+
+### Intégration monolithe
+- `http-action.ts` — Ré-exporte `defineHttpAction`, `listHttpActions` depuis `@aura/http-actions`, conserve `runHttpAction` local
+- `packages/aura/package.json` — Ajout de `@aura/http-actions`
+- `tsconfig.base.json` — Paths ajoutés pour `@aura/http-actions`

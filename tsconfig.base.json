@@ -42,7 +42,11 @@
       "@aura/notifications": ["./packages/plugins/notifications/src/index.ts"],
       "@aura/notifications/*": ["./packages/plugins/notifications/src/*"],
       "@aura/observability": ["./packages/plugins/observability/src/index.ts"],
-      "@aura/observability/*": ["./packages/plugins/observability/src/*"]
+      "@aura/observability/*": ["./packages/plugins/observability/src/*"],
+      "@aura/http-actions": ["./packages/plugins/http-actions/src/index.ts"],
+      "@aura/http-actions/*": ["./packages/plugins/http-actions/src/*"],
+      "@aura/realtime": ["./packages/plugins/realtime/src/index.ts"],
+      "@aura/realtime/*": ["./packages/plugins/realtime/src/*"]
     }
   }
 }
