@@ -1,6 +1,6 @@
 import { defineOperationFn } from "@/aura/server/operation";
 import { z } from "zod";
-import { AuraError } from "@/aura/core/errors";
+import { TodoService } from "@/operations/_services/todo-service";
 
 export default defineOperationFn("todos.update")
   .mutate()
@@ -17,19 +17,5 @@ export default defineOperationFn("todos.update")
   .entities(["Todo"])
   .public()
   .handler(async ({ ctx, input }) => {
-    const { id, dueDate, ...rest } = input;
-    const existing = await ctx.db.todo.findUnique({ where: { id } });
-    if (!existing) throw new AuraError("NOT_FOUND", "Tâche introuvable.");
-
-    const todo = await ctx.db.todo.update({
-      where: { id },
-      data: {
-        ...rest,
-        ...(dueDate !== undefined && { dueDate: dueDate ? new Date(dueDate) : null }),
-      },
-    });
-
-    ctx.invalidate({ entity: "Todo", id });
-    ctx.bump.success("Tâche mise à jour", todo.title);
-    return todo;
+    return new TodoService(ctx).update(input);
   });

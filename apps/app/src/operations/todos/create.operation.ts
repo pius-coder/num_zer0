@@ -1,5 +1,6 @@
 import { defineOperationFn } from "@/aura/server/operation";
 import { z } from "zod";
+import { TodoService } from "@/operations/_services/todo-service";
 
 export default defineOperationFn("todos.create")
   .mutate()
@@ -15,15 +16,5 @@ export default defineOperationFn("todos.create")
   .entities(["Todo"])
   .public()
   .handler(async ({ ctx, input }) => {
-    const todo = await ctx.db.todo.create({
-      data: {
-        title: input.title,
-        description: input.description,
-        priority: input.priority,
-        dueDate: input.dueDate ? new Date(input.dueDate) : null,
-        aiGenerated: input.aiGenerated,
-      },
-    });
-    ctx.bump.success("Tâche créée", todo.title);
-    return todo;
+    return new TodoService(ctx).create(input);
   });

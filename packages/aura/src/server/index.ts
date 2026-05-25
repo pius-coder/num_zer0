@@ -17,6 +17,7 @@ export { defineVectorIndex, vectorSearch, getVectorIndex, generateVectorIndexSQL
 export { defineWorkflow, startWorkflow, executeWorkflowRun, getWorkflow } from "@aura/workflows";
 export { createAuraScheduler } from "@aura/workflows";
 export { defineCronFn, getCronJob, runAuraCron } from "./cron";
+export { AuraService } from "./service";
 export { defineOperationFn, defineCommonFn } from "./operation";
 export {
   registerOperation,

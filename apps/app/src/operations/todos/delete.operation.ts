@@ -1,5 +1,6 @@
 import { defineOperationFn } from "@/aura/server/operation";
 import { z } from "zod";
+import { TodoService } from "@/operations/_services/todo-service";
 
 export default defineOperationFn("todos.delete")
   .mutate()
@@ -7,7 +8,5 @@ export default defineOperationFn("todos.delete")
   .entities(["Todo"])
   .public()
   .handler(async ({ ctx, input }) => {
-    await ctx.db.todo.delete({ where: { id: input.id } });
-    ctx.bump.success("Tâche supprimée");
-    return { ok: true };
+    return new TodoService(ctx).delete(input);
   });

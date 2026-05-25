@@ -7,7 +7,12 @@ export type { AuraBump, AuraBumpVariant, AuraSuccessEnvelope, AuraErrorEnvelope,
 export type {
   AuraSource, OperationType, OperationAccess, EntityTag,
   AuraLogger, AuraConfig, AuraRequestMetadata, AuraCookieMutation,
-  OperationRef, InferOperationInput, InferOperationOutput, AuraSessionData,
+  OperationRef, InferOperationInput, InferOperationOutput,
+  AuraSessionData, AuraAuthContext, AuraResolvedSession,
+  AuraBumpStore, AuraAuditContext,
+  PrismaReadOnlyClient, AuraScheduler,
+  AgentRef, AgentThreadRef, AuraAgent,
+  BaseAuraContext, AuraQueryContext, AuraMutationContext, AuraActionContext,
 } from "./types";
 
 export {
@@ -19,8 +24,8 @@ export type {
 } from "./operation";
 
 export type {
-  AuraAuthContext, AuraContext, AuraContextBase, AuraContextExtensions, AuraContextPatch,
-  AuraCookieContext, AuraResolvedSession, ContextExtension,
+  AuraContext, AuraContextBase, AuraContextExtensions, AuraContextPatch,
+  AuraCookieContext, ContextExtension,
 } from "./context";
 
 export { InMemoryRegistry } from "./registry";

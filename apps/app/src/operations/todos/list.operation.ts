@@ -1,5 +1,6 @@
 import { defineOperationFn } from "@/aura/server/operation";
 import { z } from "zod";
+import { TodoService } from "@/operations/_services/todo-service";
 
 export default defineOperationFn("todos.list")
   .query()
@@ -15,21 +16,5 @@ export default defineOperationFn("todos.list")
   .entities(["Todo"])
   .public()
   .handler(async ({ ctx, input }) => {
-    return ctx.paginate(ctx.db.todo, {
-      where: {
-        ...(input.status && { status: input.status }),
-        ...(input.priority && { priority: input.priority }),
-        ...(input.search && {
-          OR: [
-            { title: { contains: input.search, mode: "insensitive" as const } },
-            { description: { contains: input.search, mode: "insensitive" as const } },
-          ],
-        }),
-      },
-      cursor: input.cursor ?? undefined,
-      take: input.numItems,
-      orderBy: "createdAt",
-      direction: "desc",
-      operationHash: "todos.list",
-    });
+    return new TodoService(ctx).list(input);
   });

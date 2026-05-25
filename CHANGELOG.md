@@ -5,7 +5,13 @@
 
 ---
 
-## 2026-05-24 | Phase 0 | Ajouté
+## 2026-05-25 | Phase 0 | Ajouté
+
+**Backport pattern AuraService depuis luminous + migration ops todos**
+- Ajouté `AuraAuthContext`, `AuraResolvedSession`, `AuraBumpStore`, `AuraAuditContext`, `PrismaReadOnlyClient`, `AuraScheduler`, `AgentRef`, `AgentThreadRef`, `AuraAgent`, `BaseAuraContext`, `AuraQueryContext`, `AuraMutationContext`, `AuraActionContext` dans `packages/core/src/types.ts`
+- Créé `AuraService` base class dans `packages/aura/src/server/service.ts` (13 getters + 5 méthodes délégation)
+- Créé `TodoService extends AuraService` dans `apps/app/src/operations/_services/todo-service.ts` (6 méthodes métier)
+- Migré les 6 opérations todos en thin handlers (list, create, update, delete, toggle, ai-generate)
 
 **Système de tracking pour reprise de contexte**
 

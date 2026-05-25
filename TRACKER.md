@@ -7,7 +7,7 @@
 
 ## Resume Session (lecture obligatoire après reset)
 
-**Projet :** Aura — **plateforme runtime modulaire** en monorepo Bun. Restructuration d'un framework monolithique en core minimal + plugins.
+**Projet :** Aura — **plateforme runtime modulaire** en monorepo Bun. Restructuration d'un framework monolithique en core minimal + plugins. Pattern `AuraService` backporté depuis la branche `feat/landing-luminous` de `aura_stack`.
 
 **Structure actuelle :** `packages/aura/` = monolithe `@aura-js/core` (server, client, ui, core, cli).
 **Structure cible :** `packages/core/` + `packages/server-hono/` + `packages/client-react/` + `packages/prisma/` + `packages/cli/` + `packages/ui/` + `packages/plugins/*`.
@@ -18,6 +18,7 @@
 - Chaque feature devient un plugin indépendant (`@aura/auth`, `@aura/storage`, `@aura/dashboard`, etc.)
 - Hono, Prisma, React deviennent des adapters optionnels
 - Les plugins officiels ET communautaires utilisent EXACTEMENT le même contrat `AuraPlugin`
+- `AuraService` = classe base pour la logique métier (pattern luminous backporté)
 
 **Dernier commit :** `304d91a` "docs: add architectural audit"
 **PLAN.md a été renommé PROMPT.md** (contient le prompt architecte original) et remplacé par un plan d'exécution complet.
@@ -202,6 +203,9 @@ num_zer0/
 | D12 | **NOUVEAU** React = adapter `@aura/client-react`, pas core | Le core ne connaît pas le frontend. |
 | D13 | **NOUVEAU** Runner pur = sans observability, sans invalidation, sans broadcast | Les plugins souscrivent aux événements du runtime. |
 | D14 | **NOUVEAU** Contexte direct façon Convex (`ctx.auth`, `ctx.user`, `ctx.storage`) | `ctx.capabilities.*` est supprimé : DX trop verbeuse, extensions propres via `context.extend(() => ({ ... }))`. |
+
+| D15 | **NOUVEAU** `AuraService` = classe base pour la logique métier (backporté de luminous) | Les operations deviennent des thin handlers qui délèguent à `new Service(ctx).method()`. `AuraService` wrappe toutes les propriétés du contexte via des getters (`this.db`, `this.user`, `this.agent`, etc.). |
+| D16 | **NOUVEAU** Per-primitive context types (`AuraQueryContext`, `AuraMutationContext`, `AuraActionContext`) importés dans `packages/core/src/types.ts` | Narrowing type-safe du DB access par type d'opération. |
 
 ---
 
