@@ -391,3 +391,25 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 ### `@aura/server-hono`
 - `routes/bridge.ts` — Sérialise les cookies produits par `ctx.cookies.set` en headers `Set-Cookie`
+
+---
+
+## 2026-05-25 | Phase 3 | Ajouté
+
+**Plugin officiel `@aura/notifications`**
+
+### `@aura/notifications`
+- `package.json` / `tsconfig.json` — Nouveau workspace plugin
+- `types.ts` — `NotificationHandler`, `AuraNotificationDefinition`, `NotificationDispatcher`, types outbox
+- `registry.ts` — `defineNotificationFn()`, `hasNotification()` et registry singleton
+- `dispatcher.ts` — `createNotificationDispatcher(ctxFactory)`
+- `outbox.ts` — `processOutboxEvents({ db, createContext, batchSize })`
+- `index.ts` — `createNotificationsPlugin()` injecte directement `ctx.notify`
+
+### Intégration monolithe
+- `packages/aura/src/server/create-context.ts` — Utilise `createNotificationDispatcher` depuis `@aura/notifications`
+- `packages/aura/src/server/context.ts` — Type `NotificationDispatcher` importé depuis `@aura/notifications`
+- `packages/aura/src/server/auth/notifications.ts` — `defineNotificationFn` importé depuis `@aura/notifications`
+- `packages/aura/src/server/outbox.ts` — Délègue le traitement à `@aura/notifications`
+- `packages/aura/package.json` — Ajout de `@aura/notifications`
+- `tsconfig.base.json` — Paths ajoutés pour `@aura/notifications`

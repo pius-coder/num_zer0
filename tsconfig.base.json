@@ -38,7 +38,9 @@
       "@aura/storage": ["./packages/plugins/storage/src/index.ts"],
       "@aura/storage/*": ["./packages/plugins/storage/src/*"],
       "@aura/cron": ["./packages/plugins/cron/src/index.ts"],
-      "@aura/cron/*": ["./packages/plugins/cron/src/*"]
+      "@aura/cron/*": ["./packages/plugins/cron/src/*"],
+      "@aura/notifications": ["./packages/plugins/notifications/src/index.ts"],
+      "@aura/notifications/*": ["./packages/plugins/notifications/src/*"]
     }
   }
 }

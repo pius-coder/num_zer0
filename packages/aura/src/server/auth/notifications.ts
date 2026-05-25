@@ -1,11 +1,12 @@
 
 
 import { AuraError } from "@/aura/core/errors";
-import { defineNotificationFn } from "../notifications";
+import { defineNotificationFn } from "@aura/notifications";
 import { toPrismaJson } from "../json";
 import { authPhoneOtpNotificationSchema } from "@/aura/shared/notification-schemas";
+import type { AuraContext } from "../context";
 
-export const authPhoneOtpNotification = defineNotificationFn("auth.phoneOtp")
+export const authPhoneOtpNotification = defineNotificationFn<AuraContext>("auth.phoneOtp")
   .payload(authPhoneOtpNotificationSchema)
   .handler(async ({ ctx, payload }) => {
     await deliverOtp(ctx, payload);

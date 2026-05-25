@@ -135,6 +135,7 @@ num_zer0/
 - [x] `@aura/auth` — Extraction auth monolith (password, phone, otp, session, crypto, csrf, cookies, operations) ✅
 - [x] `@aura/storage` — Extraction storage (types, filesystem driver) ✅
 - [x] `@aura/cron` — Types et barrel ✅
+- [x] `@aura/notifications` — Registry, dispatcher, `ctx.notify`, outbox worker ✅
 - [ ] Workflows (`@aura/workflows`)
 - [ ] HTTP Actions (`@aura/http-actions`)
 - [ ] Realtime (`@aura/realtime`)
@@ -169,16 +170,17 @@ num_zer0/
 | 2026-05-25 | Phase 1: Core Runtime (operation, registry, runner, config) | ✅ | `34055f9` |
 | 2026-05-25 | Phase 2: Adapters (server-hono, prisma, client-react) | ✅ | `da9c3f7` |
 | 2026-05-25 | Phase 3: Plugins (auth, storage, cron) + AuraRuntimeImpl | ✅ | `bf34371` |
-| 2026-05-25 | Phase 3 DX: Contexte direct sans capabilities | ✅ | *(courant)* |
+| 2026-05-25 | Phase 3 DX: Contexte direct sans capabilities | ✅ | `9dea029` |
+| 2026-05-25 | Phase 3: Plugin notifications + outbox | ✅ | *(courant)* |
 
 ## Prochaine action
 
 **Phase 3 suite — Plugins restants :**
-1. Workflows (`@aura/workflows`) — step/sleep persistence, resume, scheduler
-2. HTTP Actions (`@aura/http-actions`) — webhook dispatch, access control
+1. HTTP Actions (`@aura/http-actions`) — webhook dispatch, access control
+2. Observability (`@aura/observability`) — EventBus, metrics, export
 3. Realtime (`@aura/realtime`) — WebSocket, broadcast
 4. Dashboard (`@aura/dashboard`) — SPA, introspection API
-5. Observability (`@aura/observability`) — EventBus, metrics, export
+5. Workflows (`@aura/workflows`) — attendre la clarification scheduler/resume
 6. Migrer les routes Hono du monolithe (files, health, internal) vers les plugins correspondants
 
 ---

@@ -83,6 +83,7 @@
       "name": "@aura-js/core",
       "version": "0.1.0",
       "dependencies": {
+        "@aura/notifications": "workspace:*",
         "@aws-sdk/client-s3": "^3.1046.0",
         "@base-ui/react": "^1.4.1",
         "@hono/node-server": "^1.13.2",
@@ -180,6 +181,17 @@
         "typescript": "^6.0.2",
       },
     },
+    "packages/plugins/notifications": {
+      "name": "@aura/notifications",
+      "version": "0.0.0",
+      "dependencies": {
+        "@aura/core": "workspace:*",
+        "zod": "^3.25.76",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
     "packages/plugins/storage": {
       "name": "@aura/storage",
       "version": "0.0.0",
@@ -249,6 +261,8 @@
     "@aura/core": ["@aura/core@workspace:packages/core"],
 
     "@aura/cron": ["@aura/cron@workspace:packages/plugins/cron"],
+
+    "@aura/notifications": ["@aura/notifications@workspace:packages/plugins/notifications"],
 
     "@aura/prisma": ["@aura/prisma@workspace:packages/prisma"],
 

@@ -6,7 +6,7 @@ import type { AuraContext, AuraSource } from "./context";
 import type { OperationRef } from "@/aura/core/types";
 import { createAuraLogger } from "./logger";
 import { createBumpStore } from "./bump";
-import { createNotificationDispatcher } from "./notifications";
+import { createNotificationDispatcher } from "@aura/notifications";
 import { resolveSessionFromRequest } from "./auth/session";
 import {
   sessionCookieName,

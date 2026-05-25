@@ -17,7 +17,7 @@ import type {
   InferOperationOutput,
   AuraAgent,
 } from "@/aura/core/types";
-import type { NotificationDispatcher } from "./notifications";
+import type { NotificationDispatcher } from "@aura/notifications";
 import type { AuraStorage } from "./storage/types";
 
 export type { AuraLogger, AuraSessionData, AuraSource };
