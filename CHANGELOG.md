@@ -263,9 +263,23 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 - `PLAN_THEMATIQUE.md` — Réécrit avec les 5 thèmes de la nouvelle architecture (Core, Adapters, Plugins, CLI, Architecture finale).
 - `TRACKER.md` — Mis à jour avec la nouvelle direction, les nouveaux phases, les décisions D8-D13.
 
-**Changement de direction :**
-- **Ancien :** Framework full-stack monolithique `@aura-js/core` avec toutes les features intégrées.
-- **Nouveau :** Plateforme runtime modulaire avec `@aura/core` (minimal) + plugins + adapters.
-- Contrat central : `AuraPlugin` — même mécanisme pour plugins officiels et communautaires.
-- Hono, Prisma, React deviennent des adapters optionnels, pas le socle du core.
-- Breaking changes volontaires et assumés : pas de wrappers legacy, pas d'aliases temporaires.
+---
+
+## 2026-05-25 | Phase 0 | Ajouté/Modifié
+
+**Contrats stables `@aura/core` + structure monorepo cible**
+
+- `packages/core/` — Nouveau package avec les contrats types-only :
+  - `src/plugin.ts` — `AuraPlugin`, `AuraPluginSetup` interfaces
+  - `src/runtime.ts` — `AuraRuntime` interface
+  - `src/context.ts` — `AuraContext` minimal + `ContextExtension` pattern
+  - `src/operation.ts` — `AuraOperation`, `RegisteredAuraOperation`
+  - `src/registry.ts` — `Registry` interface (operations + capabilities)
+  - `src/manifest.ts` — Manifest types (copied from `shared/manifest.ts`)
+  - `src/errors.ts` — `AuraError` (copied from `core/errors.ts`, zero deps)
+  - `src/envelope.ts` — `AuraEnvelope` (copied from `core/envelope.ts`)
+  - `src/types.ts` — Utility types (AuraSource, AuraLogger, AuraConfig, etc.)
+  - `src/index.ts` — Barrel export
+- Stubs créés : `server-hono/`, `client-react/`, `prisma/`, `cli/`, `plugins/`
+- `packages/aura/src/core/types.ts` — Supprimé les imports `@/generated/prisma/client`, remplacé PrismaClient/AuraUser/NotificationDispatcher/AuraStorage par des interfaces minimales locales
+- `tsconfig.base.json` — Ajout des paths `@aura/core`, `@aura/server-hono`, `@aura/client-react`, `@aura/prisma`, `@aura/cli`

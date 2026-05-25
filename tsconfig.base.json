@@ -22,7 +22,17 @@
       "@aura-js/core/*": ["./packages/aura/src/*"],
       "@/aura/_generated/*": ["./apps/app/src/aura/_generated/*"],
       "@/aura/*": ["./packages/aura/src/*"],
-      "@/*": ["./apps/app/src/*"]
+      "@/*": ["./apps/app/src/*"],
+      "@aura/core": ["./packages/core/src/index.ts"],
+      "@aura/core/*": ["./packages/core/src/*"],
+      "@aura/server-hono": ["./packages/server-hono/src/index.ts"],
+      "@aura/server-hono/*": ["./packages/server-hono/src/*"],
+      "@aura/client-react": ["./packages/client-react/src/index.ts"],
+      "@aura/client-react/*": ["./packages/client-react/src/*"],
+      "@aura/prisma": ["./packages/prisma/src/index.ts"],
+      "@aura/prisma/*": ["./packages/prisma/src/*"],
+      "@aura/cli": ["./packages/cli/src/index.ts"],
+      "@aura/cli/*": ["./packages/cli/src/*"]
     }
   }
 }

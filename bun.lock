@@ -115,6 +115,55 @@
         "vitest": "^4.1.5",
       },
     },
+    "packages/cli": {
+      "name": "@aura/cli",
+      "version": "0.0.0",
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
+    "packages/client-react": {
+      "name": "@aura/client-react",
+      "version": "0.0.0",
+      "dependencies": {
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
+    "packages/core": {
+      "name": "@aura/core",
+      "version": "0.0.0",
+      "dependencies": {
+        "zod": "^3.25.76",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
+    "packages/prisma": {
+      "name": "@aura/prisma",
+      "version": "0.0.0",
+      "dependencies": {
+        "@prisma/client": "^7",
+      },
+      "devDependencies": {
+        "prisma": "^7",
+        "typescript": "^6.0.2",
+      },
+    },
+    "packages/server-hono": {
+      "name": "@aura/server-hono",
+      "version": "0.0.0",
+      "dependencies": {
+        "hono": "^4.12.18",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
   },
   "packages": {
     "@acemir/cssom": ["@acemir/cssom@0.9.31", "", {}, "sha512-ZnR3GSaH+/vJ0YlHau21FjfLYjMpYVIzTD8M8vIEQvIGxeOXyXdzCI140rrCY862p/C/BbzWsjc1dgnM9mkoTA=="],
@@ -138,6 +187,16 @@
     "@aura-js/app": ["@aura-js/app@workspace:apps/app"],
 
     "@aura-js/core": ["@aura-js/core@workspace:packages/aura"],
+
+    "@aura/cli": ["@aura/cli@workspace:packages/cli"],
+
+    "@aura/client-react": ["@aura/client-react@workspace:packages/client-react"],
+
+    "@aura/core": ["@aura/core@workspace:packages/core"],
+
+    "@aura/prisma": ["@aura/prisma@workspace:packages/prisma"],
+
+    "@aura/server-hono": ["@aura/server-hono@workspace:packages/server-hono"],
 
     "@aws-crypto/crc32": ["@aws-crypto/crc32@5.2.0", "", { "dependencies": { "@aws-crypto/util": "^5.2.0", "@aws-sdk/types": "^3.222.0", "tslib": "^2.6.2" } }, "sha512-nLbCWqQNgUiwwtFsen1AdzAtvuLRsQS8rYgMuxCrdKf9kOssamGLuPwyTY9wyYblNr9+1XM8v6zoDTPPSIeANg=="],
 

@@ -1,16 +1,4 @@
-/**
- * Aura core types.
- *
- * Pure, side-effect-free type definitions shared by both the server runtime
- * and the client transport. This module MUST NOT import any server-only
- * runtime modules; only `import type` references are permitted so that the
- * file is safe to bundle into a client chunk.
- */
-
-import type { PrismaClient, AuraUser } from "@/generated/prisma/client";
 import type { AuraBump, AuraBumpVariant } from "@/aura/core/envelope";
-import type { AuraStorage } from "@/aura/server/storage/types";
-import type { NotificationDispatcher } from "@/aura/server/notifications";
 
 // ---------------------------------------------------------------------------
 // Operation references (typed `api` object surface — see Decision 14)
@@ -114,15 +102,10 @@ export interface AuraRequestMetadata {
   countryCode?: string;
 }
 
-/**
- * Read-only Prisma client surface used by query handlers.
- *
- * At the type level, this currently aliases the full `PrismaClient`. The
- * runtime Proxy that throws `AuraError("INTERNAL_ERROR", ...)` on write
- * methods, plus a precise structural type that excludes write methods at
- * compile time, is implemented in task 7.3 (`server/db-readonly.ts`).
- */
-export type PrismaReadOnlyClient = PrismaClient;
+export type PrismaReadOnlyClient = {
+  [key: string]: unknown;
+  $transaction: unknown;
+};
 
 /**
  * Scheduler primitive (Decision 13). The runtime implementation lives in
@@ -218,9 +201,9 @@ export interface AuraAgent {
  */
 export interface BaseAuraContext {
   session: AuraSessionData | null;
-  user: AuraUser | null;
+  user: unknown;
   auth: AuraAuthContext;
-  notify: NotificationDispatcher;
+  notify: { send: (channel: string, data: unknown) => Promise<void> };
   bump: AuraBumpStore;
   log: AuraLogger;
   audit: AuraAuditContext;
@@ -251,7 +234,7 @@ export interface AuraQueryContext extends BaseAuraContext {
  * `fetch`, no third-party SDKs); use `.action()` for that.
  */
 export interface AuraMutationContext extends BaseAuraContext {
-  db: PrismaClient;
+  db: Record<string, unknown> & { $transaction: unknown };
   runQuery<TRef extends OperationRef<"query">>(
     ref: TRef,
     input: InferOperationInput<TRef>,
@@ -289,7 +272,7 @@ export interface AuraActionContext extends BaseAuraContext {
     input: InferOperationInput<TRef>,
   ): Promise<InferOperationOutput<TRef>>;
   scheduler: AuraScheduler;
-  storage: AuraStorage;
+  storage: { get: (key: string) => Promise<unknown>; set: (key: string, value: unknown) => Promise<void>; delete: (key: string) => Promise<void> };
   /** Explicit fetch surface — actions own their external I/O. */
   fetch: typeof globalThis.fetch;
 }

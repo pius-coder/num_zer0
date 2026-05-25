@@ -1,0 +1,13 @@
+{
+  "name": "@aura/prisma",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^7"
+  },
+  "devDependencies": {
+    "prisma": "^7",
+    "typescript": "^6.0.2"
+  }
+}

@@ -95,15 +95,17 @@ num_zer0/
 > Les anciens thèmes (Split Déploiement, Dashboard, Hono, Standardisation DX) sont terminés ou intégrés dans la nouvelle architecture. Voir CHANGELOG.md pour l'historique.
 
 ### Phase 0 — Contrats & Fondations (PLAN.md §Phase 0)
-- [ ] Définir `AuraPlugin` contract dans `packages/core/src/plugin.ts`
-- [ ] Définir `AuraRuntime` dans `packages/core/src/runtime.ts`
-- [ ] Définir `AuraContext` minimal + `ContextExtension` pattern
-- [ ] Définir `AuraOperation`, `Registry`, `Manifest` types stables
-- [ ] Définir `AuraError`, `Envelope` types stables
-- [ ] Créer structure `packages/core/`
-- [ ] Supprimer tout import `@/generated/prisma/client` du core
-- [ ] Supprimer tout import React du core
-- [ ] Supprimer tout import Hono du core
+- [x] Définir `AuraPlugin` contract dans `packages/core/src/plugin.ts` ✅
+- [x] Définir `AuraRuntime` dans `packages/core/src/runtime.ts` ✅
+- [x] Définir `AuraContext` minimal + `ContextExtension` pattern ✅
+- [x] Définir `AuraOperation`, `Registry`, `Manifest` types stables ✅
+- [x] Définir `AuraError`, `Envelope` types stables ✅
+- [x] Créer structure `packages/core/` ✅
+- [x] Créer stubs `packages/server-hono/`, `client-react/`, `prisma/`, `cli/`, `plugins/` ✅
+- [x] Supprimer tout import `@/generated/prisma/client` du core ✅
+- [x] Supprimer tout import React du core (aucun dans core/) ✅
+- [x] Supprimer tout import Hono du core (aucun dans core/) ✅
+- [x] Mettre à jour `tsconfig.base.json` avec les paths des nouveaux packages ✅
 
 ### Phase 1 — Core Runtime (PLAN.md §Phase 1)
 - [ ] Migrer `operation.ts` → `packages/core/src/operation.ts`
@@ -150,15 +152,18 @@ num_zer0/
 | 2026-05-24 | Phase 0-5: Monorepo setup + features MVP | ✅ | Historique |
 | 2026-05-25 | Thème 3: Auth middleware Hono (internal secret, api key) | ✅ | `301afb3` |
 | 2026-05-25 | Docs: Audit architectural complet (audit.md) | ✅ | `304d91a` |
-| 2026-05-25 | Docs: Restructuration — PROMPT.md, PLAN.md, PLAN_THEMATIQUE.md, TRACKER.md | 🚧 | *(courant)* |
+| 2026-05-25 | Docs: Restructuration — PROMPT.md, PLAN.md, PLAN_THEMATIQUE.md, TRACKER.md | ✅ | `4043016` |
+| 2026-05-25 | Phase 0: Contrats + packages/core/ + stubs + stripping imports | 🚧 | *(courant)* |
 
 ## Prochaine action
 
-**Phase 0 — Définir les contrats stables :**
-1. Créer `packages/core/` avec les interfaces `AuraPlugin`, `AuraRuntime`, `AuraContext`
-2. Définir les types stables : Operation, Registry, Manifest, Error, Envelope
-3. Supprimer les imports app-specific (Prisma, React, Hono) du core
-4. Valider que le core peut compiler sans dépendances lourdes
+**Phase 1 — Core Runtime :**
+1. Migrer `operation.ts` → `packages/core/` avec le builder réel (zod, validation)
+2. Migrer `registry.ts` → `packages/core/` (registry de capabilities unifié)
+3. Migrer `runner.ts` → `packages/core/` (runner pur, sans observability)
+4. Migrer `errors.ts`, `envelope.ts` → `packages/core/` (déjà copiés)
+5. Créer `config.ts` — config loader + validation plugin
+6. Créer `manifest.ts` — manifest builder depuis registry
 
 ---
 
