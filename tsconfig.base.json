@@ -32,7 +32,13 @@
       "@aura/prisma": ["./packages/prisma/src/index.ts"],
       "@aura/prisma/*": ["./packages/prisma/src/*"],
       "@aura/cli": ["./packages/cli/src/index.ts"],
-      "@aura/cli/*": ["./packages/cli/src/*"]
+      "@aura/cli/*": ["./packages/cli/src/*"],
+      "@aura/auth": ["./packages/plugins/auth/src/index.ts"],
+      "@aura/auth/*": ["./packages/plugins/auth/src/*"],
+      "@aura/storage": ["./packages/plugins/storage/src/index.ts"],
+      "@aura/storage/*": ["./packages/plugins/storage/src/*"],
+      "@aura/cron": ["./packages/plugins/cron/src/index.ts"],
+      "@aura/cron/*": ["./packages/plugins/cron/src/*"]
     }
   }
 }

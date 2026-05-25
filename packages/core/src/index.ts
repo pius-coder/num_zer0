@@ -34,4 +34,5 @@ export { coreRunOperation } from "./runner";
 export type { CoreRunOptions } from "./runner";
 
 export type { AuraPlugin, AuraPluginSetup } from "./plugin";
+export { AuraRuntimeImpl } from "./runtime";
 export type { AuraRuntime } from "./runtime";

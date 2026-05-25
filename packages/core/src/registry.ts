@@ -8,6 +8,8 @@ export interface Registry {
 
   registerCapability<T>(name: string, capability: T): void;
   getCapability<T>(name: string): T | undefined;
+
+  getClientManifest(): AuraClientManifest;
 }
 
 export class InMemoryRegistry implements Registry {

@@ -331,3 +331,40 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 - `db-readonly.ts` — `createReadOnlyDb(client)` Proxy qui bloque les écritures (whitelist reads)
 - `pagination.ts` — `paginate()`, `encodeCursor`, `decodeCursor` (cursor base64url, web API compatible)
 - `json.ts` — `toPrismaJson(value)` (BigInt → string, Error → message/stack, récursif)
+
+---
+
+## 2026-05-25 | Phase 3 | Ajouté
+
+**Runtime concret + plugins officiels (auth, storage, cron)**
+
+### `@aura/core` — Runtime concret
+- `runtime.ts` — `AuraRuntimeImpl` class implémente `AuraRuntime` :
+  - `registerPlugin()` + `start()` appelle `setup()` sur chaque plugin
+  - `createContext()` construit le contexte avec extensions via `context.extend()`
+  - Gestion des routes, migrations, générateurs, permissions, événements
+  - `getClientManifest()`, `getPluginRoutes()`, `getPluginMigrations()`
+- `registry.ts` — `getClientManifest()` ajouté à l'interface `Registry`
+- `index.ts` — Exporte `AuraRuntimeImpl`
+
+### `@aura/auth` — Plugin auth complet
+- `password.ts` — `validatePassword`, `hashPassword` (bcryptjs), `verifyPassword`
+- `phone.ts` — `normalizePhone` (libphonenumber-js)
+- `otp.ts` — `createOtpChallenge`, `consumeOtpChallenge` (HMAC code, $transaction)
+- `session.ts` — `resolveSessionFromRequest`, `createSession`, `revokeSession`, `revokeAllUserSessions`
+- `crypto.ts` — `randomToken`, `randomNumericCode`, `sha256`, `hmacSha256`, `secureCompare`, `getAuraSecret`, `hashToken`, `hashOtpCode`
+- `cookies.ts` — `parseCookieHeader`, `sessionCookieName`, `csrfCookieName`, `isSecureCookieEnvironment`
+- `csrf.ts` — `createCsrfToken`, `verifyCsrfToken` (Web Crypto API)
+- `operations.ts` — `createAuthPluginOperations(db)` retourne 4 ops (register, login, logout, me)
+- `index.ts` — `createAuthPlugin(config)` : enregistre les ops + expose `auth.resolveSession`
+
+### `@aura/storage` — Plugin storage
+- `types.ts` — `AuraStorageDriver`, `AuraStorageUploadArgs/Result`, `AuraStoreArgs/Result`
+- `filesystem.ts` — `filesystemDriver` (écriture disque, data URL, path traversal protection)
+
+### `@aura/cron` — Types cron
+- `index.ts` — `AuraCronJob`, `RunAuraCronResult`
+
+### Infrastructure
+- `package.json` — Workspaces étendus à `packages/plugins/*`
+- `tsconfig.base.json` — Paths ajoutés pour `@aura/auth`, `@aura/storage`, `@aura/cron`

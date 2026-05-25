@@ -1,7 +1,11 @@
 {
   "name": "num_zer0",
   "private": true,
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": ["packages/*", "packages/plugins/*", "apps/*"],
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/node": "^25.9.1"
+  },
   "scripts": {
     "dev": "bun run --filter @aura-js/app dev",
     "build": "bun run --filter @aura-js/core build && bun run --filter @aura-js/app build",

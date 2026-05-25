@@ -130,9 +130,10 @@ num_zer0/
   - `hydration-boundary.tsx` — `AuraHydrationBoundary`
 
 ### Phase 3 — Plugins Officiels (PLAN.md §Phase 3)
-- [ ] Auth (`@aura/auth`)
-- [ ] Storage (`@aura/storage`)
-- [ ] Cron (`@aura/cron`)
+- [x] Runtime concret `AuraRuntimeImpl` dans `packages/core/src/runtime.ts` ✅
+- [x] `@aura/auth` — Extraction auth monolith (password, phone, otp, session, crypto, csrf, cookies, operations) ✅
+- [x] `@aura/storage` — Extraction storage (types, filesystem driver) ✅
+- [x] `@aura/cron` — Types et barrel ✅
 - [ ] Workflows (`@aura/workflows`)
 - [ ] HTTP Actions (`@aura/http-actions`)
 - [ ] Realtime (`@aura/realtime`)
@@ -165,16 +166,18 @@ num_zer0/
 | 2026-05-25 | Docs: Restructuration — PROMPT.md, PLAN.md, PLAN_THEMATIQUE.md, TRACKER.md | ✅ | `4043016` |
 | 2026-05-25 | Phase 0: Contrats + packages/core/ + stubs + stripping imports | ✅ | `d566684` |
 | 2026-05-25 | Phase 1: Core Runtime (operation, registry, runner, config) | ✅ | `34055f9` |
-| 2026-05-25 | Phase 2: Adapters (server-hono, prisma, client-react) | ✅ | *(courant)* |
+| 2026-05-25 | Phase 2: Adapters (server-hono, prisma, client-react) | ✅ | `da9c3f7` |
+| 2026-05-25 | Phase 3: Plugins (auth, storage, cron) + AuraRuntimeImpl | ✅ | *(courant)* |
 
 ## Prochaine action
 
-**Phase 3 — Plugins Officiels :**
-1. Créer `@aura/server-hono` avec `createHonoApp(runtime)`
-2. Créer `@aura/prisma` avec injection PrismaClient dans le runtime
-3. Créer `@aura/client-react` avec hooks React Query purs
-4. Migrer les routes Hono (bridge, internal, files, health, http-actions)
-5. Migrer middleware (auth, csrf, rate-limit, cors, logger)
+**Phase 3 suite — Plugins restants :**
+1. Workflows (`@aura/workflows`) — step/sleep persistence, resume, scheduler
+2. HTTP Actions (`@aura/http-actions`) — webhook dispatch, access control
+3. Realtime (`@aura/realtime`) — WebSocket, broadcast
+4. Dashboard (`@aura/dashboard`) — SPA, introspection API
+5. Observability (`@aura/observability`) — EventBus, metrics, export
+6. Migrer les routes Hono du monolithe (files, health, internal) vers les plugins correspondants
 
 ---
 
