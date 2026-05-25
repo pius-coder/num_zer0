@@ -306,3 +306,28 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
   - Access-level guard, execution, success/error envelope
 - `packages/core/src/config.ts` — `validatePluginConfig()`, `resolveActivePlugins()`
 - `packages/core/src/index.ts` — Barrel mis à jour avec tous les nouveaux exports
+
+---
+
+## 2026-05-25 | Phase 2 | Ajouté
+
+**Adapters : @aura/server-hono, @aura/client-react, @aura/prisma**
+
+### `@aura/server-hono`
+- `hono-app.ts` — `createHonoApp(runtime: AuraRuntime): Hono` (CORS + logger globaux, routes bridge/manifest/health)
+- `routes/bridge.ts` — dispatch POST `/aura/:path` via `coreRunOperation` + `runtime.createContext`
+- `routes/manifest.ts` — GET `/manifest` depuis `runtime.operations.list()`
+- `routes/health.ts` — GET `/health` (uptime, timestamp)
+- `middleware/auth.ts` — `internalSecretMiddleware`, `apiKeyMiddleware`, `optionalApiKeyMiddleware` (comparaison constant-time, portable)
+- `middleware/logger.ts` — `requestLogger` (méthode, path, status, durée)
+
+### `@aura/client-react`
+- `transport.ts` — `configureAura`, `callAura`, `fetchManifest`, `AuraClientError` + CSRF auto-heal
+- `hooks.ts` — `useQuery`, `useMutation` wrappers TanStack Query avec `OperationRef` typing
+- `provider.tsx` — `AuraProvider` (QueryClientProvider + contexte Aura)
+- `hydration-boundary.tsx` — `AuraHydrationBoundary`
+
+### `@aura/prisma`
+- `db-readonly.ts` — `createReadOnlyDb(client)` Proxy qui bloque les écritures (whitelist reads)
+- `pagination.ts` — `paginate()`, `encodeCursor`, `decodeCursor` (cursor base64url, web API compatible)
+- `json.ts` — `toPrismaJson(value)` (BigInt → string, Error → message/stack, récursif)

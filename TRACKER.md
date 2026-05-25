@@ -115,9 +115,19 @@ num_zer0/
 - [x] Mettre à jour le barrel `packages/core/src/index.ts` ✅
 
 ### Phase 2 — Adapters (PLAN.md §Phase 2)
-- [ ] Créer `@aura/server-hono` (adapter Hono)
-- [ ] Créer `@aura/prisma` (adapter DB)
-- [ ] Créer `@aura/client-react` (adapter frontend)
+- [x] Créer `@aura/server-hono` (adapter Hono) ✅
+  - `hono-app.ts` — `createHonoApp(runtime: AuraRuntime): Hono`
+  - Routes : bridge, manifest, health
+  - Middleware : auth, logger
+- [x] Créer `@aura/prisma` (adapter DB) ✅
+  - `db-readonly.ts` — Proxy read-only
+  - `pagination.ts` — Curseur pagination + `encodeCursor/decodeCursor`
+  - `json.ts` — `toPrismaJson` helper
+- [x] Créer `@aura/client-react` (adapter frontend) ✅
+  - `provider.tsx` — `AuraProvider` (QueryClientProvider + contexte)
+  - `transport.ts` — `callAura`, `fetchManifest`, `configureAura`, CSRF auto-heal
+  - `hooks.ts` — `useQuery`, `useMutation` (TanStack Query wrappers)
+  - `hydration-boundary.tsx` — `AuraHydrationBoundary`
 
 ### Phase 3 — Plugins Officiels (PLAN.md §Phase 3)
 - [ ] Auth (`@aura/auth`)
@@ -154,11 +164,12 @@ num_zer0/
 | 2026-05-25 | Docs: Audit architectural complet (audit.md) | ✅ | `304d91a` |
 | 2026-05-25 | Docs: Restructuration — PROMPT.md, PLAN.md, PLAN_THEMATIQUE.md, TRACKER.md | ✅ | `4043016` |
 | 2026-05-25 | Phase 0: Contrats + packages/core/ + stubs + stripping imports | ✅ | `d566684` |
-| 2026-05-25 | Phase 1: Core Runtime (operation, registry, runner, config) | 🚧 | *(courant)* |
+| 2026-05-25 | Phase 1: Core Runtime (operation, registry, runner, config) | ✅ | `34055f9` |
+| 2026-05-25 | Phase 2: Adapters (server-hono, prisma, client-react) | ✅ | *(courant)* |
 
 ## Prochaine action
 
-**Phase 2 — Adapters (server-hono, prisma, client-react) :**
+**Phase 3 — Plugins Officiels :**
 1. Créer `@aura/server-hono` avec `createHonoApp(runtime)`
 2. Créer `@aura/prisma` avec injection PrismaClient dans le runtime
 3. Créer `@aura/client-react` avec hooks React Query purs

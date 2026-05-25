@@ -126,10 +126,14 @@
       "name": "@aura/client-react",
       "version": "0.0.0",
       "dependencies": {
+        "@aura/core": "workspace:*",
+        "@tanstack/react-query": "^5.100.10",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
       },
       "devDependencies": {
+        "@types/node": "^22",
+        "@types/react": "^19",
         "typescript": "^6.0.2",
       },
     },
@@ -147,9 +151,11 @@
       "name": "@aura/prisma",
       "version": "0.0.0",
       "dependencies": {
+        "@aura/core": "workspace:*",
         "@prisma/client": "^7",
       },
       "devDependencies": {
+        "@types/node": "^22",
         "prisma": "^7",
         "typescript": "^6.0.2",
       },
@@ -158,9 +164,11 @@
       "name": "@aura/server-hono",
       "version": "0.0.0",
       "dependencies": {
+        "@aura/core": "workspace:*",
         "hono": "^4.12.18",
       },
       "devDependencies": {
+        "@types/node": "^22",
         "typescript": "^6.0.2",
       },
     },
