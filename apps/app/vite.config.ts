@@ -11,6 +11,9 @@ const ROOT = _dirname;
 const PKG_AURA = path.resolve(_dirname, "../../packages/aura/src");
 
 export default defineConfig({
+  server: {
+    allowedHosts: ["numzero.globalimex.online"],
+  },
   resolve: {
     alias: [
       { find: /^@\/aura\/_generated\/(.*)/, replacement: path.resolve(ROOT, "src/aura/_generated/$1") },
