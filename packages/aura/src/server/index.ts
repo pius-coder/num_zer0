@@ -36,8 +36,7 @@ export {
   generateText,
   streamText,
 } from "./ai/agent";
-export { eventBus } from "./observability/event-bus";
-export { metricsStore } from "./observability/metrics";
+export { eventBus, metricsStore } from "@aura/observability";
 export { auraDashboardRouter } from "./dashboard/routes";
 export {
   apiKeyHeaderName,

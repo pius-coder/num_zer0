@@ -1,6 +1,4 @@
-
-
-import type { AuraLogger } from "./context";
+import type { AuraLogger } from "@aura/core";
 
 function write(level: string, requestId: string, message: string, metadata?: Record<string, unknown>) {
   const payload = {

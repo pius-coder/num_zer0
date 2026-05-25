@@ -12,8 +12,8 @@ import { createReadOnlyDb } from "./db-readonly";
 import type { AuraContext } from "./context";
 import { publishInvalidation } from "./invalidate";
 import { v4 as uuidv4 } from "uuid";
-import { eventBus, type ConsoleLog } from "./observability/event-bus";
-import { metricsStore } from "./observability/metrics";
+import { eventBus, metricsStore } from "@aura/observability";
+import type { ConsoleLog } from "@aura/observability";
 
 export interface RunAuraOperationOptions {
   operationName: string;

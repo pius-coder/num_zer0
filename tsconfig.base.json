@@ -40,7 +40,9 @@
       "@aura/cron": ["./packages/plugins/cron/src/index.ts"],
       "@aura/cron/*": ["./packages/plugins/cron/src/*"],
       "@aura/notifications": ["./packages/plugins/notifications/src/index.ts"],
-      "@aura/notifications/*": ["./packages/plugins/notifications/src/*"]
+      "@aura/notifications/*": ["./packages/plugins/notifications/src/*"],
+      "@aura/observability": ["./packages/plugins/observability/src/index.ts"],
+      "@aura/observability/*": ["./packages/plugins/observability/src/*"]
     }
   }
 }

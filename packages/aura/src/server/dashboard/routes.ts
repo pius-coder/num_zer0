@@ -1,8 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Hono } from "hono";
-import { eventBus } from "../observability/event-bus";
-import { metricsStore } from "../observability/metrics";
+import { eventBus, metricsStore } from "@aura/observability";
 import { getClientOperationManifest } from "../registry";
 import { runAuraOperation } from "../runner";
 import { optionalApiKeyMiddleware } from "../middleware/auth";

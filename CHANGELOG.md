@@ -396,6 +396,24 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 ## 2026-05-25 | Phase 3 | Ajouté
 
+**Plugin officiel `@aura/observability`**
+
+### `@aura/observability`
+- `package.json` / `tsconfig.json` — Nouveau workspace plugin
+- `event-bus.ts` — `EventBus` class, `eventBus` singleton, `ExecutionEvent`/`ConsoleLog` types
+- `metrics.ts` — `MetricsStore` class, `metricsStore` singleton, `FunctionMetrics` type (sliding 60s window, percentiles)
+- `logger.ts` — `createAuraLogger(requestId)` — JSON structured logging
+- `index.ts` — Barrel exports
+
+### Intégration monolithe
+- `runner.ts` — Importe `eventBus`, `metricsStore`, `ConsoleLog` depuis `@aura/observability`
+- `create-context.ts` — Importe `createAuraLogger` depuis `@aura/observability`
+- `dashboard/routes.ts` — Importe `eventBus`, `metricsStore` depuis `@aura/observability`
+- `server/index.ts` — Re-exporte `eventBus`, `metricsStore` depuis `@aura/observability`
+- `packages/aura/package.json` — Ajout de `@aura/observability`
+- `tsconfig.base.json` — Paths ajoutés pour `@aura/observability`
+- Fichiers supprimés : `server/observability/`, `server/logger.ts`
+
 **Plugin officiel `@aura/notifications`**
 
 ### `@aura/notifications`

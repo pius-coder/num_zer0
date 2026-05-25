@@ -4,7 +4,7 @@ import { cache } from "react";
 import { db } from "./db";
 import type { AuraContext, AuraSource } from "./context";
 import type { OperationRef } from "@/aura/core/types";
-import { createAuraLogger } from "./logger";
+import { createAuraLogger } from "@aura/observability";
 import { createBumpStore } from "./bump";
 import { createNotificationDispatcher } from "@aura/notifications";
 import { resolveSessionFromRequest } from "./auth/session";
