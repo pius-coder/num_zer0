@@ -13,7 +13,6 @@ export const api = {
     health: { _name: "system.health", _type: "query" } as OperationRef<"query", InferOperationInput<typeof import("../../operations/system/health.operation")["default"]>, InferOperationOutput<typeof import("../../operations/system/health.operation")["default"]>>,
   },
   todos: {
-    "ai-generate": { _name: "todos.ai-generate", _type: "action" } as OperationRef<"action", InferOperationInput<typeof import("../../operations/todos/ai-generate.operation")["default"]>, InferOperationOutput<typeof import("../../operations/todos/ai-generate.operation")["default"]>>,
     toggle: { _name: "todos.toggle", _type: "mutate" } as OperationRef<"mutate", InferOperationInput<typeof import("../../operations/todos/toggle.operation")["default"]>, InferOperationOutput<typeof import("../../operations/todos/toggle.operation")["default"]>>,
     create: { _name: "todos.create", _type: "mutate" } as OperationRef<"mutate", InferOperationInput<typeof import("../../operations/todos/create.operation")["default"]>, InferOperationOutput<typeof import("../../operations/todos/create.operation")["default"]>>,
     delete: { _name: "todos.delete", _type: "mutate" } as OperationRef<"mutate", InferOperationInput<typeof import("../../operations/todos/delete.operation")["default"]>, InferOperationOutput<typeof import("../../operations/todos/delete.operation")["default"]>>,

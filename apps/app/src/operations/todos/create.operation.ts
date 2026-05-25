@@ -10,7 +10,6 @@ export default defineOperationFn("todos.create")
       description: z.string().max(2000).optional(),
       priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
       dueDate: z.string().datetime().optional(),
-      aiGenerated: z.boolean().default(false),
     }),
   )
   .entities(["Todo"])

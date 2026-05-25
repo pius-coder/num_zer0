@@ -1,17 +1,5 @@
 import { AuraService } from "@/aura/server/service";
 import { AuraError } from "@/aura/core/errors";
-import todoPlannerAgent from "@/operations/ai/todo-planner.agent";
-import { z } from "zod";
-
-const ResponseSchema = z.object({
-  todos: z.array(
-    z.object({
-      title: z.string(),
-      description: z.string().optional(),
-      priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
-    }),
-  ),
-});
 
 export class TodoService extends AuraService {
   async list(input: {
@@ -45,7 +33,6 @@ export class TodoService extends AuraService {
     description?: string;
     priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
     dueDate?: string;
-    aiGenerated: boolean;
   }) {
     const todo = await this.db.todo.create({
       data: {
@@ -53,7 +40,6 @@ export class TodoService extends AuraService {
         description: input.description,
         priority: input.priority,
         dueDate: input.dueDate ? new Date(input.dueDate) : null,
-        aiGenerated: input.aiGenerated,
       },
     });
     this.bump.success("Tâche créée", todo.title);
@@ -98,45 +84,4 @@ export class TodoService extends AuraService {
     return this.db.todo.update({ where: { id: input.id }, data: { status: next } });
   }
 
-  async aiGenerate(input: { goal: string; count: number }) {
-    if (!process.env.OPENROUTER_API_KEY) {
-      throw new AuraError("INTERNAL_ERROR", "OPENROUTER_API_KEY n'est pas défini.");
-    }
-
-    const thread = await this.agent.createThread(todoPlannerAgent, {
-      userId: this.user?.id,
-      metadata: { source: "todos.ai-generate", goal: input.goal },
-    });
-
-    const response = await this.agent.generateText(thread, {
-      prompt: `Objectif: ${input.goal}\n\nGénère exactement ${input.count} tâches.`,
-    });
-
-    const match = response.content.match(/\{[\s\S]*\}/);
-    if (!match) {
-      throw new AuraError("INTERNAL_ERROR", "Réponse de l'agent invalide (JSON manquant).");
-    }
-    const parsed = ResponseSchema.safeParse(JSON.parse(match[0]));
-    if (!parsed.success) {
-      throw new AuraError("INTERNAL_ERROR", `Réponse de l'agent invalide: ${parsed.error.message}`);
-    }
-
-    const created = [];
-    for (const t of parsed.data.todos) {
-      const todo = await this.runMutation("todos.create", {
-        title: t.title,
-        description: t.description,
-        priority: t.priority,
-        aiGenerated: true,
-      });
-      created.push(todo);
-    }
-
-    this.bump.success(
-      "Tâches générées",
-      `${created.length} tâche(s) créée(s) à partir de votre objectif.`,
-    );
-
-    return { count: created.length, todos: created };
-  }
 }

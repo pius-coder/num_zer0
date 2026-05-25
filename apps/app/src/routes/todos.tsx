@@ -6,11 +6,10 @@ import { Button } from "@/aura/ui/button";
 import { Input } from "@/aura/ui/input";
 import { Textarea } from "@/aura/ui/textarea";
 import { Label } from "@/aura/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/aura/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/aura/ui/card";
 import { Badge } from "@/aura/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/aura/ui/tabs";
 import { Checkbox } from "@/aura/ui/checkbox";
-import { Spinner } from "@/aura/ui/spinner";
 import { AuraEmptyState, AuraLoadingSkeleton, AuraConfirmDialog } from "@/aura/ui";
 import { cn } from "@/lib/utils";
 import type { Todo } from "@/aura/entities";
@@ -48,7 +47,7 @@ function TodosPage() {
       <header className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Mes tâches</h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          Gérez vos tâches manuellement ou laissez l'IA les générer pour vous.
+          Gérez vos tâches simplement.
         </p>
       </header>
 
@@ -74,7 +73,7 @@ function TodosPage() {
                   <CardContent className="pt-6">
                     <AuraEmptyState
                       title="Aucune tâche"
-                      description="Créez une tâche manuellement ou utilisez l'IA pour générer une liste."
+                      description="Créez une tâche pour commencer."
                     />
                   </CardContent>
                 </Card>
@@ -91,7 +90,6 @@ function TodosPage() {
 
         <div className="space-y-4">
           <CreateTodoCard />
-          <AiGeneratorCard />
         </div>
       </div>
     </div>
@@ -118,11 +116,6 @@ function TodoItem({ todo }: { todo: Todo }) {
             <Badge variant={PRIORITY_VARIANTS[todo.priority]} className="text-[10px]">
               {PRIORITY_LABELS[todo.priority]}
             </Badge>
-            {todo.aiGenerated && (
-              <Badge variant="outline" className="text-[10px]">
-                ✨ IA
-              </Badge>
-            )}
           </div>
           {todo.description && (
             <p className="text-muted-foreground text-xs">{todo.description}</p>
@@ -168,7 +161,7 @@ function CreateTodoCard() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!title.trim()) return;
-            create.mutate({ title, description: description || undefined, priority, aiGenerated: false });
+            create.mutate({ title, description: description || undefined, priority });
           }}
           className="space-y-3"
         >
@@ -208,70 +201,6 @@ function CreateTodoCard() {
           </div>
           <Button type="submit" disabled={create.isPending} className="w-full">
             {create.isPending ? "..." : "Ajouter"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
-
-function AiGeneratorCard() {
-  const [goal, setGoal] = useState("");
-  const [count, setCount] = useState(5);
-
-  const generate = useMutation(api.todos["ai-generate"], {
-    onSuccess: () => {
-      setGoal("");
-    },
-  });
-
-  return (
-    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">✨ Génération IA</CardTitle>
-        <CardDescription>
-          Décrivez un objectif et l'IA décompose en tâches.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!goal.trim()) return;
-            generate.mutate({ goal, count });
-          }}
-          className="space-y-3"
-        >
-          <div className="space-y-1.5">
-            <Label htmlFor="ai-goal">Objectif</Label>
-            <Textarea
-              id="ai-goal"
-              value={goal}
-              onChange={(e) => setGoal(e.target.value)}
-              placeholder="Organiser un voyage à Paris pour 3 jours..."
-              rows={3}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="ai-count">Nombre de tâches</Label>
-            <Input
-              id="ai-count"
-              type="number"
-              min={1}
-              max={20}
-              value={count}
-              onChange={(e) => setCount(Number(e.target.value))}
-            />
-          </div>
-          <Button type="submit" disabled={generate.isPending} className="w-full">
-            {generate.isPending ? (
-              <>
-                <Spinner className="mr-2" /> L'IA réfléchit...
-              </>
-            ) : (
-              "Générer avec l'IA"
-            )}
           </Button>
         </form>
       </CardContent>
