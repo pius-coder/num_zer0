@@ -1,39 +1,45 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Hono } from "hono";
+import type { MiddlewareHandler } from "hono";
 import { eventBus, metricsStore } from "@aura/observability";
-import { getClientOperationManifest } from "../registry";
-import { runAuraOperation } from "../runner";
-import { optionalApiKeyMiddleware } from "../middleware/auth";
+
+export interface DashboardDependencies {
+  getClientOperationManifest: () => { operations: Array<{ name: string; type: string }> };
+  runAuraOperation: (opts: {
+    operationName: string;
+    input: unknown;
+    request: Request;
+    source: string;
+  }) => Promise<{ envelope: unknown; status: number }>;
+  optionalApiKeyMiddleware: () => MiddlewareHandler;
+}
 
 let spaHtml: string | null = null;
 const runHistory: Array<{ name: string; input: unknown; result: unknown; timestamp: Date; status: number }> = [];
 const MAX_RUN_HISTORY = 200;
+
 function getSpaHtml(): string | null {
   if (spaHtml !== null) return spaHtml;
   try {
     spaHtml = readFileSync(join(__dirname, "frontend", "index.html"), "utf-8");
   } catch {
-    try {
-      spaHtml = readFileSync(join(__dirname, "..", "..", "..", "src", "server", "dashboard", "frontend", "index.html"), "utf-8");
-    } catch {
-      spaHtml = "<html><body><h1>Dashboard SPA not found</h1></body></html>";
-    }
+    spaHtml = "<html><body><h1>Dashboard SPA not found</h1></body></html>";
   }
   return spaHtml;
 }
 
-export function auraDashboardRouter(): Hono {
+export function auraDashboardRouter(deps: DashboardDependencies): Hono {
   const router = new Hono();
 
-  router.use("/api/*", optionalApiKeyMiddleware());
+  router.use("/api/*", deps.optionalApiKeyMiddleware());
 
   function getOpMeta(name: string) {
-    return getClientOperationManifest().operations.find((o) => o.name === name) ?? null;
+    return deps.getClientOperationManifest().operations.find((o) => o.name === name) ?? null;
   }
 
   router.get("/api/functions", (c) => {
-    const ops = getClientOperationManifest().operations;
+    const ops = deps.getClientOperationManifest().operations;
     const functions = ops.map((op) => ({
       name: op.name,
       type: op.type,
@@ -62,7 +68,7 @@ export function auraDashboardRouter(): Hono {
     } catch {
       return c.json({ error: "invalid JSON body" }, 400);
     }
-    const result = await runAuraOperation({
+    const result = await deps.runAuraOperation({
       operationName: name,
       input,
       request: c.req.raw,

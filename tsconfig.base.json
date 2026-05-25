@@ -46,7 +46,9 @@
       "@aura/http-actions": ["./packages/plugins/http-actions/src/index.ts"],
       "@aura/http-actions/*": ["./packages/plugins/http-actions/src/*"],
       "@aura/realtime": ["./packages/plugins/realtime/src/index.ts"],
-      "@aura/realtime/*": ["./packages/plugins/realtime/src/*"]
+      "@aura/realtime/*": ["./packages/plugins/realtime/src/*"],
+      "@aura/dashboard": ["./packages/plugins/dashboard/src/index.ts"],
+      "@aura/dashboard/*": ["./packages/plugins/dashboard/src/*"]
     }
   }
 }

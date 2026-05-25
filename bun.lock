@@ -83,7 +83,11 @@
       "name": "@aura-js/core",
       "version": "0.1.0",
       "dependencies": {
+        "@aura/dashboard": "workspace:*",
+        "@aura/http-actions": "workspace:*",
         "@aura/notifications": "workspace:*",
+        "@aura/observability": "workspace:*",
+        "@aura/realtime": "workspace:*",
         "@aws-sdk/client-s3": "^3.1046.0",
         "@base-ui/react": "^1.4.1",
         "@hono/node-server": "^1.13.2",
@@ -181,12 +185,54 @@
         "typescript": "^6.0.2",
       },
     },
+    "packages/plugins/dashboard": {
+      "name": "@aura/dashboard",
+      "version": "0.0.0",
+      "dependencies": {
+        "@aura/core": "workspace:*",
+        "@aura/observability": "workspace:*",
+        "hono": "^4.12.18",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
+    "packages/plugins/http-actions": {
+      "name": "@aura/http-actions",
+      "version": "0.0.0",
+      "dependencies": {
+        "@aura/core": "workspace:*",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
     "packages/plugins/notifications": {
       "name": "@aura/notifications",
       "version": "0.0.0",
       "dependencies": {
         "@aura/core": "workspace:*",
         "zod": "^3.25.76",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
+    "packages/plugins/observability": {
+      "name": "@aura/observability",
+      "version": "0.0.0",
+      "dependencies": {
+        "@aura/core": "workspace:*",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
+    "packages/plugins/realtime": {
+      "name": "@aura/realtime",
+      "version": "0.0.0",
+      "dependencies": {
+        "@aura/core": "workspace:*",
       },
       "devDependencies": {
         "typescript": "^6.0.2",
@@ -262,9 +308,17 @@
 
     "@aura/cron": ["@aura/cron@workspace:packages/plugins/cron"],
 
+    "@aura/dashboard": ["@aura/dashboard@workspace:packages/plugins/dashboard"],
+
+    "@aura/http-actions": ["@aura/http-actions@workspace:packages/plugins/http-actions"],
+
     "@aura/notifications": ["@aura/notifications@workspace:packages/plugins/notifications"],
 
+    "@aura/observability": ["@aura/observability@workspace:packages/plugins/observability"],
+
     "@aura/prisma": ["@aura/prisma@workspace:packages/prisma"],
+
+    "@aura/realtime": ["@aura/realtime@workspace:packages/plugins/realtime"],
 
     "@aura/server-hono": ["@aura/server-hono@workspace:packages/server-hono"],
 

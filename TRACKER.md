@@ -140,7 +140,7 @@ num_zer0/
 - [x] `@aura/http-actions` — Builder, registry, webhook dispatch ✅
 - [x] `@aura/realtime` — Invalidation client, types ✅
 - [x] `@aura/observability` — EventBus, MetricsStore, Logger ✅
-- [ ] Dashboard (`@aura/dashboard`)
+- [x] `@aura/dashboard` — SPA introspection + API routes ✅
 - [ ] AI (`@aura/ai`)
 - [ ] Search Postgres (`@aura/search-postgres`)
 - [ ] Vector pgvector (`@aura/vector-pgvector`)
@@ -174,13 +174,13 @@ num_zer0/
 | 2026-05-25 | Phase 3: Plugin notifications + outbox | ✅ | `780ef26` |
 | 2026-05-25 | Phase 3: Plugin observability (EventBus, Metrics, Logger) | ✅ | *(courant)* |
 | 2026-05-25 | Phase 3: Plugin http-actions (builder, registry) | ✅ | *(courant)* |
-| 2026-05-25 | Phase 3: Plugin realtime (invalidation client) | ✅ | *(courant)* |
+| 2026-05-25 | Phase 3: Plugin realtime (invalidation client) | ✅ | `c8490fe` |
+| 2026-05-25 | Phase 3: Plugin dashboard (SPA + API routes) | ✅ | *(courant)* |
 
 ## Prochaine action
 
 **Phase 3 suite — Plugins restants :**
-1. Dashboard (`@aura/dashboard`) — SPA, introspection API
-2. Workflows (`@aura/workflows`) — attendre la clarification scheduler/resume
+1. Workflows (`@aura/workflows`) — attendre la clarification scheduler/resume
 
 ---
 

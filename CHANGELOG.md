@@ -436,6 +436,21 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 
 ## 2026-05-25 | Phase 3 | Ajouté
 
+**Plugin officiel `@aura/dashboard`**
+
+### `@aura/dashboard`
+- `package.json` / `tsconfig.json` — Nouveau workspace plugin
+- `routes.ts` — `auraDashboardRouter(deps)` avec injection de dépendances (manifest, runner, auth middleware)
+- `frontend/index.html` — SPA vanilla (516 lignes, Chart.js CDN, pages Logs/Functions/Metrics/Errors)
+- `index.ts` — Barrel exports
+
+### Intégration monolithe
+- `hono-app.ts` — Importe `auraDashboardRouter` depuis `@aura/dashboard`, injecte les dépendances monolithe
+- `server/index.ts` — Ré-exporte `auraDashboardRouter` depuis `@aura/dashboard`
+- Fichiers supprimés : `server/dashboard/` (routes.ts + frontend/)
+- `packages/aura/package.json` — Ajout de `@aura/dashboard`
+- `tsconfig.base.json` — Paths ajoutés pour `@aura/dashboard`
+
 **Plugin officiel `@aura/realtime`**
 
 ### `@aura/realtime`
