@@ -108,11 +108,11 @@ num_zer0/
 - [x] Mettre à jour `tsconfig.base.json` avec les paths des nouveaux packages ✅
 
 ### Phase 1 — Core Runtime (PLAN.md §Phase 1)
-- [ ] Migrer `operation.ts` → `packages/core/src/operation.ts`
-- [ ] Migrer `registry.ts` → registry de capabilities unifié
-- [ ] Migrer `runner.ts` → runner pur (sans observability)
-- [ ] Créer config loader + validation plugin
-- [ ] Créer manifest builder depuis registry
+- [x] Migrer `operation.ts` → `packages/core/src/operation.ts` (builder complet, générique, sans auto-registration) ✅
+- [x] Migrer `registry.ts` → `packages/core/src/registry.ts` (InMemoryRegistry + capabilities) ✅
+- [x] Migrer `runner.ts` → `packages/core/src/runner.ts` (pur, sans EventBus/metrics/invalidation) ✅
+- [x] Créer config loader + validation plugin (`packages/core/src/config.ts`) ✅
+- [x] Mettre à jour le barrel `packages/core/src/index.ts` ✅
 
 ### Phase 2 — Adapters (PLAN.md §Phase 2)
 - [ ] Créer `@aura/server-hono` (adapter Hono)
@@ -153,17 +153,17 @@ num_zer0/
 | 2026-05-25 | Thème 3: Auth middleware Hono (internal secret, api key) | ✅ | `301afb3` |
 | 2026-05-25 | Docs: Audit architectural complet (audit.md) | ✅ | `304d91a` |
 | 2026-05-25 | Docs: Restructuration — PROMPT.md, PLAN.md, PLAN_THEMATIQUE.md, TRACKER.md | ✅ | `4043016` |
-| 2026-05-25 | Phase 0: Contrats + packages/core/ + stubs + stripping imports | 🚧 | *(courant)* |
+| 2026-05-25 | Phase 0: Contrats + packages/core/ + stubs + stripping imports | ✅ | `d566684` |
+| 2026-05-25 | Phase 1: Core Runtime (operation, registry, runner, config) | 🚧 | *(courant)* |
 
 ## Prochaine action
 
-**Phase 1 — Core Runtime :**
-1. Migrer `operation.ts` → `packages/core/` avec le builder réel (zod, validation)
-2. Migrer `registry.ts` → `packages/core/` (registry de capabilities unifié)
-3. Migrer `runner.ts` → `packages/core/` (runner pur, sans observability)
-4. Migrer `errors.ts`, `envelope.ts` → `packages/core/` (déjà copiés)
-5. Créer `config.ts` — config loader + validation plugin
-6. Créer `manifest.ts` — manifest builder depuis registry
+**Phase 2 — Adapters (server-hono, prisma, client-react) :**
+1. Créer `@aura/server-hono` avec `createHonoApp(runtime)`
+2. Créer `@aura/prisma` avec injection PrismaClient dans le runtime
+3. Créer `@aura/client-react` avec hooks React Query purs
+4. Migrer les routes Hono (bridge, internal, files, health, http-actions)
+5. Migrer middleware (auth, csrf, rate-limit, cors, logger)
 
 ---
 

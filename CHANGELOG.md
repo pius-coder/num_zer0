@@ -283,3 +283,26 @@ Tous les anciens noms (`useAuraQuery`, `AuraClientProvider`, etc.) existent enco
 - Stubs créés : `server-hono/`, `client-react/`, `prisma/`, `cli/`, `plugins/`
 - `packages/aura/src/core/types.ts` — Supprimé les imports `@/generated/prisma/client`, remplacé PrismaClient/AuraUser/NotificationDispatcher/AuraStorage par des interfaces minimales locales
 - `tsconfig.base.json` — Ajout des paths `@aura/core`, `@aura/server-hono`, `@aura/client-react`, `@aura/prisma`, `@aura/cli`
+
+---
+
+## 2026-05-25 | Phase 1 | Ajouté
+
+**Core Runtime : operation, registry, runner, config**
+
+- `packages/core/src/operation.ts` — Réécrit avec le builder complet :
+  - `defineOperationFn()` → RootStage → HandlerStage → AccessStage (chaînage complet)
+  - `AuraOperation` générique (TInput, TParams, TOutput, TName) + phantom types
+  - `RegisteredAuraOperation` (untyped, pour le registry)
+  - `DefinedCommonFn`, `CommonFnArgs`, `HandlerArgs`, `OperationHandler`
+  - Validation pure : `validateInput`, `validateParams`, `zodToFieldErrors`, `sanitizeNaNs`
+  - `ensureAuthenticated` via `ctx.capabilities` (pas de dépendance Prisma/React)
+  - Pas d'auto-registration — le builder retourne l'opération sans side-effect
+- `packages/core/src/registry.ts` — `InMemoryRegistry` class concrète (implémente `Registry` interface) + `getClientManifest()`
+- `packages/core/src/runner.ts` — `coreRunOperation()` runner pur :
+  - Pas de `EventBus`, pas de `metricsStore`, pas de console log capture
+  - Pas de `withTypedDb` (Prisma-specific), pas de `publishInvalidation`
+  - Context injecté (pas de `createAuraContext` interne)
+  - Access-level guard, execution, success/error envelope
+- `packages/core/src/config.ts` — `validatePluginConfig()`, `resolveActivePlugins()`
+- `packages/core/src/index.ts` — Barrel mis à jour avec tous les nouveaux exports
