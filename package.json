@@ -11,5 +11,8 @@
     "build": "bun run --filter @aura-js/core build && bun run --filter @aura-js/app build",
     "test": "bun run --filter @aura-js/core test && bun run --filter @aura-js/app test",
     "clean": "rm -rf packages/*/{dist,.output,node_modules} apps/*/{dist,.output,node_modules} node_modules"
+  },
+  "dependencies": {
+    "@tanstack/react-devtools": "^0.10.5"
   }
 }

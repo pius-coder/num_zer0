@@ -45,6 +45,7 @@ function createServerEntry(entry: ServerEntry): ServerEntry {
       // - /files/* — Static file serving
       // - /health — Health check endpoint
       if (
+        url.pathname === "/aura" ||
         url.pathname.startsWith("/aura/") ||
         url.pathname.startsWith("/aura-internal/") ||
         url.pathname.startsWith("/files/") ||

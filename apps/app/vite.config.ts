@@ -12,6 +12,7 @@ const PKG_AURA = path.resolve(_dirname, "../../packages/aura/src");
 
 export default defineConfig({
   server: {
+    host: true,
     allowedHosts: ["numzero.globalimex.online"],
   },
   resolve: {
