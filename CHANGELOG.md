@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-05-26 | Split Déploiement | Modifié
+
+**Fix 4 fuites d'injection d'environnement bloquant le déploiement split (Convex-style)**
+
+1. **`baseUrl` dans `AuraClientConfig`** — nouveau champ optionnel. Quand set, `operationUrl()` construit des URLs absolues cross-origin. Les appels `callAura*` passent en `credentials: "include"` (vs `same-origin`) pour envoyer les cookies CSRF cross-origin.
+2. **`__root.tsx`** — `AURA_URL` résolu en module-level avec fail-loud en prod (`VITE_AURA_URL is required at build time`). Passe `{ baseUrl: AURA_URL }` à `AuraProviderShell`.
+3. **CORS serveur** — `AURA_APP_URL` requis en prod (throw au boot si absent). `credentials: true` systématique.
+4. **`defaultWsUrl()` supprimé** du realtime client — plus de fallback magique vers l'origine frontend. Warning + early-return si `wsUrl` pas configuré.
+5. **`provider.tsx`** — `envWsUrl` loggue une erreur en prod si `VITE_AURA_WS_URL` absent (sans bloquer le boot).
+6. **Dockerfiles** — `ARG VITE_AURA_URL` ajouté au frontend + `HEALTHCHECK` sur les deux images.
+7. **`.env.production.example`** — réécrit avec sections build-time vs runtime, vars legacy conservées.
+
+**Fichiers modifiés :** `transport.ts`, `hono-app.ts` (×2), `__root.tsx`, `client.tsx`, `provider.tsx`, `Dockerfile.frontend`, `Dockerfile.backend`, `.env.production.example`.
+
 ## 2026-05-25 | Phase 0 | Ajouté
 
 **Backport pattern AuraService depuis luminous + migration ops todos**

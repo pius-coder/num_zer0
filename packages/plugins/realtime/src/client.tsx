@@ -13,14 +13,9 @@ type ServerMessage =
   | { type: "PING" }
   | { type: "CLOSING" };
 
-function defaultWsUrl(): string {
-  const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
-  return `${proto}//${window.location.host}/aura-realtime/ws`;
-}
-
 export interface AuraRealtimeProviderProps {
   children: ReactNode;
-  /** Optional override. Defaults to `ws(s)://<same-origin>/aura-realtime/ws`. */
+  /** WebSocket URL (required; no default fallback). */
   wsUrl?: string;
   /** Invoked once per unique invalidation (dedup is internal). */
   onInvalidate: (keys: string[]) => void;
@@ -43,7 +38,14 @@ export function AuraRealtimeProvider({
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const url = wsUrl ?? defaultWsUrl();
+    if (!wsUrl) {
+      console.warn(
+        "[aura:realtime] wsUrl is not configured — realtime invalidations disabled. " +
+        "Set VITE_AURA_WS_URL at build time (e.g. wss://api.example.com/ws)."
+      );
+      return;
+    }
+    const url = wsUrl;
     const channel = new BroadcastChannel(CHANNEL);
     const seen = new Map<string, number>();
     let unmounted = false;

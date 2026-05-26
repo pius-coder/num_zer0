@@ -32,12 +32,16 @@ function manifestToEntityMap(
  * the operation manifest or attached via `query.meta.entities` — appears
  * in the broadcast key set.
  */
-// Build-time override. When set, the client opens its WS directly against
-// this URL instead of same-origin `/aura-realtime/ws`. Use this when the
-// realtime server lives on a separate sub-domain (e.g. behind any reverse
-// proxy that can't path-route WebSockets, or for a Convex-style direct
-// connection).
-const envWsUrl = import.meta.env.VITE_AURA_WS_URL as string | undefined;
+const envWsUrl = (() => {
+  const baked = import.meta.env.VITE_AURA_WS_URL as string | undefined;
+  if (baked) return baked;
+  if (import.meta.env.DEV) return undefined;
+  console.error(
+    "[aura] VITE_AURA_WS_URL is not set — realtime disabled in production build. " +
+    "Pass it via --build-arg VITE_AURA_WS_URL=wss://api.example.com/ws."
+  );
+  return undefined;
+})();
 
 function AuraQueryInvalidator({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();

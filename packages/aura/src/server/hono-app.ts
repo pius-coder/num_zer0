@@ -19,8 +19,15 @@ function dashboardEnabled(): boolean {
 export async function createAuraHonoApp() {
   const app = new Hono();
 
+  const appUrl = process.env.AURA_APP_URL;
+  if (!appUrl && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[aura] AURA_APP_URL must be set in production (frontend origin for CORS allow-list)."
+    );
+  }
+
   app.use("*", cors({
-    origin: process.env.AURA_APP_URL ?? "http://localhost:3000",
+    origin: appUrl ?? "http://localhost:3000",
     credentials: true,
   }));
   app.use("*", requestLogger());

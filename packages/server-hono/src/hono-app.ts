@@ -9,7 +9,13 @@ import { requestLogger } from "./middleware/logger";
 export function createHonoApp(runtime: AuraRuntime): Hono {
   const app = new Hono();
 
-  app.use("*", cors({ origin: process.env["AURA_APP_URL"] ?? "*" }));
+  const appUrl = process.env["AURA_APP_URL"];
+  if (!appUrl && process.env["NODE_ENV"] === "production") {
+    throw new Error(
+      "[aura] AURA_APP_URL must be set in production."
+    );
+  }
+  app.use("*", cors({ origin: appUrl ?? "*", credentials: true }));
   app.use("*", requestLogger());
 
   app.route("/aura", createBridgeRouter(runtime));

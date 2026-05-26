@@ -4,6 +4,16 @@ import { AuraBumpToaster } from '@/aura/ui/aura-bump-toaster'
 
 import '../styles.css'
 
+const AURA_URL = (() => {
+  const baked = import.meta.env.VITE_AURA_URL;
+  if (baked) return baked as string;
+  if (import.meta.env.DEV) return "http://localhost:3001";
+  throw new Error(
+    "[aura] VITE_AURA_URL is required at build time for production. " +
+    "Pass it via --build-arg VITE_AURA_URL=https://api.example.com when building Dockerfile.frontend."
+  );
+})();
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -22,7 +32,7 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
-        <AuraProviderShell>
+        <AuraProviderShell config={{ baseUrl: AURA_URL }}>
           <Outlet />
           <AuraBumpToaster />
         </AuraProviderShell>

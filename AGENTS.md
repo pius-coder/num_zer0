@@ -91,12 +91,12 @@
       <export name="useAgentSend" from="agent" />
     </api>
 
-    <current_state last_commit="1208606">
+    <current_state last_commit="HEAD">
       <theme id="1" name="Split Déploiement" status="done">
         <item>server-hono.ts entrypoint Hono standalone</item>
         <item>build:backend (bun build), build:frontend (vite build)</item>
         <item>Dockerfiles backend + frontend</item>
-        <item>RouteRules Nitro pour proxy en prod</item>
+        <item>Fix 4 fuites env: baseUrl client, CORS fail-loud, defaultWsUrl supprimé, Dockerfile ARG + HEALTHCHECK</item>
       </theme>
       <theme id="2" name="Dashboard" status="done">
         <phase number="1">

@@ -4,12 +4,14 @@ import type { AuraBump, AuraEnvelope, AuraErrorEnvelope } from "@/aura/core/enve
 import type { AuraFieldErrors } from "@/aura/core/errors";
 
 export interface AuraClientConfig {
+  baseUrl: string;
   basePath: string;
   csrfCookieName: string;
   csrfHeaderName: string;
 }
 
 const defaultConfig: AuraClientConfig = {
+  baseUrl: "",
   basePath: "/aura",
   csrfCookieName: "aura_csrf",
   csrfHeaderName: "x-aura-csrf",
@@ -70,10 +72,10 @@ export async function callAuraOperationWithMeta<TData = unknown>(
 
   async function send(): Promise<{ response: Response; envelope: AuraEnvelope<TData> | null }> {
     const response = await fetch(
-      operationUrl(config.basePath, options.operationName),
+      operationUrl(options.operationName),
       {
         method: "POST",
-        credentials: "same-origin",
+        credentials: "include",
         headers: {
           "content-type": "application/json",
           [config.csrfHeaderName]: readCookie(config.csrfCookieName) ?? "",
@@ -104,9 +106,9 @@ export async function callAuraOperationWithMeta<TData = unknown>(
     /csrf/i.test(envelope.error.message)
   ) {
     try {
-      await fetch(operationUrl(config.basePath, "_manifest"), {
+      await fetch(operationUrl("_manifest"), {
         method: "GET",
-        credentials: "same-origin",
+        credentials: "include",
       });
     } catch {
       /* fall through and surface the original error */
@@ -145,10 +147,9 @@ export const callAura = callAuraOperation;
 export async function fetchAuraManifest<TManifest>(
   signal?: AbortSignal,
 ): Promise<TManifest> {
-  const config = getAuraClientConfig();
-  const response = await fetch(operationUrl(config.basePath, "_manifest"), {
+  const response = await fetch(operationUrl("_manifest"), {
     method: "GET",
-    credentials: "same-origin",
+    credentials: "include",
     signal,
   });
 
@@ -166,15 +167,19 @@ export async function fetchAuraManifest<TManifest>(
 
 export const fetchManifest = fetchAuraManifest;
 
-function operationUrl(basePath: string, operationName: string): string {
-  const safeBasePath = basePath.endsWith("/")
-    ? basePath.slice(0, -1)
-    : basePath;
+function operationUrl(operationName: string): string {
+  const config = getAuraClientConfig();
+  const baseUrl = config.baseUrl.endsWith("/")
+    ? config.baseUrl.slice(0, -1)
+    : config.baseUrl;
+  const safeBasePath = config.basePath.endsWith("/")
+    ? config.basePath.slice(0, -1)
+    : config.basePath;
   const path = operationName
     .split(".")
     .map((segment) => encodeURIComponent(segment))
     .join("/");
-  return `${safeBasePath}/${path}`;
+  return `${baseUrl}${safeBasePath}/${path}`;
 }
 
 function readCookie(name: string): string | null {
