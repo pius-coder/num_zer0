@@ -23,13 +23,12 @@
 **Dernier commit :** `304d91a` "docs: add architectural audit"
 **PLAN.md a été renommé PROMPT.md** (contient le prompt architecte original) et remplacé par un plan d'exécution complet.
 
-**Prochaine action :** Phase 0 — Définir les contrats stables (AuraPlugin, AuraRuntime, AuraContext) avant toute extraction.
+**Prochaine action :** Phase 4 (CLI) ou Phase 5 (nettoyage monolithe).
 
 **Pièges connus :**
-- Toutes les features sont encore dans `packages/aura/` — aucune extraction n'a commencé.
-- `packages/aura/` importe `@/generated/prisma/client` (app-specific) — à couper en Phase 0.
-- Le barrel `packages/aura/src/server/index.ts` exporte tout — à supprimer.
-- `packages/aura/package.json` a 30+ dépendances — c'est exactement le problème à résoudre.
+- `packages/aura/` (ancien monolithe) toujours utilisé par l'app via `@/aura/*` — à supprimer en Phase 5.
+- `packages/aura/` importe `@/generated/prisma/client` (app-specific).
+- `packages/aura/package.json` a 30+ dépendances.
 
 **Fichiers clés :**
 - `PROMPT.md` = prompt architecte original (ancien PLAN.md)
@@ -179,10 +178,11 @@ num_zer0/
 | 2026-05-25 | Phase 3: Plugin dashboard (SPA + API routes) | ✅ | `59faed1` |
 | 2026-05-25 | Phase 3: Plugin workflows + scheduler | ✅ | `380ba09` |
 | 2026-05-25 | Phase 5: Nettoyage — wrappers supprimés | ✅ | *(courant)* |
+| 2026-05-26 | Déploiement: fusion WS dans Hono backend, 2 Dockerfiles, pure SSR | ✅ | *(courant)* |
 
 ## Prochaine action
 
-**Phase 3 est terminée.** Tous les plugins officiels extraits. Prochaine phase : Phase 4 (CLI) ou Phase 5 (nettoyage monolithe).
+**Prochaine phase : Phase 4 (CLI) ou Phase 5 (nettoyage monolithe — suppression de packages/aura/).**
 
 ---
 
@@ -206,6 +206,7 @@ num_zer0/
 
 | D15 | **NOUVEAU** `AuraService` = classe base pour la logique métier (backporté de luminous) | Les operations deviennent des thin handlers qui délèguent à `new Service(ctx).method()`. `AuraService` wrappe toutes les propriétés du contexte via des getters (`this.db`, `this.user`, `this.agent`, etc.). |
 | D16 | **NOUVEAU** Per-primitive context types (`AuraQueryContext`, `AuraMutationContext`, `AuraActionContext`) importés dans `packages/core/src/types.ts` | Narrowing type-safe du DB access par type d'opération. |
+| D17 | **NOUVEAU** 2 services déploiement : frontend (SSR pur, port 3000) + backend (Hono API + WS, port 3001) | Le WS broadcast est fusionné dans le backend Hono. Plus de serveur realtime standalone. |
 
 ---
 

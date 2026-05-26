@@ -7,9 +7,9 @@
     "@types/node": "^25.9.1"
   },
   "scripts": {
-    "dev": "bun run --parallel --filter @aura-js/app --filter @aura/realtime dev",
+    "dev": "bun run --filter @aura-js/app dev",
     "dev:app": "bun run --filter @aura-js/app dev",
-    "dev:realtime": "bun run --filter @aura/realtime dev",
+    "dev:backend": "bun run --filter @aura-js/app dev:backend",
     "build": "bun run --filter @aura-js/core build && bun run --filter @aura-js/app build",
     "test": "bun run --filter @aura-js/core test && bun run --filter @aura-js/app test",
     "clean": "rm -rf packages/*/{dist,.output,node_modules} apps/*/{dist,.output,node_modules} node_modules"

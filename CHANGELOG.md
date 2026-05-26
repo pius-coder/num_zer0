@@ -507,6 +507,35 @@ Imports mis à jour :
 - `packages/aura/package.json` — Ajout de `@aura/realtime`
 - `tsconfig.base.json` — Paths ajoutés pour `@aura/realtime`
 
+---
+
+## 2026-05-26 | Déploiement | Modifié/Supprimé
+
+**Fusion WS dans Hono backend — 2 services (frontend + backend), plus de realtime standalone**
+
+### `@aura/realtime` — server.ts refactoré
+- `server.ts` n'est plus un serveur standalone. Exporte `addRealtimeRoutes(app)` (ajoute WS, publish, clients, status à un Hono existant) et `websocket` (re-export `hono/bun`).
+- Heartbeat et shutdown intégrés dans `addRealtimeRoutes()`.
+- Scripts `dev`/`start` supprimés du `package.json`.
+
+### `apps/app/src/backend.ts` — Nouveau entrypoint backend
+- Fusionne Hono API (`createAuraHonoApp` depuis old monolithe) + WS (`addRealtimeRoutes` depuis `@aura/realtime/server`)
+- Bun serve avec `{ port, fetch, websocket }` — WS sur le même port que l'API.
+- `build:backend` (bun build), `dev:backend` (bun run), `start:backend` scripts ajoutés.
+
+### `apps/app/src/server.ts` — SSR pur
+- Retiré le montage Hono. Le TanStack Start handler ne gère plus que le SSR.
+- `createServerEntry()` wrapper supprimé. Export direct `{ fetch: startFetch }`.
+
+### Dockerfiles
+- `Dockerfile.backend` réécrit : build + run le backend fusionné (bun build → backend.js).
+- `Dockerfile.frontend` simplifié : build + run le SSR TanStack Start (port 3000).
+- `Dockerfile.realtime` **supprimé** — remplacé par le backend fusionné.
+
+### Scripts racine
+- `dev` ne lance plus `--filter @aura/realtime` (fusionné dans le backend).
+- `dev:backend` ajouté (lance le backend Hono+WS via filter).
+
 **Plugin officiel `@aura/http-actions`**
 
 ### `@aura/http-actions`

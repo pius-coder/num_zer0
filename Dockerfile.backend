@@ -1,16 +1,30 @@
 FROM oven/bun:latest AS build
 WORKDIR /app
-COPY package.json bun.lock ./
+COPY package.json bun.lock tsconfig.base.json ./
 COPY apps/app/package.json apps/app/tsconfig.json apps/app/
 COPY packages/aura/package.json packages/aura/
-RUN bun install --frozen-lockfile
+COPY packages/core/package.json packages/core/
+COPY packages/server-hono/package.json packages/server-hono/
+COPY packages/prisma/package.json packages/prisma/
+COPY packages/plugins/realtime/package.json packages/plugins/realtime/
+COPY packages/plugins/observability/package.json packages/plugins/observability/
+COPY packages/plugins/http-actions/package.json packages/plugins/http-actions/
+COPY packages/plugins/dashboard/package.json packages/plugins/dashboard/
+COPY packages/plugins/workflows/package.json packages/plugins/workflows/
+COPY packages/plugins/notifications/package.json packages/plugins/notifications/
+COPY packages/plugins/auth/package.json packages/plugins/auth/
+COPY packages/plugins/storage/package.json packages/plugins/storage/
+COPY packages/plugins/cron/package.json packages/plugins/cron/
+RUN bun install
+
 COPY . .
-RUN bun run build --cwd apps/app
+RUN bun run --filter @aura-js/app build:backend
 
 FROM oven/bun:latest
+USER bun
 WORKDIR /app
-COPY --from=build /app/apps/app/build/backend ./backend
-COPY --from=build /app/apps/app/src/generated ./generated
+COPY --from=build --chown=bun:bun /app/apps/app/build/backend ./backend
+COPY --from=build --chown=bun:bun /app/apps/app/src/generated ./generated
 ENV PORT=3001
 EXPOSE 3001
-CMD ["bun", "backend/server-hono.js"]
+CMD ["bun", "backend/backend.js"]

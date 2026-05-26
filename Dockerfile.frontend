@@ -1,22 +1,28 @@
 FROM oven/bun:latest AS build
 ARG VITE_AURA_WS_URL
 WORKDIR /app
-COPY package.json bun.lock ./
+COPY package.json bun.lock tsconfig.base.json ./
 COPY apps/app/package.json apps/app/tsconfig.json apps/app/
 COPY packages/aura/package.json packages/aura/
-COPY packages/plugins/ packages/plugins/
-RUN bun install --frozen-lockfile
+COPY packages/core/package.json packages/core/
+COPY packages/client-react/package.json packages/client-react/
+COPY packages/plugins/realtime/package.json packages/plugins/realtime/
+COPY packages/plugins/observability/package.json packages/plugins/observability/
+COPY packages/plugins/http-actions/package.json packages/plugins/http-actions/
+COPY packages/plugins/dashboard/package.json packages/plugins/dashboard/
+COPY packages/plugins/workflows/package.json packages/plugins/workflows/
+COPY packages/plugins/notifications/package.json packages/plugins/notifications/
+RUN bun install
 COPY . .
 ENV VITE_AURA_WS_URL=$VITE_AURA_WS_URL
-RUN bun run build --cwd apps/app
+RUN bun run --filter @aura-js/app build
 
 FROM oven/bun:latest
+USER bun
 WORKDIR /app
-RUN addgroup --system --gid 1001 aura \
-  && adduser --system --uid 1001 --ingroup aura aura \
-  && chown -R aura:aura /app
-COPY --from=build --chown=aura:aura /app/apps/app/.output ./.output
+# Preserve original directory structure so Bun's relative symlinks resolve
+COPY --from=build --chown=bun:bun /app/node_modules ./node_modules
+COPY --from=build --chown=bun:bun /app/apps/app/ ./apps/app/
 ENV PORT=3000
 EXPOSE 3000
-USER aura
-CMD ["bun", ".output/server/index.mjs"]
+CMD ["bun", "apps/app/dist/server/server.js"]
