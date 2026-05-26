@@ -1,9 +1,7 @@
-
-
 import { cache } from "react";
 import { db } from "./db";
 import type { AuraContext, AuraSource } from "./context";
-import type { OperationRef } from "@/aura/core/types";
+import type { OperationRef, AuraAgent, AuraScheduler } from "@/aura/core/types";
 import { createAuraLogger } from "@aura/observability";
 import { createBumpStore } from "./bump";
 import { createNotificationDispatcher } from "@aura/notifications";
@@ -15,9 +13,61 @@ import {
 } from "./transport/cookies";
 import { toPrismaJson } from "./json";
 import { createAuraStorage } from "./storage";
-import { createAuraScheduler } from "@aura/workflows";
-import { createAuraAgent } from "./ai/context-binding";
 import { v4 as uuidv4 } from "uuid";
+
+/**
+ * Lazy agent wrapper — avoids pulling `@langchain/core` (and its 13Mo of
+ * transitive deps) into the import graph until an operation actually calls
+ * `ctx.agent.*`. Each call resolves once and caches the real surface.
+ */
+function createLazyAgent(): AuraAgent {
+  let resolved: Promise<AuraAgent> | null = null;
+  const resolve = (): Promise<AuraAgent> => {
+    if (!resolved) {
+      resolved = import("./ai/context-binding").then((m) => m.createAuraAgent());
+    }
+    return resolved;
+  };
+  return {
+    async createThread(ref, opts) {
+      return (await resolve()).createThread(ref, opts);
+    },
+    async generateText(thread, opts) {
+      return (await resolve()).generateText(thread, opts);
+    },
+    async streamText(thread, opts) {
+      return (await resolve()).streamText(thread, opts);
+    },
+    async getUsage(opts) {
+      return (await resolve()).getUsage(opts);
+    },
+  };
+}
+
+/**
+ * Lazy scheduler wrapper — same idea: avoid loading `@aura/workflows` (and
+ * its scheduler runtime) until an operation actually schedules a job.
+ */
+function createLazyScheduler(): AuraScheduler {
+  let resolved: Promise<AuraScheduler> | null = null;
+  const resolve = (): Promise<AuraScheduler> => {
+    if (!resolved) {
+      resolved = import("@aura/workflows").then((m) => m.createAuraScheduler(db));
+    }
+    return resolved;
+  };
+  return {
+    async runAfter(delayMs, ref, input) {
+      return (await resolve()).runAfter(delayMs, ref, input);
+    },
+    async runAt(timestamp, ref, input) {
+      return (await resolve()).runAt(timestamp, ref, input);
+    },
+    async cancel(scheduledId) {
+      return (await resolve()).cancel(scheduledId);
+    },
+  };
+}
 
 /**
  * Session resolution is memoized per-request (React cache). Multiple Aura
@@ -172,8 +222,8 @@ export async function createAuraContext(
       set: cookieMutations,
     },
     storage: createAuraStorage(),
-    scheduler: createAuraScheduler(db),
-    agent: await createAuraAgent(),
+    scheduler: createLazyScheduler(),
+    agent: createLazyAgent(),
     // Typed `api` object refs — see `core/types.ts` for the OperationRef
     // contract. String names are accepted for backward compatibility.
     runQuery: runOperation as AuraContext["runQuery"],

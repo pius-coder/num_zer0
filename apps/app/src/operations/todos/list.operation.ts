@@ -6,7 +6,7 @@ export default defineOperationFn("todos.list")
   .query()
   .input(
     z.object({
-      status: z.enum(["PENDING", "IN_PROGRESS", "DONE"]).optional(),
+      statuses: z.array(z.enum(["PENDING", "IN_PROGRESS", "DONE"])).optional(),
       priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
       cursor: z.string().nullish(),
       numItems: z.number().int().positive().max(100).default(20),

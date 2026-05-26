@@ -1,2 +1,1 @@
-export { signInvalidationPayload, publishInvalidation } from "./invalidate";
-export type { WsClient, InvalidatePayload, PublishInvalidationOptions } from "./types";
+export { publishInvalidation, signPublishPayload } from "./publish";

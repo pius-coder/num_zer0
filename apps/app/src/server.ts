@@ -21,7 +21,7 @@ import type { Register } from "@tanstack/react-router";
 import "./operations/_registry";
 
 // Create the Aura Hono app instance
-const honoApp = createAuraHonoApp();
+const honoApp = await createAuraHonoApp();
 
 // Create the TanStack Start handler with streaming SSR
 const startFetch = createStartHandler(defaultStreamHandler);

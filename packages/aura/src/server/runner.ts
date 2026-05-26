@@ -1,5 +1,3 @@
-
-
 import {
   errorEnvelope,
   successEnvelope,
@@ -142,7 +140,7 @@ export async function runAuraOperation<TData = unknown>(
       : [];
 
     if (isMutating && invalidates.length > 0) {
-      void publishInvalidation({ keys: invalidates });
+      void publishInvalidation(invalidates);
     }
 
     return {

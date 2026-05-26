@@ -6,7 +6,6 @@ import type { BaseMessage } from "@langchain/core/messages";
 import { z } from "zod";
 import { db } from "../db";
 import type { AuraDb } from "../db";
-import { publishInvalidation } from "@aura/realtime";
 import { v4 as uuidv4 } from "uuid";
 import { toPrismaJson } from "../json";
 import type { AgentRef, OperationRef } from "@/aura/core/types";
@@ -337,15 +336,8 @@ export async function streamText(
     if (delta) {
       fullContent += delta;
       options.onDelta?.(delta);
-      void publishInvalidation({
-        keys: [`__agent_stream:${options.threadId}:${messageId}:${delta}`],
-      });
     }
   }
-
-  void publishInvalidation({
-    keys: [`__agent_stream_done:${options.threadId}:${messageId}`],
-  });
 
   await prisma.auraAgentMessage.create({
     data: { id: messageId, threadId: options.threadId, role: "assistant", content: fullContent },

@@ -1,5 +1,3 @@
-
-
 import { cache } from "react";
 import { errorEnvelope, successEnvelope, type AuraEnvelope } from "@/aura/core/envelope";
 import { AuraError, toPublicAuraError } from "@/aura/core/errors";
@@ -132,7 +130,7 @@ async function runAuraServerUncached<TData = unknown>(
     }
 
     if (isMutating && invalidates.length > 0) {
-      void publishInvalidation({ keys: invalidates });
+      void publishInvalidation(invalidates);
     }
 
     return successEnvelope({

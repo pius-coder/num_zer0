@@ -23,19 +23,5 @@ export default defineConfig({
       { find: /^#\/aura\/(.*)/, replacement: path.resolve(PKG_AURA, "$1") },
     ],
   },
-  plugins: [
-    devtools(),
-    tailwindcss(),
-    tanstackStart({
-      server: {
-        routeRules: {
-          "/aura/**": { proxy: "http://localhost:3001" },
-          "/aura-internal/**": { proxy: "http://localhost:3001" },
-          "/files/**": { proxy: "http://localhost:3001" },
-          "/health": { proxy: "http://localhost:3001" },
-        },
-      },
-    }),
-    viteReact(),
-  ],
+  plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
 });

@@ -1,4 +1,3 @@
-
 import "@/aura.registry";
 
 import type { ReactNode } from "react";
@@ -6,21 +5,21 @@ import { AuraProvider } from "@/aura/client";
 
 import { getClientOperationManifest } from "./registry";
 
+/**
+ * Server-side wrapper that seeds the client manifest synchronously so the
+ * entity cache is ready before the first render.
+ */
 export function AuraProviderShell({
   children,
   config,
   queryClient,
-  wsUrl,
 }: {
   children: ReactNode;
   config?: Parameters<typeof AuraProvider>[0]["config"];
   queryClient?: Parameters<typeof AuraProvider>[0]["queryClient"];
-  wsUrl?: string;
 }) {
-  const manifest = getClientOperationManifest();
-
   return (
-    <AuraProvider config={config} queryClient={queryClient} wsUrl={wsUrl} initialManifest={manifest}>
+    <AuraProvider config={config} queryClient={queryClient} initialManifest={getClientOperationManifest()}>
       {children}
     </AuraProvider>
   );

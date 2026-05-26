@@ -20,7 +20,6 @@ import {
   fetchManifest,
   AuraClientError,
 } from "./transport";
-import { useBroadcast } from "./provider";
 import { getOperationEntities } from "./manifest-cache";
 import { auraQueryKey, type AuraQueryKey } from "@/aura/shared/query-key";
 
@@ -98,6 +97,10 @@ export function useQuery(
   });
 }
 
+// ---------------------------------------------------------------------------
+// useMutation — options-based API
+// ---------------------------------------------------------------------------
+
 export interface UseMutationOptions_<TInput, TData> extends Omit<
   UseMutationOptions<TData, Error, TInput>,
   "mutationFn"
@@ -120,11 +123,57 @@ interface CallableMutation<TInput, TData> {
   data: TData | undefined;
   status: "idle" | "pending" | "success" | "error";
   reset: () => void;
+  failureCount: number;
+  failureReason: Error | null;
+  variables: TInput | undefined;
+  submittedAt: Date | undefined;
 }
+
+export interface UseMutationBuilder<TInput, TData, TContext = unknown> {
+  (input: TInput): Promise<TData>;
+  mutate: UseMutationResult<TData, Error, TInput>["mutate"];
+  mutateAsync: UseMutationResult<TData, Error, TInput>["mutateAsync"];
+  isPending: boolean;
+  isIdle: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+  error: Error | null;
+  data: TData | undefined;
+  status: "idle" | "pending" | "success" | "error";
+  reset: () => void;
+  failureCount: number;
+  failureReason: Error | null;
+  variables: TInput | undefined;
+  submittedAt: Date | undefined;
+
+  onMutate<TNewContext>(
+    fn: (vars: TInput) => TNewContext | Promise<TNewContext>,
+  ): UseMutationBuilder<TInput, TData, TNewContext>;
+  onSuccess(
+    fn: (data: TData, vars: TInput, ctx: TContext) => void,
+  ): UseMutationBuilder<TInput, TData, TContext>;
+  onError(
+    fn: (err: Error, vars: TInput, ctx: TContext) => void,
+  ): UseMutationBuilder<TInput, TData, TContext>;
+  onSettled(
+    fn: (data: TData | undefined, err: Error | null, vars: TInput, ctx: TContext) => void,
+  ): UseMutationBuilder<TInput, TData, TContext>;
+}
+
+// Overloads — Order matters: builder (1 arg) before options (2 args).
+// useMutation(ref)          → builder
+// useMutation(ref, opts)    → callable (options path)
 
 export function useMutation<TRef extends OperationRef<"mutate" | "action">>(
   operationRef: TRef,
-  options?: UseMutationOptions_<
+): UseMutationBuilder<
+  NarrowOperationRef<TRef>["input"],
+  NarrowOperationRef<TRef>["data"]
+>;
+
+export function useMutation<TRef extends OperationRef<"mutate" | "action">>(
+  operationRef: TRef,
+  options: UseMutationOptions_<
     NarrowOperationRef<TRef>["input"],
     NarrowOperationRef<TRef>["data"]
   >,
@@ -132,50 +181,100 @@ export function useMutation<TRef extends OperationRef<"mutate" | "action">>(
   NarrowOperationRef<TRef>["input"],
   NarrowOperationRef<TRef>["data"]
 >;
+
 export function useMutation<TInput = void, TData = unknown>(
   operationName: string,
-  options?: UseMutationOptions_<TInput, TData>,
+): UseMutationBuilder<TInput, TData>;
+
+export function useMutation<TInput = void, TData = unknown>(
+  operationName: string,
+  options: UseMutationOptions_<TInput, TData>,
 ): CallableMutation<TInput, TData>;
+
 export function useMutation(
   operationRef: string | OperationRef,
-  options: UseMutationOptions_<unknown, unknown> = {},
+  options?: UseMutationOptions_<unknown, unknown>,
 ) {
-  const operationName = resolveOperationName(operationRef);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const broadcast = useBroadcast();
-  const {
-    params,
-    invalidate,
-    refresh = true,
-    showBumps = true,
-    onSuccess,
-    onError: userOnError,
-    ...mutationOptions
-  } = options;
+  const operationName = resolveOperationName(operationRef);
 
+  // Shared state across both paths
   const lastMetaRef = useRef<{
     invalidates: string[];
     refresh: boolean;
   } | null>(null);
+
+  // Builder path: callbacks are stored in a ref and set via builder methods
+  // Options path: callbacks are captured from the options object immediately
+  const callbacksRef = useRef<{
+    onMutate: ((vars: unknown) => unknown) | undefined;
+    onSuccess: ((data: unknown, vars: unknown, ctx: unknown) => void) | undefined;
+    onError: ((err: Error, vars: unknown, ctx: unknown) => void) | undefined;
+    onSettled: ((data: unknown, err: Error | null, vars: unknown, ctx: unknown) => void) | undefined;
+    invalidate: string[] | undefined;
+    params: unknown;
+    refresh: boolean;
+    showBumps: boolean;
+  }>({
+    onMutate: undefined,
+    onSuccess: undefined,
+    onError: undefined,
+    onSettled: undefined,
+    invalidate: undefined,
+    params: undefined,
+    refresh: true,
+    showBumps: true,
+  });
+
+  // Populate callbacks ref from options when provided.
+  // All Aura-specific fields are destructured; remaining keys
+  // (retry, gcTime, networkMode, mutationKey, etc.) are forwarded
+  // to TanStack Query via tanstackOptionsRef.
+  const tanstackOptionsRef = useRef<Record<string, unknown>>({});
+  if (options !== undefined) {
+    const {
+      params,
+      invalidate,
+      refresh = true,
+      showBumps = true,
+      onMutate,
+      onSuccess,
+      onError,
+      onSettled,
+      ...tanstackOptions
+    } = options;
+    callbacksRef.current.onMutate = onMutate as (vars: unknown) => unknown;
+    callbacksRef.current.onSuccess = onSuccess as (data: unknown, vars: unknown, ctx: unknown) => void;
+    callbacksRef.current.onError = onError as (err: Error, vars: unknown, ctx: unknown) => void;
+    callbacksRef.current.onSettled = onSettled as (data: unknown, err: Error | null, vars: unknown, ctx: unknown) => void;
+    callbacksRef.current.invalidate = invalidate;
+    callbacksRef.current.params = params;
+    callbacksRef.current.refresh = refresh;
+    callbacksRef.current.showBumps = showBumps;
+    tanstackOptionsRef.current = tanstackOptions as Record<string, unknown>;
+  }
 
   const mutation = useTanStackMutation({
     mutationFn: async (input: unknown) => {
       const result = await callAuraOperationWithMeta<unknown>({
         operationName,
         input,
-        params,
+        params: callbacksRef.current.params,
       });
-      if (showBumps) displayAuraBumps(result.meta.bumps);
+      if (callbacksRef.current.showBumps) displayAuraBumps(result.meta.bumps);
       lastMetaRef.current = {
         invalidates: result.meta.invalidates,
         refresh: result.meta.refresh,
       };
       return result.data;
     },
-    async onSuccess(data, variables, onMutateResult, context) {
+    onMutate(variables: unknown) {
+      return callbacksRef.current.onMutate?.(variables) as unknown;
+    },
+    async onSuccess(data: unknown, variables: unknown, context: unknown) {
       const meta = lastMetaRef.current;
-      const explicitKeys = invalidate?.length ? invalidate : [];
+      const explicitKeys = callbacksRef.current.invalidate?.length ? callbacksRef.current.invalidate : [];
       const entityKeys = meta?.invalidates?.length ? meta.invalidates : [];
       const allKeys = [...new Set([...explicitKeys, ...entityKeys])];
       if (allKeys.length === 0) allKeys.push(operationName);
@@ -194,14 +293,19 @@ export function useMutation(
         },
       });
 
-      const broadcastKeys = [...new Set([...entityKeys, operationName])];
-      broadcast(broadcastKeys);
+      if (typeof BroadcastChannel !== "undefined") {
+        try {
+          const bc = new BroadcastChannel("aura:realtime");
+          bc.postMessage({ id: crypto.randomUUID(), keys: allKeys });
+          bc.close();
+        } catch { /* ignore */ }
+      }
 
-      if (refresh && meta?.refresh) router.invalidate();
-      await onSuccess?.(data, variables, onMutateResult, context);
+      if (callbacksRef.current.refresh && meta?.refresh) router.invalidate();
+      await callbacksRef.current.onSuccess?.(data, variables, context);
     },
-    onError(error, variables, onMutateResult, context) {
-      if (showBumps) {
+    onError(error: Error, variables: unknown, context: unknown) {
+      if (callbacksRef.current.showBumps) {
         const isFieldError =
           error instanceof AuraClientError &&
           error.fieldErrors &&
@@ -211,9 +315,12 @@ export function useMutation(
           toast.error(error.message || "Une erreur est survenue");
         }
       }
-      userOnError?.(error, variables, onMutateResult, context);
+      callbacksRef.current.onError?.(error, variables, context);
     },
-    ...mutationOptions,
+    onSettled(data: unknown, error: Error | null, variables: unknown, context: unknown) {
+      callbacksRef.current.onSettled?.(data, error, variables, context);
+    },
+    ...(tanstackOptionsRef.current as UseMutationOptions<unknown, Error, unknown, unknown>),
   });
 
   const callable = (input: unknown) => mutation.mutateAsync(input);
@@ -229,10 +336,48 @@ export function useMutation(
     data: { get: () => mutation.data },
     status: { get: () => mutation.status },
     reset: { get: () => mutation.reset },
+    failureCount: { get: () => mutation.failureCount },
+    failureReason: { get: () => mutation.failureReason },
+    variables: { get: () => mutation.variables },
+    submittedAt: { get: () => mutation.submittedAt },
   });
+
+  // Builder path: attach chainable methods
+  if (options === undefined) {
+    Object.defineProperties(callable, {
+      onMutate: {
+        value: (fn: (vars: unknown) => unknown) => {
+          callbacksRef.current.onMutate = fn;
+          return callable;
+        },
+      },
+      onSuccess: {
+        value: (fn: (data: unknown, vars: unknown, ctx: unknown) => void) => {
+          callbacksRef.current.onSuccess = fn;
+          return callable;
+        },
+      },
+      onError: {
+        value: (fn: (err: Error, vars: unknown, ctx: unknown) => void) => {
+          callbacksRef.current.onError = fn;
+          return callable;
+        },
+      },
+      onSettled: {
+        value: (fn: (data: unknown, err: Error | null, vars: unknown, ctx: unknown) => void) => {
+          callbacksRef.current.onSettled = fn;
+          return callable;
+        },
+      },
+    });
+  }
 
   return callable;
 }
+
+// ---------------------------------------------------------------------------
+// useAuraManifest
+// ---------------------------------------------------------------------------
 
 export function useAuraManifest() {
   return useTanStackQuery({

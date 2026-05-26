@@ -1,0 +1,9 @@
+node_modules
+.git
+.next
+.vinxi
+.tanstack
+*.log
+.env
+.env.local
+.env.production

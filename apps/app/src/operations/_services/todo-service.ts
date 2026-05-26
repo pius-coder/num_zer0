@@ -3,7 +3,7 @@ import { AuraError } from "@/aura/core/errors";
 
 export class TodoService extends AuraService {
   async list(input: {
-    status?: "PENDING" | "IN_PROGRESS" | "DONE";
+    statuses?: ("PENDING" | "IN_PROGRESS" | "DONE")[];
     priority?: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
     cursor?: string | null;
     numItems: number;
@@ -11,7 +11,7 @@ export class TodoService extends AuraService {
   }) {
     return this.paginate(this.db.todo, {
       where: {
-        ...(input.status && { status: input.status }),
+        ...(input.statuses?.length && { status: { in: input.statuses } }),
         ...(input.priority && { priority: input.priority }),
         ...(input.search && {
           OR: [

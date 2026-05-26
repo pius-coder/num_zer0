@@ -1,8 +1,8 @@
 import { createRootRoute, HeadContent, Scripts, Outlet } from '@tanstack/react-router'
-import { AuraProvider } from '@/aura/client'
-import { AuraBumpToaster } from '@/aura/ui'
+import { AuraProviderShell } from '@/aura/server/manifest-injector'
+import { AuraBumpToaster } from '@/aura/ui/aura-bump-toaster'
 
-import appCss from '../styles.css?url'
+import '../styles.css'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -10,9 +10,6 @@ export const Route = createRootRoute({
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'Todo App' },
-    ],
-    links: [
-      { rel: 'stylesheet', href: appCss },
     ],
   }),
   component: RootDocument,
@@ -25,10 +22,10 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
-        <AuraProvider>
+        <AuraProviderShell>
           <Outlet />
           <AuraBumpToaster />
-        </AuraProvider>
+        </AuraProviderShell>
         <Scripts />
       </body>
     </html>

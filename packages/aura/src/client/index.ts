@@ -20,6 +20,7 @@ export {
 export type {
   AuraQueryKey,
   UseMutationOptions_ as UseMutationOptions,
+  UseMutationBuilder,
   UseQueryOptions_ as UseQueryOptions,
 } from "./hooks";
 export { useAuraForm } from "./form";
