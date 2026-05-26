@@ -19,6 +19,11 @@
 
 **Fichiers modifiés :** `csrf.ts`, `csrf-middleware.ts`, `auth.ts`, `hono-app.ts`, `package.json` (apps/app), `Dockerfile.backend`, `list/toggle/create/delete/update.operation.ts`, `todo-service.ts`.
 
+8. **Auth ops server importées** — `aura.registry.ts` importe `@/aura/server/auth/operations`.
+9. **Login/Register UI** — Routes `/login` et `/register` avec formulaires phone-based (countryCode + phoneNumber + password). AuraGuard sur la page todo (redirect → `/login`).
+
+**Fichiers modifiés :** `aura.registry.ts`, `login.tsx`, `register.tsx`, `index.tsx` (route todo).
+
 ## 2026-05-26 | Split Déploiement | Modifié
 
 **Fix 4 fuites d'injection d'environnement bloquant le déploiement split (Convex-style)**

@@ -1,6 +1,7 @@
 
 
 import "@/operations/_registry";
+import "@/aura/server/auth/operations";
 
 export {
   getClientOperationManifest,

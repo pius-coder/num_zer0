@@ -180,10 +180,11 @@ num_zer0/
 | 2026-05-25 | Phase 5: Nettoyage — wrappers supprimés | ✅ | *(courant)* |
 | 2026-05-26 | Déploiement: fusion WS dans Hono backend, 2 Dockerfiles, pure SSR | ✅ | *(courant)* |
 | 2026-05-26 | Thème 5: Sécurité Production — 7 correctifs bloquants | ✅ | *(courant)* |
+| 2026-05-26 | Login/Register UI — auth ops import, routes, AuraGuard | ✅ | *(courant)* |
 
 ## Prochaine action
 
-**Prochaine phase : Phase 4 (CLI) ou Phase 5 (nettoyage monolithe — suppression de packages/aura/).**
+**Test manuel : démarrer l'app, créer un compte, se connecter, vérifier accès todos avec ownership.**
 
 ---
 

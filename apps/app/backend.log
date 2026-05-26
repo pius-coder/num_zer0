@@ -1,0 +1,5 @@
+[aura:backend] listening on :3001 (+WS /ws)
+[aura] HEAD /manifest 404 2.1ms
+[aura] POST /aura/todos.create 403 1.0ms
+[aura] GET /manifest 404 0.9ms
+[aura] POST /aura/todos.create 403 1.1ms

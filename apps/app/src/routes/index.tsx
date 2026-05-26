@@ -9,6 +9,7 @@ import { Checkbox } from "@/aura/ui/checkbox";
 import { NativeSelect } from "@/aura/ui/native-select";
 import { AuraEmptyState } from "@/aura/ui/aura-empty-state";
 import { AuraLoadingSkeleton } from "@/aura/ui/aura-loading-skeleton";
+import { AuraGuard } from "@/aura/client/guard";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({ component: TodoApp });
@@ -27,6 +28,14 @@ const FILTERS = [
 ];
 
 function TodoApp() {
+  return (
+    <AuraGuard redirectTo="/login">
+      <TodoContent />
+    </AuraGuard>
+  );
+}
+
+function TodoContent() {
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [newTitle, setNewTitle] = useState("");
