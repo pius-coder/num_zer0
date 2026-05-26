@@ -25,4 +25,4 @@ COPY --from=build --chown=bun:bun /app/node_modules ./node_modules
 COPY --from=build --chown=bun:bun /app/apps/app/ ./apps/app/
 ENV PORT=3000
 EXPOSE 3000
-CMD ["bun", "apps/app/dist/server/server.js"]
+CMD ["bun", "apps/app/.output/server/index.mjs"]
