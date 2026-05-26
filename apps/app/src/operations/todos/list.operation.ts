@@ -14,7 +14,7 @@ export default defineOperationFn("todos.list")
     }),
   )
   .entities(["Todo"])
-  .public()
+  .auth()
   .handler(async ({ ctx, input }) => {
     return new TodoService(ctx).list(input);
   });

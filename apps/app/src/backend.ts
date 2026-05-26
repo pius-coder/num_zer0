@@ -1,6 +1,7 @@
 import { websocket } from "hono/bun";
 import { createAuraHonoApp } from "@aura-js/core/server/hono-app";
 import { addRealtimeRoutes } from "@aura/realtime/server";
+import "./aura.registry";
 
 const app = await createAuraHonoApp();
 addRealtimeRoutes(app);

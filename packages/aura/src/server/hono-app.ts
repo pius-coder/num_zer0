@@ -9,6 +9,8 @@ import { getClientOperationManifest } from "./registry";
 import { runAuraOperation } from "./runner";
 import { optionalApiKeyMiddleware } from "./middleware/auth";
 import { requestLogger } from "./middleware/logger";
+import { rateLimitMiddleware } from "./middleware/rate-limit";
+import type { DashboardDependencies } from "@aura/dashboard";
 
 function dashboardEnabled(): boolean {
   const v = process.env.AURA_DASHBOARD_ENABLED;
@@ -32,6 +34,13 @@ export async function createAuraHonoApp() {
   }));
   app.use("*", requestLogger());
 
+  const bridgeLimiter = rateLimitMiddleware({
+    key: (c) => `bridge:${c.req.header("x-forwarded-for") ?? "anon"}`,
+    limit: 120,
+    windowMs: 60_000,
+  });
+
+  app.use("/aura/*", bridgeLimiter);
   app.route("/aura", auraBridgeRouter());
   app.route("/aura-internal", auraInternalRouter());
   app.route("/files", auraFilesRouter());
@@ -39,13 +48,22 @@ export async function createAuraHonoApp() {
   app.route("/aura-http", auraHttpActionsRouter());
 
   if (dashboardEnabled()) {
-    // Conditional dynamic import: the dashboard plugin (and its UI assets)
-    // stays out of the import graph entirely when AURA_DASHBOARD_ENABLED=0
-    // (e.g. production by default).
+    if (!process.env.AURA_API_KEY) {
+      console.warn("[aura] AURA_API_KEY not set — dashboard is unprotected!");
+    }
+
+    const dashboardLimiter = rateLimitMiddleware({
+      key: (c) => `dashboard:${c.req.header("x-forwarded-for") ?? "anon"}`,
+      limit: 60,
+      windowMs: 60_000,
+    });
+
+    app.use("/dashboard/*", dashboardLimiter);
+
     const { auraDashboardRouter } = await import("@aura/dashboard");
     app.route("/dashboard", auraDashboardRouter({
       getClientOperationManifest,
-      runAuraOperation,
+      runAuraOperation: runAuraOperation as unknown as DashboardDependencies["runAuraOperation"],
       optionalApiKeyMiddleware,
     }));
   }

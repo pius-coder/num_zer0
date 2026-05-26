@@ -8,12 +8,9 @@ function csrfSecret(): string {
     process.env.AURA_INTERNAL_SECRET;
 
   if (provided) return provided;
-  if (process.env.NODE_ENV === "production") {
-    throw new Error(
-      "[aura] AURA_CSRF_SECRET (or AURA_INTERNAL_SECRET) is required in production.",
-    );
-  }
-  return "aura-dev-csrf-secret";
+  throw new Error(
+    "[aura] AURA_CSRF_SECRET (or AURA_INTERNAL_SECRET) is required.",
+  );
 }
 
 function base64Url(bytes: Uint8Array): string {

@@ -15,7 +15,7 @@ export default defineOperationFn("todos.update")
     }),
   )
   .entities(["Todo"])
-  .public()
+  .auth()
   .handler(async ({ ctx, input }) => {
     return new TodoService(ctx).update(input);
   });

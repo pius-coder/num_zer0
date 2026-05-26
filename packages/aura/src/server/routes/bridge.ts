@@ -130,8 +130,8 @@ export function auraBridgeRouter(): Hono {
     // secret). Otherwise the user would be permanently stuck behind a
     // CSRF wall on every POST until they manually clear cookies.
     const needsReissue = !existing || !(await verifyCsrfToken(existing));
+    const token = needsReissue ? await createCsrfToken() : existing;
     if (needsReissue) {
-      const token = await createCsrfToken();
       const cookie: AuraCookieMutation = {
         name: csrfCookieName(),
         value: token,
@@ -146,7 +146,7 @@ export function auraBridgeRouter(): Hono {
       };
       applyCookieMutations(c, [cookie]);
     }
-    return c.json(getClientOperationManifest(), 200);
+    return c.json({ ...getClientOperationManifest(), _csrf: token }, 200);
   });
 
   // -------------------------------------------------------------------------

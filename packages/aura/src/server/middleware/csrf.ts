@@ -46,16 +46,10 @@ import {
  * are reused as-is — this middleware is only the HTTP plumbing.
  */
 export function csrfMiddleware(): MiddlewareHandler {
-  // Requirement 7.5 — fail fast at startup if the signing secret is missing
-  // in production. We don't rely on `csrfSecret()` throwing lazily inside
-  // `verifyCsrfToken`, because that would defer the failure to the first
-  // request rather than catching it at boot.
-  if (process.env.NODE_ENV === "production") {
-    if (!process.env.AURA_CSRF_SECRET && !process.env.AURA_INTERNAL_SECRET) {
-      throw new Error(
-        "[aura] AURA_CSRF_SECRET (or AURA_INTERNAL_SECRET) is required in production.",
-      );
-    }
+  if (!process.env.AURA_CSRF_SECRET && !process.env.AURA_INTERNAL_SECRET) {
+    throw new Error(
+      "[aura] AURA_CSRF_SECRET (or AURA_INTERNAL_SECRET) is required.",
+    );
   }
 
   return async (c, next) => {

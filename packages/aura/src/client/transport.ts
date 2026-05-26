@@ -17,6 +17,8 @@ const defaultConfig: AuraClientConfig = {
   csrfHeaderName: "x-aura-csrf",
 };
 
+let csrfToken: string | null = null;
+
 let activeConfig: AuraClientConfig = defaultConfig;
 
 export function configureAuraClient(config: Partial<AuraClientConfig>): void {
@@ -70,6 +72,10 @@ export async function callAuraOperationWithMeta<TData = unknown>(
 ): Promise<AuraOperationResult<TData>> {
   const config = getAuraClientConfig();
 
+  function csrfHeaderValue(): string {
+    return csrfToken ?? readCookie(config.csrfCookieName) ?? "";
+  }
+
   async function send(): Promise<{ response: Response; envelope: AuraEnvelope<TData> | null }> {
     const response = await fetch(
       operationUrl(options.operationName),
@@ -78,7 +84,7 @@ export async function callAuraOperationWithMeta<TData = unknown>(
         credentials: "include",
         headers: {
           "content-type": "application/json",
-          [config.csrfHeaderName]: readCookie(config.csrfCookieName) ?? "",
+          [config.csrfHeaderName]: csrfHeaderValue(),
         },
         body: JSON.stringify({
           input: options.input,
@@ -106,10 +112,16 @@ export async function callAuraOperationWithMeta<TData = unknown>(
     /csrf/i.test(envelope.error.message)
   ) {
     try {
-      await fetch(operationUrl("_manifest"), {
+      const res = await fetch(operationUrl("_manifest"), {
         method: "GET",
         credentials: "include",
       });
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data === "object" && data !== null && "_csrf" in data) {
+          csrfToken = data._csrf as string;
+        }
+      }
     } catch {
       /* fall through and surface the original error */
     }
@@ -162,7 +174,11 @@ export async function fetchAuraManifest<TManifest>(
     });
   }
 
-  return (await response.json()) as TManifest;
+  const data = await response.json();
+  if (typeof data === "object" && data !== null && "_csrf" in data) {
+    csrfToken = data._csrf as string;
+  }
+  return data as TManifest;
 }
 
 export const fetchManifest = fetchAuraManifest;

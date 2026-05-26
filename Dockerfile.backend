@@ -25,6 +25,7 @@ USER bun
 WORKDIR /app
 COPY --from=build --chown=bun:bun /app/apps/app/build/backend ./backend
 COPY --from=build --chown=bun:bun /app/apps/app/src/generated ./generated
+COPY --from=build --chown=bun:bun /app/packages/plugins/dashboard/src/frontend ./backend/frontend
 ENV PORT=3001
 EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \

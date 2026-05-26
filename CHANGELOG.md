@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-05-26 | Sécurité Production | Ajouté/Modifié
+
+**Correctifs sécurité bloquants pour le déploiement production**
+
+1. **Dashboard SPA build** — `build:backend` copie désormais `frontend/index.html` dans le build. Dockerfile.backend mis à jour. Le "Dashboard SPA not found" est résolu.
+2. **Rate limiting** — Middleware monté sur `/aura/*` (120 req/min/IP) et `/dashboard/*` (60 req/min/IP).
+3. **CSRF secret** — Plus de fallback hardcodé `"aura-dev-csrf-secret"`. Crash au boot si `AURA_CSRF_SECRET` ou `AURA_INTERNAL_SECRET` pas défini, même en dev.
+4. **Auth ops todos** — Toutes les opérations passent de `.public()` à `.auth()`. Session requise.
+5. **Ownership checks** — `todo-service.ts` filtre par `userId` sur les listes, vérifie la propriété sur update/delete/toggle, et assigne `userId` à la création.
+6. **Dashboard API** — Warning au boot si `AURA_API_KEY` pas configurée. `optionalApiKeyMiddleware` log un warning à chaque requête non authentifiée.
+7. **`csrfMiddleware`** — Vérification startup non conditionnelle (plus seulement en production).
+
+**Fichiers modifiés :** `csrf.ts`, `csrf-middleware.ts`, `auth.ts`, `hono-app.ts`, `package.json` (apps/app), `Dockerfile.backend`, `list/toggle/create/delete/update.operation.ts`, `todo-service.ts`.
+
 ## 2026-05-26 | Split Déploiement | Modifié
 
 **Fix 4 fuites d'injection d'environnement bloquant le déploiement split (Convex-style)**

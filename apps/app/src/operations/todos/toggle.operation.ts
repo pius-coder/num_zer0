@@ -6,7 +6,7 @@ export default defineOperationFn("todos.toggle")
   .mutate()
   .input(z.object({ id: z.string() }))
   .entities(["Todo"])
-  .public()
+  .auth()
   .handler(async ({ ctx, input }) => {
     return new TodoService(ctx).toggle(input);
   });

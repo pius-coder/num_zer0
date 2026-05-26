@@ -57,7 +57,10 @@ export function apiKeyMiddleware(): MiddlewareHandler {
 
 export function optionalApiKeyMiddleware(): MiddlewareHandler {
   return async (c, next) => {
-    if (!process.env.AURA_API_KEY) return next();
+    if (!process.env.AURA_API_KEY) {
+      console.warn("[aura] AURA_API_KEY not set — dashboard API has no authentication.");
+      return next();
+    }
     const key = c.req.header(apiKeyHeaderName) ?? bearerToken(c.req.header("authorization"));
     if (!verifyApiKey(key)) {
       return c.json(forbidden("Clé API invalide."), 403);
