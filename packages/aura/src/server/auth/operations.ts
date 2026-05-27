@@ -131,10 +131,8 @@ export const authRegister = defineOperationFn("auth.register")
     }
 
     const passwordHash = await hashPassword(input.password);
-    const refSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
     const user = await ctx.db.auraUser.create({
       data: {
-        referralCode: `GI${refSuffix}`,
         phoneIdentities: {
           create: {
             countryCode: phone.countryCode,
