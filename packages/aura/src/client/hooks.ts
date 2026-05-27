@@ -305,6 +305,15 @@ export function useMutation(
       await callbacksRef.current.onSuccess?.(data, variables, context);
     },
     onError(error: Error, variables: unknown, context: unknown) {
+      if (
+        error instanceof AuraClientError &&
+        (error.code === "UNAUTHORIZED" || error.status === 401)
+      ) {
+        try {
+          router.navigate({ to: "/login" });
+        } catch { /* navigate peut échouer hors route */ }
+        return;
+      }
       if (callbacksRef.current.showBumps) {
         const isFieldError =
           error instanceof AuraClientError &&
