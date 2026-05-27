@@ -131,21 +131,19 @@ export function auraBridgeRouter(): Hono {
     // CSRF wall on every POST until they manually clear cookies.
     const needsReissue = !existing || !(await verifyCsrfToken(existing));
     const token = needsReissue ? await createCsrfToken() : existing;
-    if (needsReissue) {
-      const cookie: AuraCookieMutation = {
-        name: csrfCookieName(),
-        value: token,
-        options: {
-          httpOnly: false,
-          secure: isSecureCookieEnvironment(),
-          sameSite: getSameSite(),
-          path: "/",
-          // 30-day rolling lifetime — refreshed on every login.
-          maxAge: 60 * 60 * 24 * 30,
-        },
-      };
-      applyCookieMutations(c, [cookie]);
-    }
+    const cookie: AuraCookieMutation = {
+      name: csrfCookieName(),
+      value: token,
+      options: {
+        httpOnly: false,
+        secure: isSecureCookieEnvironment(),
+        sameSite: getSameSite(),
+        path: "/",
+        // 30-day rolling lifetime — refreshed on every login.
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    };
+    applyCookieMutations(c, [cookie]);
     return c.json({ ...getClientOperationManifest(), _csrf: token }, 200);
   });
 
