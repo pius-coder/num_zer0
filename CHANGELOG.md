@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-05-27 | Fix Secure cookie inlined to false in backend bundle | Modifié
+
+**Bug login → /login en prod (cookie session jamais stocké car `SameSite=None` sans `Secure`)**
+
+Symptôme: `POST /aura/auth/login 200` puis `POST /aura/auth/me 401` immédiat → AuraGuard redirige vers `/login` indéfiniment. Le navigateur rejette silencieusement le cookie `aura_session` car `SameSite=None` requiert `Secure`.
+
+Cause racine: `bun build --target bun` inline `process.env.NODE_ENV === "production"` au build-time. Le build du Dockerfile.backend ne définissait pas `NODE_ENV=production`, donc l'expression a été figée à `false` → `isSecureCookieEnvironment()` retournait `false` au runtime malgré `NODE_ENV=production`.
+
+- `packages/aura/src/server/transport/cookies.ts` — `isSecureCookieEnvironment()` lit `process.env["NODE_ENV"]` (bracket notation, non-inlined par Bun) ; ajout d'un fallback `AURA_SAMESITE=none → Secure=true` (un cookie `SameSite=None` doit toujours être `Secure`).
+- `Dockerfile.backend` — ajout de `ENV NODE_ENV=production` dans l'image runtime (le build stage hérite déjà de l'image, mais on s'assure aussi côté run).
+
+---
+
+## 2026-05-27 | CSRF Origin Header Check (Copenhagen Book) | Ajouté/Supprimé
+
+**Ajout Origin header check comme première ligne de défense CSRF, suppression patches temporaires**
+
+- `packages/aura/src/server/middleware/csrf.ts` — Ajout de la vérification Origin header avant la validation CSRF token. Si Origin est présent et correspond à `AURA_APP_URL`, le middleware skip la vérification token. Si Origin ne correspond pas, retour 403. Si Origin absent, fallback vers la vérification token existante.
+- `packages/aura/src/server/middleware/csrf.test.ts` — Ajout de 6 nouveaux tests (matching Origin, mismatched Origin, Origin absent, Origin vide, safe method avec Origin hostile).
+- `packages/aura/src/server/routes/bridge.ts` — Suppression des 3 headers anti-cache (`Cache-Control`, `Pragma`, `Expires`) du handler `GET /_manifest`. Plus nécessaires car le Origin check rend le cookie CSRF optionnel.
+- `packages/aura/src/client/transport.ts` — Suppression de la fonction `setCsrfCookie()` (fallback CDN). Plus nécessaire car le Origin check évite la dépendance au cookie CSRF pour les requêtes first-party.
+
+**Fichiers modifiés :** `csrf.ts`, `csrf.test.ts`, `bridge.ts`, `transport.ts`.
+
+---
+
 ## 2026-05-27 | Cross-Origin SameSite | Modifié
 
 **SameSite cookie configurable via env var AURA_SAMESITE**
