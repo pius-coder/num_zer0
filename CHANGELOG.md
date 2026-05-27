@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-05-27 | Cross-Origin SameSite | Modifié
+
+**SameSite cookie configurable via env var AURA_SAMESITE**
+
+- `packages/aura/src/server/transport/cookies.ts` — ajout de `getSameSite()` qui lit `AURA_SAMESITE` (défaut `lax`, valeurs `lax|strict|none`)
+- `packages/aura/src/server/create-context.ts` — 3 occurrences remplacées par `getSameSite()`
+- `packages/aura/src/server/auth/session.ts` — 1 occurrence remplacée par `getSameSite()`
+- `packages/aura/src/server/routes/bridge.ts` — 1 occurrence remplacée par `getSameSite()`
+- `packages/plugins/auth/src/cookies.ts` — ajout de `getSameSite()`
+- `packages/plugins/auth/src/session.ts` — 1 occurrence remplacée
+- `packages/plugins/auth/src/index.ts` — 3 occurrences remplacées
+
+Le cookie SameSite est désormais configurable en déploiement split (frontend 3000, backend 3001) via `AURA_SAMESITE=none`.
+
+---
+
+## 2026-05-26 | Split Déploiement | Modifié
+
+**Dashboard SPA robuste en Docker split**
+
+- `@aura/dashboard` résout désormais `index.html` via `AURA_DASHBOARD_SPA_PATH`, `process.cwd()/frontend`, `process.cwd()/backend/frontend`, puis `__dirname/frontend`.
+- Corrige le fallback `Dashboard SPA not found` quand le bundle backend tourne depuis `/app` avec la SPA copiée dans `/app/backend/frontend`.
+
+**Fichier modifié :** `packages/plugins/dashboard/src/routes.ts`.
+
 ## 2026-05-26 | Sécurité Production | Ajouté/Modifié
 
 **Correctifs sécurité bloquants pour le déploiement production**

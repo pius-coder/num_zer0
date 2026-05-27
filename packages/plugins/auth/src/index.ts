@@ -1,6 +1,6 @@
 import type { AuraAuthContext, AuraPlugin } from "@aura/core";
 import { createAuthPluginOperations } from "./operations";
-import { csrfCookieName, isSecureCookieEnvironment, sessionCookieName } from "./cookies";
+import { csrfCookieName, isSecureCookieEnvironment, getSameSite, sessionCookieName } from "./cookies";
 
 export interface AuthPluginConfig {
   db: {
@@ -40,7 +40,7 @@ export function createAuthPlugin(config: AuthPluginConfig): AuraPlugin {
               options: {
                 httpOnly: true,
                 secure: isSecureCookieEnvironment(),
-                sameSite: "lax",
+                sameSite: getSameSite(),
                 path: "/",
                 maxAge: 30 * 24 * 60 * 60,
                 expires: expiresAt,
@@ -54,7 +54,7 @@ export function createAuthPlugin(config: AuthPluginConfig): AuraPlugin {
               options: {
                 httpOnly: true,
                 secure: isSecureCookieEnvironment(),
-                sameSite: "lax",
+                sameSite: getSameSite(),
                 path: "/",
                 maxAge: 0,
                 expires: new Date(0),
@@ -66,7 +66,7 @@ export function createAuthPlugin(config: AuthPluginConfig): AuraPlugin {
               options: {
                 httpOnly: false,
                 secure: isSecureCookieEnvironment(),
-                sameSite: "lax",
+                sameSite: getSameSite(),
                 path: "/",
                 maxAge: 0,
                 expires: new Date(0),

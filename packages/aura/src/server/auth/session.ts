@@ -9,6 +9,7 @@ import {
   sessionCookieName,
   csrfCookieName,
   isSecureCookieEnvironment,
+  getSameSite,
 } from "../transport/cookies";
 import { AuraError } from "@/aura/core/errors";
 
@@ -120,7 +121,7 @@ export async function createSession(
     options: {
       httpOnly: false,
       secure: isSecureCookieEnvironment(),
-      sameSite: "lax",
+      sameSite: getSameSite(),
       path: "/",
       maxAge: SESSION_TTL_SECONDS,
       expires: expiresAt,

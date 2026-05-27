@@ -181,6 +181,7 @@ num_zer0/
 | 2026-05-26 | Déploiement: fusion WS dans Hono backend, 2 Dockerfiles, pure SSR | ✅ | *(courant)* |
 | 2026-05-26 | Thème 5: Sécurité Production — 7 correctifs bloquants | ✅ | *(courant)* |
 | 2026-05-26 | Login/Register UI — auth ops import, routes, AuraGuard | ✅ | *(courant)* |
+| 2026-05-26 | Split Déploiement — résolution robuste Dashboard SPA Docker | ✅ | *(courant)* |
 
 ## Prochaine action
 
@@ -211,6 +212,22 @@ num_zer0/
 | D15 | **NOUVEAU** `AuraService` = classe base pour la logique métier (backporté de luminous) | Les operations deviennent des thin handlers qui délèguent à `new Service(ctx).method()`. `AuraService` wrappe toutes les propriétés du contexte via des getters (`this.db`, `this.user`, `this.agent`, etc.). |
 | D16 | **NOUVEAU** Per-primitive context types (`AuraQueryContext`, `AuraMutationContext`, `AuraActionContext`) importés dans `packages/core/src/types.ts` | Narrowing type-safe du DB access par type d'opération. |
 | D17 | **NOUVEAU** 2 services déploiement : frontend (SSR pur, port 3000) + backend (Hono API + WS, port 3001) | Le WS broadcast est fusionné dans le backend Hono. Plus de serveur realtime standalone. |
+
+---
+
+## Session 2026-05-27: SameSite cookie configurable
+
+**Thème :** Cross-Origin SameSite
+
+**Statut :** DONE
+
+**Changements :**
+- `AURA_SAMESITE` env var (défaut `lax`, valeurs `lax|strict|none`) dans tous les endroits où SameSite était hardcodé
+- Fonction utilitaire `getSameSite()` dans `packages/aura/src/server/transport/cookies.ts` et `packages/plugins/auth/src/cookies.ts`
+- 6 emplacements runtime dans `packages/aura/` + 4 emplacements dans `packages/plugins/auth/` remplacés
+- Les tests utilisent encore `sameSite: "lax"` en dur — OK car ils testent la valeur par défaut
+
+**Vérification :** typecheck OK (aucune nouvelle erreur)
 
 ---
 

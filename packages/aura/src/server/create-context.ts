@@ -10,6 +10,7 @@ import {
   sessionCookieName,
   isSecureCookieEnvironment,
   parseCookieHeader,
+  getSameSite,
 } from "./transport/cookies";
 import { toPrismaJson } from "./json";
 import { createAuraStorage } from "./storage";
@@ -114,7 +115,7 @@ export async function createAuraContext(
       options: {
         httpOnly: true,
         secure: isSecureCookieEnvironment(),
-        sameSite: "lax",
+        sameSite: getSameSite(),
         path: "/",
         maxAge: 0,
       },
@@ -170,7 +171,7 @@ export async function createAuraContext(
           options: {
             httpOnly: true,
             secure: isSecureCookieEnvironment(),
-            sameSite: "lax",
+            sameSite: getSameSite(),
             path: "/",
             expires: expiresAt,
           },
@@ -183,7 +184,7 @@ export async function createAuraContext(
           options: {
             httpOnly: true,
             secure: isSecureCookieEnvironment(),
-            sameSite: "lax",
+            sameSite: getSameSite(),
             path: "/",
             maxAge: 0,
           },

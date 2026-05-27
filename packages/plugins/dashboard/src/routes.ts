@@ -21,11 +21,23 @@ const MAX_RUN_HISTORY = 200;
 
 function getSpaHtml(): string | null {
   if (spaHtml !== null) return spaHtml;
-  try {
-    spaHtml = readFileSync(join(__dirname, "frontend", "index.html"), "utf-8");
-  } catch {
-    spaHtml = "<html><body><h1>Dashboard SPA not found</h1></body></html>";
+  const candidates = [
+    process.env.AURA_DASHBOARD_SPA_PATH,
+    join(process.cwd(), "frontend", "index.html"),
+    join(process.cwd(), "backend", "frontend", "index.html"),
+    join(__dirname, "frontend", "index.html"),
+  ].filter((path): path is string => Boolean(path));
+
+  for (const path of candidates) {
+    try {
+      spaHtml = readFileSync(path, "utf-8");
+      return spaHtml;
+    } catch {
+      continue;
+    }
   }
+
+  spaHtml = "<html><body><h1>Dashboard SPA not found</h1></body></html>";
   return spaHtml;
 }
 

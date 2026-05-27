@@ -7,7 +7,7 @@ import { csrfMiddleware } from "@/aura/server/middleware/csrf";
 import { getClientOperationManifest } from "@/aura/server/registry";
 import { runAuraOperation } from "@/aura/server/runner";
 import type { AuraCookieMutation } from "@/aura/core/types";
-import { csrfCookieName, parseCookieHeader, isSecureCookieEnvironment } from "@/aura/server/transport/cookies";
+import { csrfCookieName, parseCookieHeader, isSecureCookieEnvironment, getSameSite } from "@/aura/server/transport/cookies";
 import { createCsrfToken, verifyCsrfToken } from "@/aura/server/transport/csrf";
 import { v4 as uuidv4 } from "uuid";
 
@@ -138,7 +138,7 @@ export function auraBridgeRouter(): Hono {
         options: {
           httpOnly: false,
           secure: isSecureCookieEnvironment(),
-          sameSite: "lax",
+          sameSite: getSameSite(),
           path: "/",
           // 30-day rolling lifetime — refreshed on every login.
           maxAge: 60 * 60 * 24 * 30,

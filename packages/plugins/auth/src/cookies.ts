@@ -20,3 +20,10 @@ export function csrfCookieName(): string {
 export function isSecureCookieEnvironment(): boolean {
   return process.env.NODE_ENV === "production";
 }
+
+export function getSameSite(): "lax" | "strict" | "none" {
+  const value = process.env.AURA_SAMESITE?.toLowerCase();
+  if (value === "strict") return "strict";
+  if (value === "none") return "none";
+  return "lax";
+}

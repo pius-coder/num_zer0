@@ -2,7 +2,7 @@ import { AuraError } from "@aura/core";
 import type { AuraContext } from "@aura/core";
 import { hashToken, randomToken, sha256 } from "./crypto";
 import { createCsrfToken } from "./csrf";
-import { parseCookieHeader, sessionCookieName, csrfCookieName, isSecureCookieEnvironment } from "./cookies";
+import { parseCookieHeader, sessionCookieName, csrfCookieName, isSecureCookieEnvironment, getSameSite } from "./cookies";
 
 const SESSION_TTL_DAYS = 30;
 const SESSION_TTL_SECONDS = SESSION_TTL_DAYS * 24 * 60 * 60;
@@ -121,7 +121,7 @@ export async function createSession(
     options: {
       httpOnly: false,
       secure: isSecureCookieEnvironment(),
-      sameSite: "lax",
+      sameSite: getSameSite(),
       path: "/",
       maxAge: SESSION_TTL_SECONDS,
       expires: expiresAt,

@@ -9,3 +9,10 @@ dist/
 .next/
 tmp/
 coverage/
+
+/.crew/
+/.crew
+!.crew/artifacts/
+!.crew/graphs/
+!.crew/artifacts/.gitkeep
+!.crew/graphs/.gitkeep
