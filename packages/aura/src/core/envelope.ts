@@ -15,6 +15,7 @@ export interface AuraSuccessEnvelope<TData> {
     requestId: string;
     bumps: AuraBump[];
     invalidates: string[];
+    readKeys: string[];
     refresh: boolean;
   };
 }
@@ -37,6 +38,7 @@ export function successEnvelope<TData>(args: {
   requestId: string;
   bumps: AuraBump[];
   invalidates: string[];
+  readKeys: string[];
   refresh: boolean;
 }): AuraSuccessEnvelope<TData> {
   return {
@@ -46,6 +48,7 @@ export function successEnvelope<TData>(args: {
       requestId: args.requestId,
       bumps: args.bumps,
       invalidates: args.invalidates,
+      readKeys: args.readKeys,
       refresh: args.refresh,
     },
   };

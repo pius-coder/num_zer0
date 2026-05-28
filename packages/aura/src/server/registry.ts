@@ -29,7 +29,6 @@ export function getClientOperationManifest(): AuraClientManifest {
         name: operation.name,
         type: operation.type,
         access: operation.access,
-        entities: [...operation.entities],
       }))
       .sort((left, right) => left.name.localeCompare(right.name)),
   };

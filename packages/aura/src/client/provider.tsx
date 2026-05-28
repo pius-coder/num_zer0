@@ -5,57 +5,45 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
-import { AuraRealtimeProvider } from "@aura/realtime/client";
+import { AuraRealtimeProvider, type RealtimeHandle } from "@aura/realtime/client";
 import { configureAura, type AuraClientConfig } from "./transport";
-import type { AuraClientManifest } from "@/aura/shared/manifest";
-import {
-  setManifestEntities,
-  getOperationEntities,
-} from "./manifest-cache";
+import { getReadKeys, collectActiveReadKeys } from "./read-registry";
 
-function manifestToEntityMap(
-  manifest: AuraClientManifest,
-): Record<string, string[]> {
-  const map: Record<string, string[]> = {};
-  for (const op of manifest.operations) {
-    map[op.name] = [...op.entities];
-  }
-  return map;
-}
-
-/**
- * Bridges realtime invalidations into the React Query cache.
- *
- * A query is invalidated when any of its observed entities — declared on
- * the operation manifest or attached via `query.meta.entities` — appears
- * in the broadcast key set.
- */
 const envWsUrl = (() => {
   const baked = import.meta.env.VITE_AURA_WS_URL as string | undefined;
   if (baked) return baked;
-  if (import.meta.env.DEV) return undefined;
   console.error(
-    "[aura] VITE_AURA_WS_URL is not set — realtime disabled in production build. " +
-    "Pass it via --build-arg VITE_AURA_WS_URL=wss://api.example.com/ws."
+    "[aura] VITE_AURA_WS_URL is not set — realtime disabled. " +
+    "Set it in .env.local (dev) or via --build-arg VITE_AURA_WS_URL=wss://api.example.com/ws (prod)."
   );
   return undefined;
 })();
 
-function AuraQueryInvalidator({ children }: { children: ReactNode }) {
+function AuraQueryInvalidator({
+  children,
+  realtimeRef,
+}: {
+  children: ReactNode;
+  realtimeRef: React.RefObject<RealtimeHandle | null>;
+}) {
   const queryClient = useQueryClient();
 
   function onInvalidate(keys: string[]) {
     const matched: string[] = [];
+    console.log("[aura:debug] realtime.onInvalidate called with keys:", keys);
     queryClient.invalidateQueries({
       predicate: (query) => {
-        const name = query.queryKey[1] as string;
-        const metaEntities = (query.meta?.entities as string[]) ?? [];
-        const manifestEntities = getOperationEntities(name);
-        const observed = new Set([...metaEntities, ...manifestEntities]);
-        const hit = keys.some((k) => k === name || observed.has(k));
-        if (hit) matched.push(name);
+        const reads = getReadKeys(query.queryKey);
+        if (!reads) {
+          const fallback = keys.includes(query.queryKey[1] as string);
+          console.log("[aura:debug] realtime predicate fallback", query.queryKey[1], "keys:", keys, "=>", fallback);
+          return fallback;
+        }
+        const hit = keys.some((k) => reads.has(k));
+        if (hit) matched.push(query.queryKey[1] as string);
+        console.log("[aura:debug] realtime predicate match", query.queryKey[1], "keys:", keys, "reads:", [...reads], "=>", hit);
         return hit;
       },
     });
@@ -64,8 +52,20 @@ function AuraQueryInvalidator({ children }: { children: ReactNode }) {
     }
   }
 
+  useEffect(() => {
+    const unsubscribe = queryClient.getQueryCache().subscribe(() => {
+      const union = collectActiveReadKeys(queryClient.getQueryCache());
+      realtimeRef.current?.setSubscriptions(union);
+    });
+    return unsubscribe;
+  }, [queryClient, realtimeRef]);
+
   return (
-    <AuraRealtimeProvider wsUrl={envWsUrl} onInvalidate={onInvalidate}>
+    <AuraRealtimeProvider
+      ref={realtimeRef}
+      wsUrl={envWsUrl}
+      onInvalidate={onInvalidate}
+    >
       {children}
     </AuraRealtimeProvider>
   );
@@ -75,26 +75,14 @@ export interface AuraClientProviderProps {
   children: ReactNode;
   config?: Partial<AuraClientConfig>;
   queryClient?: QueryClient;
-  /**
-   * Operation manifest serialized on the server. When provided, the client
-   * seeds its entity cache synchronously before the first render — removing
-   * the race that made cross-operation invalidation silently incomplete on
-   * initial mount.
-   */
-  initialManifest?: AuraClientManifest;
 }
 
 export function AuraClientProvider({
   children,
   config,
   queryClient,
-  initialManifest,
 }: AuraClientProviderProps) {
   if (config) configureAura(config);
-
-  if (initialManifest) {
-    setManifestEntities(manifestToEntityMap(initialManifest));
-  }
 
   const [ownedQueryClient] = useState(
     () =>
@@ -102,8 +90,6 @@ export function AuraClientProvider({
       new QueryClient({
         defaultOptions: {
           queries: {
-            // staleTime: 0 so invalidated queries refetch immediately rather
-            // than waiting for the next focus event.
             staleTime: 0,
             gcTime: 5 * 60_000,
             refetchOnWindowFocus: false,
@@ -115,10 +101,14 @@ export function AuraClientProvider({
       }),
   );
 
+  const realtimeRef = useRef<RealtimeHandle | null>(null);
+
   return (
     <QueryClientProvider client={ownedQueryClient}>
       <NuqsAdapter>
-        <AuraQueryInvalidator>{children}</AuraQueryInvalidator>
+        <AuraQueryInvalidator realtimeRef={realtimeRef}>
+          {children}
+        </AuraQueryInvalidator>
       </NuqsAdapter>
     </QueryClientProvider>
   );

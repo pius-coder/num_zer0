@@ -23,17 +23,7 @@
 
 import type { PrismaClient } from "@/generated/prisma/client";
 import { AuraError } from "@/aura/core/errors";
-
-const READ_METHODS = new Set([
-  "findMany",
-  "findFirst",
-  "findUnique",
-  "findUniqueOrThrow",
-  "findFirstOrThrow",
-  "count",
-  "aggregate",
-  "groupBy",
-]);
+import { READ_METHODS } from "./db-tracked";
 
 const TOP_LEVEL_ALLOWED = new Set([
   "$queryRaw",

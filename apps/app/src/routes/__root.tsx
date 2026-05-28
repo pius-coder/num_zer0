@@ -1,5 +1,5 @@
 import { createRootRoute, HeadContent, Scripts, Outlet } from '@tanstack/react-router'
-import { AuraProviderShell } from '@/aura/server/manifest-injector'
+import { AuraProvider } from '@/aura/client'
 import { AuraBumpToaster } from '@/aura/ui/aura-bump-toaster'
 
 import '../styles.css'
@@ -32,10 +32,10 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
-        <AuraProviderShell config={{ baseUrl: AURA_URL }}>
+        <AuraProvider config={{ baseUrl: AURA_URL }}>
           <Outlet />
           <AuraBumpToaster />
-        </AuraProviderShell>
+        </AuraProvider>
         <Scripts />
       </body>
     </html>

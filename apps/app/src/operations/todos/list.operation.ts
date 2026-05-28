@@ -13,7 +13,6 @@ export default defineOperationFn("todos.list")
       search: z.string().optional(),
     }),
   )
-  .entities(["Todo"])
   .auth()
   .handler(async ({ ctx, input }) => {
     return new TodoService(ctx).list(input);

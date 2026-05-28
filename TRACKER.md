@@ -215,6 +215,22 @@ num_zer0/
 
 ---
 
+## Session 2026-05-27: CSRF Origin Header Check (Copenhagen Book)
+
+**Thème :** Sécurité CSRF — première ligne de défense Origin
+
+**Statut :** DONE
+
+**Changements :**
+- `packages/aura/src/server/middleware/csrf.ts` — Ajout Origin header check avant la validation token CSRF. Si Origin présent et match `AURA_APP_URL`, skip vérification token. Si Origin présent mais mismatch, 403. Si absent, fallback token.
+- `packages/aura/src/server/middleware/csrf.test.ts` — 6 nouveaux tests pour Origin check (matching, mismatched, absent, vide, safe method).
+- `packages/aura/src/server/routes/bridge.ts` — Suppression des 3 headers anti-cache (`Cache-Control`, `Pragma`, `Expires`) du handler `GET /_manifest`.
+- `packages/aura/src/client/transport.ts` — Suppression de `setCsrfCookie()` et ses 2 call sites.
+
+**Vérification :** typecheck OK (aucune nouvelle erreur dans les fichiers modifiés, seules erreurs pré-existantes dans packages/aura/src/ui/)
+
+---
+
 ## Session 2026-05-27: SameSite cookie configurable
 
 **Thème :** Cross-Origin SameSite

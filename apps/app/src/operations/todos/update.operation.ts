@@ -14,7 +14,6 @@ export default defineOperationFn("todos.update")
       dueDate: z.string().datetime().nullish(),
     }),
   )
-  .entities(["Todo"])
   .auth()
   .handler(async ({ ctx, input }) => {
     return new TodoService(ctx).update(input);

@@ -16,24 +16,13 @@ interface Client {
   connectedAt: number;
   lastPong: number;
   remote: string | null;
+  keys: Set<string>;
 }
 
 const clients = new Map<string, Client>();
+const subs = new Map<string, Set<string>>();
 
 let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
-
-function fanout(payload: string): number {
-  let sent = 0;
-  for (const [id, client] of clients) {
-    try {
-      client.send(payload);
-      sent += 1;
-    } catch {
-      clients.delete(id);
-    }
-  }
-  return sent;
-}
 
 function verifySignature(body: string, ts: string | null, sig: string | null): boolean {
   if (!ts || !sig) return false;
@@ -54,12 +43,14 @@ function startHeartbeat(): void {
     const payload = JSON.stringify({ type: "PING" });
     for (const [id, client] of clients) {
       if (now - client.lastPong > HEARTBEAT_TIMEOUT_MS) {
+        removeClientFromSubs(id);
         clients.delete(id);
         continue;
       }
       try {
         client.send(payload);
       } catch {
+        removeClientFromSubs(id);
         clients.delete(id);
       }
     }
@@ -73,6 +64,32 @@ function stopHeartbeat(): void {
   }
 }
 
+function removeClientFromSubs(clientId: string): void {
+  for (const [key, ids] of subs) {
+    ids.delete(clientId);
+    if (ids.size === 0) subs.delete(key);
+  }
+}
+
+function routePublish(writeKeys: string[]): Set<string> {
+  const targets = new Set<string>();
+  for (const wk of writeKeys) {
+    const exact = subs.get(wk);
+    if (exact) for (const id of exact) targets.add(id);
+
+    if (wk.includes(":")) {
+      const tableKey = wk.slice(0, wk.indexOf(":"));
+      const tableSubs = subs.get(tableKey);
+      if (tableSubs) for (const id of tableSubs) targets.add(id);
+    } else {
+      for (const [k, ids] of subs) {
+        if (k.startsWith(wk + ":")) for (const id of ids) targets.add(id);
+      }
+    }
+  }
+  return targets;
+}
+
 export function addRealtimeRoutes(app: Hono): void {
   startHeartbeat();
 
@@ -83,7 +100,7 @@ export function addRealtimeRoutes(app: Hono): void {
 <body><main>
   <h1>Aura Realtime</h1>
   <p class="status">● Serveur actif</p>
-  <p class="info">${clients.size} client(s) connecté(s)</p>
+  <p class="info">${clients.size} client(s) connecté(s) · ${subs.size} clé(s) souscrite(s)</p>
 </main></body></html>`),
   );
 
@@ -95,6 +112,7 @@ export function addRealtimeRoutes(app: Hono): void {
         connectedAt: it.connectedAt,
         lastPong: it.lastPong,
         remote: it.remote,
+        keys: [...it.keys],
       })),
     }),
   );
@@ -116,14 +134,28 @@ export function addRealtimeRoutes(app: Hono): void {
       return c.json({ ok: false, reason: "invalid-payload" }, 400);
     }
 
+    const writeKeys = parsed.keys as string[];
     const payload = JSON.stringify({
       type: "INVALIDATE",
       id: randomUUID(),
-      keys: parsed.keys as string[],
+      keys: writeKeys,
     });
-    const relayed = fanout(payload);
-    console.log(`[aura:realtime] publish → ${relayed} client(s) [${(parsed.keys as string[]).join(", ")}]`);
-    return c.json({ ok: true, relayed });
+
+    const targets = routePublish(writeKeys);
+    let sent = 0;
+    for (const id of targets) {
+      const client = clients.get(id);
+      if (!client) continue;
+      try {
+        client.send(payload);
+        sent += 1;
+      } catch {
+        removeClientFromSubs(id);
+        clients.delete(id);
+      }
+    }
+    console.log(`[aura:realtime] publish → ${sent} client(s) [${writeKeys.join(", ")}]`);
+    return c.json({ ok: true, relayed: sent });
   });
 
   app.get(
@@ -145,6 +177,7 @@ export function addRealtimeRoutes(app: Hono): void {
             connectedAt: now,
             lastPong: now,
             remote,
+            keys: new Set(),
           };
           clients.set(id, client);
           console.log(`[aura:realtime] open ${id} (total: ${clients.size})`);
@@ -157,6 +190,23 @@ export function addRealtimeRoutes(app: Hono): void {
             const msg = JSON.parse(evt.data as string);
             if (msg.type === "PONG" || msg.type === "PING") {
               client.lastPong = Date.now();
+              return;
+            }
+            if (msg.type === "SUB" && Array.isArray(msg.keys)) {
+              for (const k of msg.keys) {
+                client.keys.add(k);
+                if (!subs.has(k)) subs.set(k, new Set());
+                subs.get(k)!.add(id!);
+              }
+              return;
+            }
+            if (msg.type === "UNSUB" && Array.isArray(msg.keys)) {
+              for (const k of msg.keys) {
+                client.keys.delete(k);
+                subs.get(k)?.delete(id!);
+                if (subs.get(k)?.size === 0) subs.delete(k);
+              }
+              return;
             }
           } catch {
             /* ignore malformed */
@@ -164,12 +214,16 @@ export function addRealtimeRoutes(app: Hono): void {
         },
         onClose() {
           if (id) {
+            removeClientFromSubs(id);
             clients.delete(id);
             console.log(`[aura:realtime] close ${id} (total: ${clients.size})`);
           }
         },
         onError() {
-          if (id) clients.delete(id);
+          if (id) {
+            removeClientFromSubs(id);
+            clients.delete(id);
+          }
         },
       };
     }),
@@ -189,6 +243,7 @@ function shutdown(signal: string) {
     }
   }
   clients.clear();
+  subs.clear();
   stopHeartbeat();
 }
 

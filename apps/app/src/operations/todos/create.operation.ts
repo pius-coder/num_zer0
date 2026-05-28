@@ -12,7 +12,6 @@ export default defineOperationFn("todos.create")
       dueDate: z.string().datetime().optional(),
     }),
   )
-  .entities(["Todo"])
   .auth()
   .handler(async ({ ctx, input }) => {
     return new TodoService(ctx).create(input);

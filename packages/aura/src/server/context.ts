@@ -134,13 +134,15 @@ export interface AuraContext {
   ): Promise<AuraPaginatedResult<Awaited<ReturnType<TDelegate["findMany"]>>[number]>>;
 
   /**
-   * Queue a fine-grained entity invalidation. `{ entity }` triggers a
-   * type-level invalidation (every query that depends on the entity);
-   * `{ entity, id }` only invalidates queries watching that instance.
+   * Escape hatch for operations that cannot auto-track reads/writes
+   * (e.g. `$queryRaw`, actions without DB). Manually adds keys that
+   * participate in the reactive invalidation matching.
    */
-  invalidate(target: { entity: string; id?: string }): void;
-  /** Internal — invalidations queued during this request. */
-  invalidatedEntities: Set<string>;
+  track(input: { read?: string[]; write?: string[] }): void;
+  /** Read keys auto-tracked during this request. */
+  readKeys: Set<string>;
+  /** Write keys auto-tracked during this request. */
+  writeKeys: Set<string>;
   /** Explicit fetch surface for actions. */
   fetch: typeof globalThis.fetch;
 }

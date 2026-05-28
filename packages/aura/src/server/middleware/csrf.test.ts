@@ -332,6 +332,94 @@ describe("csrfMiddleware", () => {
     });
   });
 
+  // ── Origin header check (Copenhagen Book) ────────────────────────────────
+
+  describe("origin header check (Copenhagen Book)", () => {
+    beforeEach(() => {
+      process.env.AURA_APP_URL = "http://localhost:3000";
+    });
+
+    it("POST with matching Origin passes without CSRF tokens", async () => {
+      const app = makeApp();
+      const res = await app.request(
+        new Request("http://localhost/test", {
+          method: "POST",
+          headers: { origin: "http://localhost:3000" },
+        })
+      );
+      expect(res.status).toBe(200);
+    });
+
+    it("POST with matching Origin passes even with missing CSRF cookie", async () => {
+      const app = makeApp();
+      const res = await app.request(
+        new Request("http://localhost/test", {
+          method: "POST",
+          headers: {
+            origin: "http://localhost:3000",
+            "x-aura-csrf": validToken,
+            // no cookie header
+          },
+        })
+      );
+      expect(res.status).toBe(200);
+    });
+
+    it("POST with mismatched Origin returns 403 even with valid CSRF tokens", async () => {
+      const app = makeApp();
+      const res = await app.request(
+        new Request("http://localhost/test", {
+          method: "POST",
+          headers: {
+            cookie: `${csrfCookieName()}=${validToken}`,
+            "x-aura-csrf": validToken,
+            origin: "https://evil.com",
+          },
+        })
+      );
+      expect(res.status).toBe(403);
+      const body = await res.json();
+      expect(body.error.code).toBe("FORBIDDEN");
+      expect(body.error.message).toContain("non autorisée");
+    });
+
+    it("POST with no Origin header falls through to CSRF token check", async () => {
+      const app = makeApp();
+      const res = await app.request(
+        new Request("http://localhost/test", { method: "POST" })
+      );
+      // No CSRF tokens → 403
+      expect(res.status).toBe(403);
+    });
+
+    it("POST with empty Origin header (treated as absent) uses token check", async () => {
+      const app = makeApp();
+      const res = await app.request(
+        new Request("http://localhost/test", {
+          method: "POST",
+          headers: {
+            origin: "",
+            cookie: `${csrfCookieName()}=${validToken}`,
+            "x-aura-csrf": validToken,
+          },
+        })
+      );
+      // Falls through to token check, which passes with valid tokens
+      expect(res.status).toBe(200);
+    });
+
+    it("GET with any Origin still passes through (safe method)", async () => {
+      const app = makeApp();
+      const res = await app.request(
+        new Request("http://localhost/test", {
+          method: "GET",
+          headers: { origin: "https://evil.com" },
+        })
+      );
+      expect(res.status).toBe(200);
+    });
+  });
+
   // ── Edge cases ────────────────────────────────────────────────────────────
 
   describe("edge cases", () => {

@@ -117,27 +117,22 @@ async function runAuraServerUncached<TData = unknown>(
     })) as TData;
 
     const isMutating = operation.type === "mutate" || operation.type === "action";
-    const invalidates = isMutating
-      ? [...new Set([...operation.entities, ...ctx.invalidatedEntities])]
-      : [];
+    const writeKeys = isMutating ? [...ctx.writeKeys] : [];
 
-    // Apply any cookie mutations queued by the operation (session clear,
-    // CSRF rotation, …). TanStack Start allows cookie writes via setCookie
-    // from @tanstack/start-server-core, which we expose through the
-    // context-adapter module.
     if (ctx.cookies.set.length > 0) {
       applyAuraCookies(ctx.cookies.set);
     }
 
-    if (isMutating && invalidates.length > 0) {
-      void publishInvalidation(invalidates);
+    if (isMutating && writeKeys.length > 0) {
+      void publishInvalidation(writeKeys);
     }
 
     return successEnvelope({
       data,
       requestId,
       bumps: ctx.bump.all(),
-      invalidates,
+      invalidates: writeKeys,
+      readKeys: [...ctx.readKeys],
       refresh: isMutating,
     });
   } catch (error) {

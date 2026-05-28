@@ -5,7 +5,6 @@ export interface AuraManifestOperation {
   name: string;
   type: AuraManifestOperationType;
   access: AuraManifestAccess;
-  entities: string[];
 }
 
 export interface AuraClientManifest {

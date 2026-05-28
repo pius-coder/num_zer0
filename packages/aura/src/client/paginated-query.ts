@@ -9,7 +9,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { OperationRef } from "@/aura/core/types";
 import { auraQueryKey } from "@/aura/shared/query-key";
-import { callAuraOperation } from "./transport";
+import { callAuraOperationWithMeta } from "./transport";
+import { setReadKeys, getReadKeys } from "./read-registry";
 
 export interface PaginatedResult<T> {
   items: T[];
@@ -30,16 +31,26 @@ export function useAuraPaginatedQuery<TInput extends Record<string, unknown>, TO
   const name = typeof ref === "string" ? ref : ref._name;
   const numItems = options.numItems ?? 20;
 
+  const queryKey = auraQueryKey(name, { ...input, numItems }) as readonly unknown[];
+
   const query = useInfiniteQuery<PaginatedResult<TOutput>>({
-    queryKey: auraQueryKey(name, { ...input, numItems }) as readonly unknown[],
+    queryKey,
     initialPageParam: null as string | null,
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam, signal }) => {
       const fullInput = { ...input, cursor: pageParam, numItems };
-      const data = await callAuraOperation<PaginatedResult<TOutput>>({
+      const result = await callAuraOperationWithMeta<PaginatedResult<TOutput>>({
         operationName: name,
         input: fullInput,
+        signal,
       });
-      return data;
+      const isFirstPage = pageParam === null;
+      const base = isFirstPage ? new Set<string>() : new Set<string>(getReadKeys(queryKey) ?? []);
+      for (const k of result.meta.readKeys) base.add(k);
+      setReadKeys(queryKey, [...base]);
+      if (typeof window !== "undefined") {
+        console.log("[aura:debug] usePaginatedQuery", name, "readKeys:", [...base]);
+      }
+      return result.data;
     },
     getNextPageParam: (lastPage) => lastPage.cursor,
     enabled: options.enabled,

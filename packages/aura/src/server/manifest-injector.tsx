@@ -19,7 +19,7 @@ export function AuraProviderShell({
   queryClient?: Parameters<typeof AuraProvider>[0]["queryClient"];
 }) {
   return (
-    <AuraProvider config={config} queryClient={queryClient} initialManifest={getClientOperationManifest()}>
+    <AuraProvider config={config} queryClient={queryClient}>
       {children}
     </AuraProvider>
   );

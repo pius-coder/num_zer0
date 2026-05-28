@@ -82,7 +82,6 @@ export class TodoService extends AuraService {
       },
     });
 
-    this.invalidate({ entity: "Todo", id });
     this.bump.success("Tâche mise à jour", todo.title);
     return todo;
   }

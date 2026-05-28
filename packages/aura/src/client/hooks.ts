@@ -20,7 +20,7 @@ import {
   fetchManifest,
   AuraClientError,
 } from "./transport";
-import { getOperationEntities } from "./manifest-cache";
+import { setReadKeys, getReadKeys, deleteReadKeys } from "./read-registry";
 import { auraQueryKey, type AuraQueryKey } from "@/aura/shared/query-key";
 
 export { auraQueryKey };
@@ -78,22 +78,22 @@ export function useQuery(
 ) {
   const operationName = resolveOperationName(operationRef);
   const { params, showBumps = true, ...queryOptions } = options;
-  const entities = getOperationEntities(operationName);
 
   return useTanStackQuery({
     ...(queryOptions as UseQueryOptions<unknown, Error, unknown, AuraQueryKey>),
     queryKey: auraQueryKey(operationName, input, params),
-    queryFn: async ({ signal }) => {
+    queryFn: async ({ queryKey, signal }) => {
       const result = await callAuraOperationWithMeta({
         operationName,
         input,
         params,
         signal,
       });
+      if (typeof window !== "undefined") console.log("[aura:debug] useQuery", operationName, "readKeys:", result.meta.readKeys);
+      setReadKeys(queryKey, result.meta.readKeys);
       if (showBumps) displayAuraBumps(result.meta.bumps);
       return result.data;
     },
-    meta: { entities },
   });
 }
 
@@ -275,21 +275,22 @@ export function useMutation(
     async onSuccess(data: unknown, variables: unknown, context: unknown) {
       const meta = lastMetaRef.current;
       const explicitKeys = callbacksRef.current.invalidate?.length ? callbacksRef.current.invalidate : [];
-      const entityKeys = meta?.invalidates?.length ? meta.invalidates : [];
-      const allKeys = [...new Set([...explicitKeys, ...entityKeys])];
+      const writeKeys = meta?.invalidates?.length ? meta.invalidates : [];
+      const allKeys = [...new Set([...explicitKeys, ...writeKeys])];
       if (allKeys.length === 0) allKeys.push(operationName);
+      if (typeof window !== "undefined") console.log("[aura:debug] useMutation.onSuccess", operationName, "invalidates:", meta?.invalidates, "writeKeys:", writeKeys, "allKeys:", allKeys);
 
       await queryClient.invalidateQueries({
         predicate: (query) => {
-          const queryName = query.queryKey[1] as string;
-          const metaEntities = (query.meta?.entities as string[]) || [];
-          const manifestEntities = getOperationEntities(queryName);
-          const queryEntities = [
-            ...new Set([...metaEntities, ...manifestEntities]),
-          ];
-          return allKeys.some(
-            (key) => key === queryName || queryEntities.includes(key),
-          );
+          const reads = getReadKeys(query.queryKey);
+          if (!reads) {
+            const fallback = allKeys.includes(query.queryKey[1] as string);
+            if (typeof window !== "undefined") console.log("[aura:debug] predicate fallback", query.queryKey[1], "allKeys:", allKeys, "=>", fallback);
+            return fallback;
+          }
+          const hit = allKeys.some((k) => reads.has(k));
+          if (typeof window !== "undefined") console.log("[aura:debug] predicate match", query.queryKey[1], "allKeys:", allKeys, "reads:", [...reads], "=>", hit);
+          return hit;
         },
       });
 

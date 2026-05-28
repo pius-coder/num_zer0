@@ -21,7 +21,6 @@ COPY . .
 RUN bun run --filter @aura-js/app build:backend
 
 FROM oven/bun:latest
-USER bun
 WORKDIR /app
 COPY --from=build --chown=bun:bun /app/apps/app/build/backend ./backend
 COPY --from=build --chown=bun:bun /app/apps/app/src/generated ./generated

@@ -133,27 +133,16 @@ export async function runAuraOperation<TData = unknown>(
     });
 
     const isMutating = opType === "mutate" || opType === "action";
-    // Static entities declared on the operation + dynamic invalidations
-    // queued via `ctx.invalidate(...)` during the handler execution.
-    const invalidates = isMutating
-      ? [...new Set([...operation.entities, ...ctx.invalidatedEntities])]
-      : [];
-
-    if (isMutating && invalidates.length > 0) {
-      void publishInvalidation(invalidates);
-    }
+    const writeKeys = isMutating ? [...ctx.writeKeys] : [];
+    if (isMutating && writeKeys.length > 0) void publishInvalidation(writeKeys);
 
     return {
       envelope: successEnvelope({
         data,
         requestId: ctx.requestId,
         bumps: ctx.bump.all(),
-        invalidates,
-        // refresh forces `router.invalidate()` which re-runs every loader on
-        // the page — heavy and almost always redundant with TanStack Query
-        // invalidation that already happens client-side. Leave it OFF by
-        // default; callers can opt-in by setting `refresh: true` in
-        // \`useMutation\` options.
+        invalidates: writeKeys,
+        readKeys: [...ctx.readKeys],
         refresh: false,
       }),
       status: 200,

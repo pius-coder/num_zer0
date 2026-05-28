@@ -100,12 +100,6 @@ async function createAndSendOtp(args: {
 export const authRegister = defineOperationFn("auth.register")
   .mutate()
   .input(authRegisterInputSchema)
-  .entities([
-    "AuraUser",
-    "AuraPhoneIdentity",
-    "AuraPasswordCredential",
-    "AuraSession",
-  ])
   .public()
   .handler<AuthSessionResult>(async ({ ctx, input }) => {
     const phone = normalizePhone({
@@ -180,12 +174,6 @@ export const authRegister = defineOperationFn("auth.register")
 export const authVerifyPhone = defineOperationFn("auth.verifyPhone")
   .mutate()
   .input(authVerifyOtpInputSchema)
-  .entities([
-    "AuraUser",
-    "AuraPhoneIdentity",
-    "AuraOtpChallenge",
-    "AuraSession",
-  ])
   .public()
   .handler<AuthSessionResult>(async ({ ctx, input }) => {
     await enforceRateLimit(ctx.db, {
@@ -244,12 +232,6 @@ export const authVerifyPhone = defineOperationFn("auth.verifyPhone")
 export const authLogin = defineOperationFn("auth.login")
   .mutate()
   .input(authLoginInputSchema)
-  .entities([
-    "AuraUser",
-    "AuraPhoneIdentity",
-    "AuraPasswordCredential",
-    "AuraSession",
-  ])
   .public()
   .handler<AuthSessionResult>(async ({ ctx, input }) => {
     const phone = normalizePhone({
@@ -324,12 +306,6 @@ export const authLogin = defineOperationFn("auth.login")
 export const authVerifyLoginOtp = defineOperationFn("auth.verifyLoginOtp")
   .mutate()
   .input(authVerifyOtpInputSchema)
-  .entities([
-    "AuraUser",
-    "AuraPhoneIdentity",
-    "AuraOtpChallenge",
-    "AuraSession",
-  ])
   .public()
   .handler<AuthSessionResult>(async ({ ctx, input }) => {
     await enforceRateLimit(ctx.db, {
@@ -417,7 +393,6 @@ export const authRequestPasswordReset = defineOperationFn(
 )
   .mutate()
   .input(authRequestPasswordResetInputSchema)
-  .entities(["AuraUser", "AuraPhoneIdentity", "AuraOtpChallenge"])
   .public()
   .handler<AuthChallengeResult | { sent: true }>(async ({ ctx, input }) => {
     const phone = normalizePhone({
@@ -455,13 +430,6 @@ export const authRequestPasswordReset = defineOperationFn(
 export const authResetPassword = defineOperationFn("auth.resetPassword")
   .mutate()
   .input(authResetPasswordInputSchema)
-  .entities([
-    "AuraUser",
-    "AuraPhoneIdentity",
-    "AuraPasswordCredential",
-    "AuraSession",
-    "Referral",
-  ])
   .public()
   .handler<AuthSessionResult>(async ({ ctx, input }) => {
     await enforceRateLimit(ctx.db, {
@@ -532,7 +500,6 @@ export const authResetPassword = defineOperationFn("auth.resetPassword")
 
 export const authLogout = defineOperationFn("auth.logout")
   .mutate()
-  .entities(["AuraSession"])
   .auth()
   .handler<{ ok: true }>(async ({ ctx }) => {
     await revokeCurrentSession(ctx);
@@ -543,7 +510,6 @@ export const authLogout = defineOperationFn("auth.logout")
 
 export const authMe = defineOperationFn("auth.me")
   .query()
-  .entities(["AuraUser", "AuraPhoneIdentity"])
   .auth()
   .handler<AuthSessionResult>(async ({ ctx }) => {
     const phoneIdentity = await ctx.db.auraPhoneIdentity.findFirst({
@@ -575,7 +541,6 @@ export const authMe = defineOperationFn("auth.me")
 
 export const authListSessions = defineOperationFn("auth.listSessions")
   .query()
-  .entities(["AuraSession"])
   .auth()
   .handler<AuthSessionListResult>(async ({ ctx }) => {
     const sessions = await ctx.db.auraSession.findMany({
@@ -600,7 +565,6 @@ export const authListSessions = defineOperationFn("auth.listSessions")
 
 export const authRevokeAllSessions = defineOperationFn("auth.revokeAllSessions")
   .mutate()
-  .entities(["AuraSession"])
   .auth()
   .handler<{ ok: true }>(async ({ ctx }) => {
     await revokeAllUserSessions(ctx.db, ctx.user.id);

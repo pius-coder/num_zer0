@@ -123,6 +123,7 @@ export function auraBridgeRouter(): Hono {
   // the `x-aura-csrf` header on unsafe requests.
   // -------------------------------------------------------------------------
   router.get("/_manifest", async (c) => {
+
     const cookies = parseCookieHeader(c.req.header("cookie") ?? null);
     const existing = cookies.get(csrfCookieName());
     // Self-heal: reissue when missing OR when HMAC verification fails

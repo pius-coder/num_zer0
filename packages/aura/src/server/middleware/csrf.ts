@@ -58,6 +58,24 @@ export function csrfMiddleware(): MiddlewareHandler {
       return next();
     }
 
+    // ── Origin header check (Copenhagen Book) ──────────────────────────
+    // If the Origin header is present and matches the configured app URL,
+    // skip CSRF token verification entirely. The browser's same-origin
+    // policy guarantees that only the app's own pages can forge requests
+    // with this origin.
+    const origin = c.req.header("origin");
+    const expectedOrigin = process.env.AURA_APP_URL;
+    if (origin && expectedOrigin) {
+      if (origin === expectedOrigin.replace(/\/$/, "")) {
+        return next();
+      }
+      // Origin present but doesn't match — reject promptly.
+      const requestId = uuidv4();
+      const error = new AuraError("FORBIDDEN", "Origine non autorisée.");
+      return c.json(errorEnvelope({ error, requestId }), 403);
+    }
+    // ── End Origin check ──────────────────────────────────────────────
+
     const cookies = parseCookieHeader(c.req.header("cookie") ?? null);
     const cookieToken = cookies.get(csrfCookieName());
     const headerToken = c.req.header(csrfHeaderName());

@@ -59,9 +59,6 @@ function makeOperation(name: string): void {
   const { dir, file } = nameToPath(name);
   const path = dir ? `${OPS_DIR}/${dir}/${file}.operation.ts` : `${OPS_DIR}/${file}.operation.ts`;
 
-  const entityGuess = name.split(".")[0];
-  const entity = entityGuess.charAt(0).toUpperCase() + entityGuess.slice(1);
-
   ensureWrite(path, `import { defineOperationFn } from "@/aura/server";
 import { z } from "zod";
 
@@ -70,7 +67,6 @@ export default defineOperationFn("${name}")
   .input(z.object({
     // TODO: define input schema
   }))
-  .entities(["${entity}"])
   .auth()
   .handler(async (ctx, { input }) => {
     // TODO: implement

@@ -63,6 +63,7 @@ export interface AuraOperationResult<TData> {
     requestId: string;
     bumps: AuraBump[];
     invalidates: string[];
+    readKeys: string[];
     refresh: boolean;
   };
 }
@@ -209,3 +210,5 @@ function readCookie(name: string): string | null {
 
   return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
 }
+
+

@@ -20,6 +20,6 @@ export class AuraService {
   runQuery(ref: any, input: any) { return (this.ctx.runQuery as any)(ref, input); }
   runMutation(ref: any, input: any) { return (this.ctx.runMutation as any)(ref, input); }
   runAction(ref: any, input: any) { return (this.ctx.runAction as any)(ref, input); }
-  invalidate(target: { entity: string; id?: string }) { this.ctx.invalidate(target); }
+  track(input: { read?: string[]; write?: string[] }) { this.ctx.track(input); }
   paginate(model: any, opts: any) { return (this.ctx.paginate as any)(model, opts); }
 }

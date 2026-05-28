@@ -14,6 +14,7 @@ import {
 } from "./transport/cookies";
 import { toPrismaJson } from "./json";
 import { createAuraStorage } from "./storage";
+import { createTrackedDb, type TrackSink } from "./db-tracked";
 import { v4 as uuidv4 } from "uuid";
 
 /**
@@ -143,24 +144,18 @@ export async function createAuraContext(
       req: options.request,
     });
 
-    // Merge inner mutation/action invalidations into the outer entity set
-    // (Decision 14 — invalidation propagates up through nested calls).
-    if (operation.type === "mutate" || operation.type === "action") {
-      for (const tag of operation.entities) {
-        invalidatedEntities.add(tag);
-      }
-    }
-
     return out as TOutput;
   }
 
-  // Tracks instance-level + type-level invalidations queued by mutations
-  // and actions. Consumed by the runner / call paths via `ctx.invalidate`
-  // and the operation's static `entities` list.
-  const invalidatedEntities = new Set<string>();
+  const readKeys = new Set<string>();
+  const writeKeys = new Set<string>();
+  const sink: TrackSink = {
+    addRead: (k) => readKeys.add(k),
+    addWrite: (k) => writeKeys.add(k),
+  };
 
   const ctx: AuraContext = {
-    db,
+    db: createTrackedDb(db, sink),
     session: resolvedSession.session,
     user: resolvedSession.user,
     auth: {
@@ -240,18 +235,12 @@ export async function createAuraContext(
         },
       ) as never;
     },
-    invalidate(target) {
-      // Decision 16: support both type-level (`{ entity }`) and
-      // instance-level (`{ entity, id }`) invalidation. We serialize as
-      // `Entity` and `Entity:id` respectively so the broadcast layer
-      // can pattern-match.
-      if (target.id) {
-        invalidatedEntities.add(`${target.entity}:${target.id}`);
-      } else {
-        invalidatedEntities.add(target.entity);
-      }
+    track(input) {
+      input.read?.forEach((k) => readKeys.add(k));
+      input.write?.forEach((k) => writeKeys.add(k));
     },
-    invalidatedEntities,
+    readKeys,
+    writeKeys,
     // Default `fetch` for actions (queries/mutations should not use it,
     // but exposing it on the union surface keeps the runtime simple).
     fetch: globalThis.fetch.bind(globalThis),

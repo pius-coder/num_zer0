@@ -71,12 +71,9 @@ export interface AuraOperation<TInput, TParams, TOutput, TName extends string> {
   readonly access: OperationAccess;
   readonly inputSchema: z.ZodType<TInput> | null;
   readonly paramsSchema: z.ZodType<TParams> | null;
-  readonly entities: readonly EntityTag[];
   readonly commonFns: readonly DefinedCommonFn<unknown, unknown>[];
   readonly handler: OperationHandler<TInput, TParams, TOutput>;
-  /** Phantom — used by `InferOperationInput<typeof op>` to recover the type. */
   readonly _input?: TInput;
-  /** Phantom — used by `InferOperationOutput<typeof op>` to recover the type. */
   readonly _output?: TOutput;
   execute(args: {
     ctx: AuraContext;
@@ -93,7 +90,6 @@ export interface RegisteredAuraOperation {
   readonly access: OperationAccess;
   readonly inputSchema: z.ZodType | null;
   readonly paramsSchema: z.ZodType | null;
-  readonly entities: readonly EntityTag[];
   readonly commonFns: readonly DefinedCommonFn<unknown, unknown>[];
   execute(args: {
     ctx: AuraContext;
@@ -111,7 +107,6 @@ interface BuilderState<TInput, TParams, TName extends string> {
   access: OperationAccess | null;
   inputSchema: z.ZodType<TInput> | null;
   paramsSchema: z.ZodType<TParams> | null;
-  entities: EntityTag[];
   commonFns: DefinedCommonFn<unknown, unknown>[];
 }
 
@@ -124,7 +119,6 @@ function createState<TName extends string>(
     access: null,
     inputSchema: null,
     paramsSchema: null,
-    entities: [],
     commonFns: [],
   };
 }
@@ -216,7 +210,6 @@ function buildOperation<TInput, TParams, TOutput, TName extends string>(
     access: state.access,
     inputSchema: state.inputSchema,
     paramsSchema: state.paramsSchema,
-    entities: Object.freeze([...state.entities]),
     commonFns: Object.freeze([...state.commonFns]),
     handler,
     async execute(args) {
@@ -279,7 +272,6 @@ interface HandlerStage<TInput, TParams, TName extends string> {
   params<TSchema extends z.ZodType>(
     schema: TSchema,
   ): HandlerStage<TInput, z.infer<TSchema>, TName>;
-  entities(tags: readonly EntityTag[]): HandlerStage<TInput, TParams, TName>;
   use(
     ...fns: DefinedCommonFn<unknown, unknown>[]
   ): HandlerStage<TInput, TParams, TName>;
@@ -309,10 +301,6 @@ function makeHandlerStage<TInput, TParams, TName extends string>(
       >;
       next.paramsSchema = schema as unknown as z.ZodType<z.infer<TSchema>>;
       return makeHandlerStage(next);
-    },
-    entities(tags) {
-      state.entities.push(...tags);
-      return this;
     },
     use(...fns) {
       state.commonFns.push(...fns);
