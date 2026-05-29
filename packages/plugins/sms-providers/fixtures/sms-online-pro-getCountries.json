@@ -1,0 +1,1530 @@
+{
+  "united arab emirates": {
+    "id": 95,
+    "eng": "united arab emirates",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "afghanistan": {
+    "id": 74,
+    "eng": "afghanistan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "antigua and barbuda": {
+    "id": 169,
+    "eng": "antigua and barbuda",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "anguilla": {
+    "id": 181,
+    "eng": "anguilla",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "albania": {
+    "id": 155,
+    "eng": "albania",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "armenia": {
+    "id": 148,
+    "eng": "armenia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "angola": {
+    "id": 76,
+    "eng": "angola",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "argentina": {
+    "id": 39,
+    "eng": "argentina",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "austria": {
+    "id": 50,
+    "eng": "austria",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "australia": {
+    "id": 175,
+    "eng": "australia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "aruba": {
+    "id": 179,
+    "eng": "aruba",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "azerbaijan": {
+    "id": 35,
+    "eng": "azerbaijan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "bosnia and herzegovina": {
+    "id": 108,
+    "eng": "bosnia and herzegovina",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "barbados": {
+    "id": 118,
+    "eng": "barbados",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "bangladesh": {
+    "id": 60,
+    "eng": "bangladesh",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "belgium": {
+    "id": 82,
+    "eng": "belgium",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "burkina faso": {
+    "id": 152,
+    "eng": "burkina faso",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "bulgaria": {
+    "id": 83,
+    "eng": "bulgaria",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "bahrain": {
+    "id": 145,
+    "eng": "bahrain",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "burundi": {
+    "id": 119,
+    "eng": "burundi",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "benin": {
+    "id": 120,
+    "eng": "benin",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "brunei": {
+    "id": 121,
+    "eng": "brunei",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "bolivia": {
+    "id": 92,
+    "eng": "bolivia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "brazil": {
+    "id": 73,
+    "eng": "brazil",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "bahamas": {
+    "id": 122,
+    "eng": "bahamas",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "bhutan": {
+    "id": 158,
+    "eng": "bhutan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "botswana": {
+    "id": 123,
+    "eng": "botswana",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "belarus": {
+    "id": 51,
+    "eng": "belarus",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "belize": {
+    "id": 124,
+    "eng": "belize",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "canada": {
+    "id": 36,
+    "eng": "canada",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "democratic republic of the congo": {
+    "id": 18,
+    "eng": "democratic republic of the congo",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "central african republic": {
+    "id": 125,
+    "eng": "central african republic",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "congo": {
+    "id": 150,
+    "eng": "congo",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "switzerland": {
+    "id": 173,
+    "eng": "switzerland",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "c\u00f4te d'ivoire": {
+    "id": 27,
+    "eng": "c\u00f4te d'ivoire",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "chile": {
+    "id": 151,
+    "eng": "chile",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "cameroon": {
+    "id": 41,
+    "eng": "cameroon",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "china": {
+    "id": 3,
+    "eng": "china",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "colombia": {
+    "id": 33,
+    "eng": "colombia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "costa rica": {
+    "id": 93,
+    "eng": "costa rica",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "cuba": {
+    "id": 113,
+    "eng": "cuba",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "cape verde": {
+    "id": 186,
+    "eng": "cape verde",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "cyprus": {
+    "id": 77,
+    "eng": "cyprus",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "czechia": {
+    "id": 63,
+    "eng": "czechia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "germany": {
+    "id": 43,
+    "eng": "germany",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "djibouti": {
+    "id": 168,
+    "eng": "djibouti",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "denmark": {
+    "id": 172,
+    "eng": "denmark",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "dominica": {
+    "id": 126,
+    "eng": "dominica",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "dominican republic": {
+    "id": 109,
+    "eng": "dominican republic",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "algeria": {
+    "id": 58,
+    "eng": "algeria",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "ecuador": {
+    "id": 105,
+    "eng": "ecuador",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "estonia": {
+    "id": 34,
+    "eng": "estonia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "egypt": {
+    "id": 21,
+    "eng": "egypt",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "eritrea": {
+    "id": 176,
+    "eng": "eritrea",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "spain": {
+    "id": 56,
+    "eng": "spain",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "ethiopia": {
+    "id": 71,
+    "eng": "ethiopia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "finland": {
+    "id": 163,
+    "eng": "finland",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "fiji": {
+    "id": 189,
+    "eng": "fiji",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "france": {
+    "id": 78,
+    "eng": "france",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "gabon": {
+    "id": 154,
+    "eng": "gabon",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "united kingdom of great britain and northern ireland": {
+    "id": 16,
+    "eng": "united kingdom of great britain and northern ireland",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "grenada": {
+    "id": 127,
+    "eng": "grenada",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "georgia": {
+    "id": 128,
+    "eng": "georgia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "french guiana": {
+    "id": 162,
+    "eng": "french guiana",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "ghana": {
+    "id": 38,
+    "eng": "ghana",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "gibraltar": {
+    "id": 201,
+    "eng": "gibraltar",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "gambia": {
+    "id": 28,
+    "eng": "gambia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "guinea": {
+    "id": 68,
+    "eng": "guinea",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "guadeloupe": {
+    "id": 160,
+    "eng": "guadeloupe",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "equatorial guinea": {
+    "id": 167,
+    "eng": "equatorial guinea",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "greece": {
+    "id": 129,
+    "eng": "greece",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "guatemala": {
+    "id": 94,
+    "eng": "guatemala",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "guinea-bissau": {
+    "id": 130,
+    "eng": "guinea-bissau",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "guyana": {
+    "id": 131,
+    "eng": "guyana",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "hong kong": {
+    "id": 14,
+    "eng": "hong kong",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "honduras": {
+    "id": 88,
+    "eng": "honduras",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "croatia": {
+    "id": 45,
+    "eng": "croatia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "haiti": {
+    "id": 26,
+    "eng": "haiti",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "hungary": {
+    "id": 84,
+    "eng": "hungary",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "indonesia": {
+    "id": 6,
+    "eng": "indonesia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "ireland": {
+    "id": 23,
+    "eng": "ireland",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "israel": {
+    "id": 13,
+    "eng": "israel",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "india": {
+    "id": 22,
+    "eng": "india",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "iraq": {
+    "id": 47,
+    "eng": "iraq",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "iran": {
+    "id": 57,
+    "eng": "iran",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "iceland": {
+    "id": 132,
+    "eng": "iceland",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "italy": {
+    "id": 86,
+    "eng": "italy",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "jamaica": {
+    "id": 103,
+    "eng": "jamaica",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "jordan": {
+    "id": 116,
+    "eng": "jordan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "kenya": {
+    "id": 8,
+    "eng": "kenya",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "kyrgyzstan": {
+    "id": 11,
+    "eng": "kyrgyzstan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "cambodia": {
+    "id": 24,
+    "eng": "cambodia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "comoros": {
+    "id": 133,
+    "eng": "comoros",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "saint kitts and nevis": {
+    "id": 134,
+    "eng": "saint kitts and nevis",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "kuwait": {
+    "id": 100,
+    "eng": "kuwait",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "cayman islands": {
+    "id": 170,
+    "eng": "cayman islands",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "kazakhstan": {
+    "id": 2,
+    "eng": "kazakhstan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "lao people's democratic republic": {
+    "id": 25,
+    "eng": "lao people's democratic republic",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "lebanon": {
+    "id": 153,
+    "eng": "lebanon",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "saint lucia": {
+    "id": 164,
+    "eng": "saint lucia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "sri lanka": {
+    "id": 64,
+    "eng": "sri lanka",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "liberia": {
+    "id": 135,
+    "eng": "liberia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "lesotho": {
+    "id": 136,
+    "eng": "lesotho",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "lithuania": {
+    "id": 44,
+    "eng": "lithuania",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "luxembourg": {
+    "id": 165,
+    "eng": "luxembourg",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "latvia": {
+    "id": 49,
+    "eng": "latvia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "libya": {
+    "id": 102,
+    "eng": "libya",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "morocco": {
+    "id": 37,
+    "eng": "morocco",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "monaco": {
+    "id": 144,
+    "eng": "monaco",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "moldova": {
+    "id": 85,
+    "eng": "moldova",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "montenegro": {
+    "id": 171,
+    "eng": "montenegro",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "madagascar": {
+    "id": 17,
+    "eng": "madagascar",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "republic of north macedonia": {
+    "id": 183,
+    "eng": "republic of north macedonia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "mali": {
+    "id": 69,
+    "eng": "mali",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "myanmar": {
+    "id": 5,
+    "eng": "myanmar",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "mongolia": {
+    "id": 72,
+    "eng": "mongolia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "macao": {
+    "id": 20,
+    "eng": "macao",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "mauritania": {
+    "id": 114,
+    "eng": "mauritania",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "montserrat": {
+    "id": 180,
+    "eng": "montserrat",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "mauritius": {
+    "id": 157,
+    "eng": "mauritius",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "maldives": {
+    "id": 159,
+    "eng": "maldives",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "malawi": {
+    "id": 137,
+    "eng": "malawi",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "mexico": {
+    "id": 54,
+    "eng": "mexico",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "malaysia": {
+    "id": 7,
+    "eng": "malaysia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "mozambique": {
+    "id": 80,
+    "eng": "mozambique",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "namibia": {
+    "id": 138,
+    "eng": "namibia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "new caledonia": {
+    "id": 185,
+    "eng": "new caledonia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "niger": {
+    "id": 139,
+    "eng": "niger",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "nigeria": {
+    "id": 19,
+    "eng": "nigeria",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "nicaragua": {
+    "id": 90,
+    "eng": "nicaragua",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "netherlands": {
+    "id": 48,
+    "eng": "netherlands",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "norway": {
+    "id": 174,
+    "eng": "norway",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "nepal": {
+    "id": 81,
+    "eng": "nepal",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "niue": {
+    "id": 204,
+    "eng": "niue",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "new zealand": {
+    "id": 67,
+    "eng": "new zealand",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "oman": {
+    "id": 107,
+    "eng": "oman",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "panama": {
+    "id": 112,
+    "eng": "panama",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "peru": {
+    "id": 65,
+    "eng": "peru",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "papua new guinea": {
+    "id": 79,
+    "eng": "papua new guinea",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "philippines": {
+    "id": 4,
+    "eng": "philippines",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "pakistan": {
+    "id": 66,
+    "eng": "pakistan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "poland": {
+    "id": 15,
+    "eng": "poland",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "puerto rico": {
+    "id": 97,
+    "eng": "puerto rico",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "portugal": {
+    "id": 117,
+    "eng": "portugal",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "paraguay": {
+    "id": 87,
+    "eng": "paraguay",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "qatar": {
+    "id": 111,
+    "eng": "qatar",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "r\u00e9union": {
+    "id": 146,
+    "eng": "r\u00e9union",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "romania": {
+    "id": 32,
+    "eng": "romania",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "serbia": {
+    "id": 29,
+    "eng": "serbia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "russian federation": {
+    "id": 0,
+    "eng": "russian federation",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "rwanda": {
+    "id": 140,
+    "eng": "rwanda",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "saudi arabia": {
+    "id": 53,
+    "eng": "saudi arabia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "seychelles": {
+    "id": 184,
+    "eng": "seychelles",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "sudan": {
+    "id": 98,
+    "eng": "sudan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "sweden": {
+    "id": 46,
+    "eng": "sweden",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "singapore": {
+    "id": 196,
+    "eng": "singapore",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "slovenia": {
+    "id": 59,
+    "eng": "slovenia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "slovakia": {
+    "id": 141,
+    "eng": "slovakia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "sierra leone": {
+    "id": 115,
+    "eng": "sierra leone",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "senegal": {
+    "id": 61,
+    "eng": "senegal",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "somalia": {
+    "id": 149,
+    "eng": "somalia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "suriname": {
+    "id": 142,
+    "eng": "suriname",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "south sudan": {
+    "id": 177,
+    "eng": "south sudan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "sao tome and principe": {
+    "id": 178,
+    "eng": "sao tome and principe",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "el salvador": {
+    "id": 101,
+    "eng": "el salvador",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "syrian arab republic": {
+    "id": 110,
+    "eng": "syrian arab republic",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "chad": {
+    "id": 42,
+    "eng": "chad",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "togo": {
+    "id": 99,
+    "eng": "togo",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "thailand": {
+    "id": 52,
+    "eng": "thailand",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "tadjikistan": {
+    "id": 143,
+    "eng": "tadjikistan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "timor-leste": {
+    "id": 91,
+    "eng": "timor-leste",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "turkmenistan": {
+    "id": 161,
+    "eng": "turkmenistan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "tunisia": {
+    "id": 89,
+    "eng": "tunisia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "turkey": {
+    "id": 62,
+    "eng": "turkey",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "trinidad and tobago": {
+    "id": 104,
+    "eng": "trinidad and tobago",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "taiwan": {
+    "id": 55,
+    "eng": "taiwan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "tanzania": {
+    "id": 9,
+    "eng": "tanzania",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "ukraine": {
+    "id": 1,
+    "eng": "ukraine",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "uganda": {
+    "id": 75,
+    "eng": "uganda",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "united states of america": {
+    "id": 187,
+    "eng": "united states of america",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "usa (virtual)": {
+    "id": 12,
+    "eng": "usa (virtual)",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "uruguay": {
+    "id": 156,
+    "eng": "uruguay",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "uzbekistan": {
+    "id": 40,
+    "eng": "uzbekistan",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "saint vincent and the grenadines": {
+    "id": 166,
+    "eng": "saint vincent and the grenadines",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "venezuela": {
+    "id": 70,
+    "eng": "venezuela",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "viet nam": {
+    "id": 10,
+    "eng": "viet nam",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "kosovo": {
+    "id": 203,
+    "eng": "kosovo",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "yemen": {
+    "id": 30,
+    "eng": "yemen",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "south africa": {
+    "id": 31,
+    "eng": "south africa",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "zambia": {
+    "id": 147,
+    "eng": "zambia",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  },
+  "zimbabwe": {
+    "id": 96,
+    "eng": "zimbabwe",
+    "visible": 1,
+    "retry": 0,
+    "rent": 0,
+    "multiService": 1
+  }
+}

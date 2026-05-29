@@ -47,6 +47,8 @@
       "@aura/http-actions/*": ["./packages/plugins/http-actions/src/*"],
       "@aura/realtime": ["./packages/plugins/realtime/src/index.ts"],
       "@aura/realtime/*": ["./packages/plugins/realtime/src/*"],
+      "@aura/sms-providers": ["./packages/plugins/sms-providers/src/index.ts"],
+      "@aura/sms-providers/*": ["./packages/plugins/sms-providers/src/*"],
       "@aura/dashboard": ["./packages/plugins/dashboard/src/index.ts"],
       "@aura/dashboard/*": ["./packages/plugins/dashboard/src/*"],
       "@aura/workflows": ["./packages/plugins/workflows/src/index.ts"],

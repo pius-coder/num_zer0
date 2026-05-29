@@ -1,0 +1,420 @@
+{
+  "41": {
+    "kt": {
+      "cost": "6.74",
+      "count": 54
+    },
+    "nv": {
+      "cost": "3.37",
+      "count": 72
+    },
+    "oi": {
+      "cost": "1.74",
+      "count": 82
+    },
+    "ig": {
+      "cost": "3.50",
+      "count": 60
+    },
+    "tg": {
+      "cost": "24.55",
+      "count": 59
+    },
+    "dh": {
+      "cost": "4.51",
+      "count": 61
+    },
+    "vi": {
+      "cost": "0.75",
+      "count": 72
+    },
+    "fb": {
+      "cost": "5.32",
+      "count": 80
+    },
+    "go": {
+      "cost": "6.00",
+      "count": 51
+    },
+    "me": {
+      "cost": "5.96",
+      "count": 64
+    },
+    "mt": {
+      "cost": "1.49",
+      "count": 93
+    },
+    "ts": {
+      "cost": "7.52",
+      "count": 69
+    },
+    "wa": {
+      "cost": "12.41",
+      "count": 78
+    },
+    "bz": {
+      "cost": "1.52",
+      "count": 76
+    },
+    "tw": {
+      "cost": "0.76",
+      "count": 80
+    },
+    "nz": {
+      "cost": "8.51",
+      "count": 91
+    },
+    "vk": {
+      "cost": "1.50",
+      "count": 70
+    },
+    "ub": {
+      "cost": "2.29",
+      "count": 54
+    },
+    "mm": {
+      "cost": "0.51",
+      "count": 86
+    },
+    "uk": {
+      "cost": "15.04",
+      "count": 82
+    },
+    "mb": {
+      "cost": "0.99",
+      "count": 92
+    },
+    "qd": {
+      "cost": "23.35",
+      "count": 80
+    },
+    "hn": {
+      "cost": "21.22",
+      "count": 76
+    },
+    "wc": {
+      "cost": "8.42",
+      "count": 53
+    },
+    "ew": {
+      "cost": "2.23",
+      "count": 54
+    },
+    "wj": {
+      "cost": "30.79",
+      "count": 91
+    },
+    "lf": {
+      "cost": "1.01",
+      "count": 69
+    },
+    "ka": {
+      "cost": "6.34",
+      "count": 98
+    },
+    "jgd": {
+      "cost": "21.22",
+      "count": 62
+    },
+    "qo": {
+      "cost": "41.39",
+      "count": 84
+    },
+    "qq": {
+      "cost": "3.98",
+      "count": 64
+    },
+    "ak": {
+      "cost": "41.39",
+      "count": 60
+    },
+    "cle": {
+      "cost": "16.99",
+      "count": 68
+    },
+    "avu": {
+      "cost": "29.73",
+      "count": 63
+    },
+    "xex": {
+      "cost": "13.79",
+      "count": 84
+    },
+    "rhw": {
+      "cost": "16.99",
+      "count": 96
+    },
+    "dy": {
+      "cost": "19.11",
+      "count": 73
+    },
+    "im": {
+      "cost": "3.61",
+      "count": 91
+    },
+    "re": {
+      "cost": "8.51",
+      "count": 86
+    },
+    "ds": {
+      "cost": "0.50",
+      "count": 88
+    },
+    "xk": {
+      "cost": "25.49",
+      "count": 89
+    },
+    "gr": {
+      "cost": "14.85",
+      "count": 79
+    },
+    "wb": {
+      "cost": "7.05",
+      "count": 87
+    },
+    "mc": {
+      "cost": "22.08",
+      "count": 63
+    },
+    "snb": {
+      "cost": "31.83",
+      "count": 99
+    },
+    "bp": {
+      "cost": "42.47",
+      "count": 83
+    },
+    "lfp": {
+      "cost": "31.83",
+      "count": 93
+    },
+    "nf": {
+      "cost": "8.51",
+      "count": 75
+    },
+    "am": {
+      "cost": "5.00",
+      "count": 95
+    },
+    "hw": {
+      "cost": "3.48",
+      "count": 99
+    },
+    "pf": {
+      "cost": "1.49",
+      "count": 52
+    },
+    "yl": {
+      "cost": "5.90",
+      "count": 87
+    },
+    "wg": {
+      "cost": "4.26",
+      "count": 67
+    },
+    "zz": {
+      "cost": "25.49",
+      "count": 75
+    },
+    "pm": {
+      "cost": "0.51",
+      "count": 83
+    },
+    "zk": {
+      "cost": "8.51",
+      "count": 60
+    },
+    "ls": {
+      "cost": "8.51",
+      "count": 51
+    },
+    "zr": {
+      "cost": "30.09",
+      "count": 63
+    },
+    "wx": {
+      "cost": "0.89",
+      "count": 80
+    },
+    "btl": {
+      "cost": "9.84",
+      "count": 78
+    },
+    "fu": {
+      "cost": "3.57",
+      "count": 100
+    },
+    "os": {
+      "cost": "25.32",
+      "count": 97
+    },
+    "vz": {
+      "cost": "2.23",
+      "count": 84
+    },
+    "dr": {
+      "cost": "3.45",
+      "count": 59
+    },
+    "my": {
+      "cost": "31.64",
+      "count": 58
+    },
+    "df": {
+      "cost": "42.19",
+      "count": 52
+    },
+    "kc": {
+      "cost": "63.28",
+      "count": 87
+    },
+    "ot": {
+      "cost": "3.55",
+      "count": 54
+    },
+    "ly": {
+      "cost": "42.19",
+      "count": 58
+    },
+    "tx": {
+      "cost": "5.11",
+      "count": 70
+    },
+    "ma": {
+      "cost": "5.36",
+      "count": 63
+    },
+    "bl": {
+      "cost": "1.50",
+      "count": 59
+    },
+    "tn": {
+      "cost": "0.89",
+      "count": 94
+    },
+    "yw": {
+      "cost": "0.61",
+      "count": 52
+    },
+    "sn": {
+      "cost": "4.47",
+      "count": 94
+    },
+    "we": {
+      "cost": "4.56",
+      "count": 79
+    },
+    "ym": {
+      "cost": "3.01",
+      "count": 92
+    },
+    "ss": {
+      "cost": "45.10",
+      "count": 91
+    },
+    "ya": {
+      "cost": "2.62",
+      "count": 62
+    },
+    "fd": {
+      "cost": "0.90",
+      "count": 58
+    },
+    "ie": {
+      "cost": "126.57",
+      "count": 83
+    },
+    "kf": {
+      "cost": "31.64",
+      "count": 73
+    },
+    "jq": {
+      "cost": "84.38",
+      "count": 68
+    },
+    "an": {
+      "cost": "31.64",
+      "count": 69
+    },
+    "et": {
+      "cost": "42.19",
+      "count": 59
+    },
+    "ul": {
+      "cost": "42.19",
+      "count": 90
+    },
+    "ij": {
+      "cost": "105.47",
+      "count": 64
+    },
+    "vm": {
+      "cost": "42.19",
+      "count": 59
+    },
+    "zh": {
+      "cost": "5.11",
+      "count": 51
+    },
+    "kp": {
+      "cost": "15.41",
+      "count": 75
+    },
+    "xz": {
+      "cost": "6.28",
+      "count": 87
+    },
+    "uz": {
+      "cost": "5.55",
+      "count": 81
+    },
+    "iq": {
+      "cost": "28.73",
+      "count": 55
+    },
+    "rm": {
+      "cost": "20.53",
+      "count": 77
+    },
+    "jg": {
+      "cost": "2.28",
+      "count": 81
+    },
+    "zy": {
+      "cost": "6.41",
+      "count": 77
+    },
+    "rr": {
+      "cost": "6.41",
+      "count": 76
+    },
+    "rt": {
+      "cost": "6.28",
+      "count": 92
+    },
+    "bf": {
+      "cost": "43.10",
+      "count": 88
+    },
+    "sf": {
+      "cost": "30.80",
+      "count": 75
+    },
+    "xv": {
+      "cost": "21.55",
+      "count": 70
+    },
+    "tf": {
+      "cost": "10.55",
+      "count": 58
+    },
+    "acz": {
+      "cost": "3.49",
+      "count": 68
+    },
+    "gms": {
+      "cost": "3.55",
+      "count": 54
+    }
+  }
+}

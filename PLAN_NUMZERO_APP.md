@@ -75,24 +75,39 @@ packages/plugins/                            ← plugins communautaires (NON off
 
 Les trois (SMS Online Pro, Tiger SMS, Grizzly) suivent le pattern **SMS-Activate `handler_api.php`** avec un noyau d'actions communes (`getNumberV2`, `setStatus`, `getStatusV2`, `getStatusV1`, `getBalance`) et les mêmes sentinelles d'erreur (`BAD_KEY`, `NO_NUMBERS`, `NO_ACTIVATION`, `BAD_SERVICE`, `BAD_STATUS`, `BAD_ACTION`, `ERROR_SQL`, `SERVICE_UNAVAILABLE_REGION`, `NO_BALANCE`). Voir `src/services/grizzly/client.ts` (branche `main`) pour la signature de référence.
 
-#### Divergences confirmées en Phase 0 (curl réel, 2026-05-28)
+#### Divergences confirmées en Phase 0 (curl réel, 2026-05-29 — re-test via opencode CLI)
 
 | Point | Tiger SMS | SMS Online Pro |
 |---|---|---|
-| Base URL | `https://tiger-sms.com/stubs/handler_api.php` | `https://sms-online.pro/stubs/handler_api.php` (NB: pas `smsonlinepro.com`, DNS NXDOMAIN) |
-| Devise des prix & balance | **RUB** (balance test = 92.20 RUB) | **USD** (balance test = 3.00 USD) |
-| `getPrices` (sans `V3`) | OK — `{country: {service: {cost: "string", count: int}}}` (cost en chaîne) | OK — `{country: {service: {cost: number, count: int, physicalCount: int}}}` |
-| `getCountries` | **BAD_ACTION** (indispo) | OK — `{<englishName>: {id, eng, visible, retry, rent, multiService}}` |
+| Base URL | `https://api.tiger-sms.com/stubs/handler_api.php` (⚠️ **`api.` requis** — `tiger-sms.com` sans sous-domaine sert le site marketing, pas l'API) | `https://sms-online.pro/stubs/handler_api.php` (pas `smsonlinepro.com`, DNS NXDOMAIN) |
+| Devise des prix & balance | **RUB** (balance test = **92.2 RUB**) | **USD** (balance test = **5.3522 USD**) |
+| `getPrices` (sans `V3`) | OK — `{country: {service: {cost: "string", count: int}}}` (**cost en chaîne**, ex `"6.74"`) | OK — `{country: {service: {cost: number, count: int, physicalCount: int}}}` (**cost en number**, expose aussi `physicalCount` ≠ `count`) |
+| `getCountries` | **BAD_ACTION** (indispo) | OK — **191 pays** retournés, format `{<englishName>: {id, eng, visible, retry, rent, multiService}}` |
 | `getServicesList` | BAD_ACTION | BAD_ACTION |
-| `getNumbersStatus` | BAD_ACTION | OK — `{<serviceCode>: stockCount}` (dict plat) |
+| `getNumbersStatus` | BAD_ACTION | OK — dict plat `{<serviceCode>: stockCount}` — testé pour Cameroun = **2024 services connus, 70 avec stock > 0** |
 | `getTopCountriesByService` | BAD_ACTION | non testé |
+| `getProviders` | OK — HTML-wrapped JSON `<html><body>[{id, name: "Provider14", numbers_count, delivery_percent, number_lifetime}]</body></html>` — **noms déjà anonymisés à la source** (`Provider14`, `Provider36`, etc.) | non documenté |
+
+⚠️ **Découverte critique** : **Cameroun = id `41`** (pas `187` comme supposé dans le plan original). Vérifié sur les deux providers via `getPrices?country=41`. L'id `187` correspond à autre chose côté SMS Online Pro (réponse vide pour les services testés).
+
+#### Données live capturées (fixtures `packages/plugins/sms-providers/fixtures/`)
+
+| Fichier | Source | Contenu |
+|---|---|---|
+| `sms-online-pro-getCountries.json` | live API | 191 pays avec `id, eng, visible, retry, rent, multiService` |
+| `sms-online-pro-getPrices-cameroon.json` | `country=41` | **72 services dispo au Cameroun**, top stock : `am=24089, oi=20224, ig=19129, fb=19030, lf=17069, tg=16184, mb=15236, vi=14893, me=14887, dh=14741` |
+| `tiger-sms-getPrices-cameroon.json` | `country=41` | **104 services dispo au Cameroun** (plus que SOP), top stock : `fu=100, snb=99, hw=99, ka=98, os=97, rhw=96, am=95, tn=94, sn=94, mt=93` |
+
+**Overlap des codes services entre les deux providers (Cameroun) : 66 codes communs sur 110 uniques** — quasi-identiques (descend de SMS-Activate). 38 services exclusivement Tiger, 6 exclusivement SOP. ⇒ même code = même service partout : `wa`, `tg`, `ig`, `fb`, `go`, `am`, `vi`, etc.
 
 #### Conséquences pour l'implémentation
 
 - **Catalog source = `getPrices`**, **pas** `getServicesList` (indispo partout) ni `getCountries` Tiger. Le plugin dérive le catalogue services/pays en lisant les **clés** de la réponse `getPrices` (premier appel cache 5–15min).
-- **Mapping ISO ↔ id externe** : table statique `ExternalCountryMapping` (cf. §3.1) pré-seedée à partir d'une liste connue (les ids SMS-Activate-style sont quasi-stables entre clones — ex. `185 = USA`, `187 = Cameroun`).
-- **Normalisation devise** : chaque `ProviderClient` lit son `currency: "RUB" | "USD"` et expose les coûts **en USD interne**. Conversion via `PricingConfig.usd_to_xaf_rate` et `PricingConfig.rub_to_xaf_rate` (cf. §3.2). On ne mélange jamais RUB et USD au-dessus de la couche client.
+- **Mapping ISO ↔ id externe** : fichier statique `packages/plugins/sms-providers/src/mappings/countries.ts` (déjà créé, 191 entrées). **Cameroun = id 41** y est marqué `CAMEROON_ID` constant exporté.
+- **Sprite icons** : `packages/plugins/sms-providers/src/mappings/sms-online-pro-sprite.ts` (déjà créé) — **2035 services** (pas 644 comme estimé initialement) extraits de `https://static.sms-online.pro/sprites/service-full.css`. Sprite PNG `1280×2560px`, icon `35×35px` à stride 40px. 97/104 services Tiger ont leur icône dans le sprite SOP ⇒ on partage le sprite entre les deux providers, fallback emoji pour les 7 codes Tiger-only (`cle`, `gms`, `jgd`, `lfp`, `rhw`, `snb`, `xex`).
+- **Normalisation devise** : chaque `ProviderClient` lit son `currency: "RUB" | "USD"` et expose les coûts **en USD interne**. Conversion via `PricingConfig.usd_to_xaf_rate` et `PricingConfig.rub_to_xaf_rate` (cf. §3.2). Cost Tiger arrive en string — `Number(cost)` côté client. On ne mélange jamais RUB et USD au-dessus de la couche client.
 - **Pas de webhook push** (ni Tiger ni SMS Online Pro n'en exposent visiblement) → polling `getStatusV2` toutes les 3–5s pendant la phase WAITING. Grizzly garde son webhook si on l'active plus tard.
+- **Parser Tiger `getProviders`** : strip HTML envelope avant `JSON.parse` (regex `/<body>(.+)<\/body>/s`).
 
 > Sécurité : les deux clés API ont été échangées en clair dans le transcript Claude Code de la session de planification. Elles **doivent être régénérées** avant le go-live, et stockées uniquement dans `apps/app/.env` + `Provider.apiKeyCipher` chiffré (cf. §10).
 
@@ -182,7 +197,7 @@ model ExternalCountryMapping {
   id                String  @id @default(cuid())
   providerId        String
   isoCode           String                // "CM", "FR"
-  externalCountryId String                // "187" (Grizzly), peut différer
+  externalCountryId String                // "41" pour Cameroun (vérifié sur les 3 providers)
   provider          Provider @relation(fields: [providerId], references: [id])
   @@unique([providerId, isoCode])
 }
@@ -398,9 +413,9 @@ Toutes suivent le pattern `defineOperationFn(name).query|mutate|action().input(z
 ### 5.1 `catalog/*` (queries publiques, sans auth)
 
 - `catalog.listProviders` — retourne `[{ code, displayLetter, displayName, accentColor, isActive }]` pour le picker.
-- `catalog.listCountries` — retourne `[{ iso, name, available }]` selon le provider du user. Paginé via `useAuraPaginatedQuery` (cf. `packages/aura/src/client/paginated-query.ts:26`).
-- `catalog.listServices` — `[{ slug, name, icon, priceXaf, availability }]` pour un (provider, country).
-- `catalog.quotePrice` — `(serviceSlug, countryIso) → { priceXaf, wholesaleUsd, marginXaf, available }` — appelle le ProviderClient → calcule la marge.
+- `catalog.listCountries` — retourne `[{ id, iso, name, available }]` selon le provider du user. SOP : 191 pays via `getCountries`. Tiger : lecture de `mappings/countries.ts` (191 pré-seedés), filtré par les keys de `getPrices` du provider Tiger pour `available`. Paginé via `useAuraPaginatedQuery` (cf. `packages/aura/src/client/paginated-query.ts:26`).
+- `catalog.listServices` — `[{ code, name, iconCode, priceXaf, stockCount }]` pour un (provider, country). Le front consomme `code` directement via `<ServiceIcon code={code} />` (sprite + emoji fallback). Le serveur n'envoie **pas** d'URL d'image — c'est le composant client qui résout.
+- `catalog.quotePrice` — `(serviceCode, countryId) → { priceXaf, wholesaleUsd, marginXaf, available, stockCount }` — appelle le ProviderClient → calcule la marge.
 
 ### 5.2 `activations/*`
 
@@ -449,17 +464,177 @@ Toutes suivent le pattern `defineOperationFn(name).query|mutate|action().input(z
 
 ### 6.1 `@aura/sms-providers` (NOUVEAU)
 
-| Fichier | Rôle |
-|---|---|
-| `src/index.ts` | exports `getProvider(code)`, `listProviders()`, `anonymizeProvider(code)` |
-| `src/core/types.ts` | interface `ProviderClient`, error sentinels |
-| `src/core/base-client.ts` | classe abstraite avec fetch + retry + cache (TTL configurable) |
-| `src/providers/grizzly-sms.ts` | port direct de `src/services/grizzly/client.ts` (main) |
-| `src/providers/sms-online-pro.ts` | **à valider Phase 0** — variantes URL/params |
-| `src/providers/tiger-sms.ts` | **à valider Phase 0** |
-| `src/anonymizer.ts` | déterministe sur `code` → letter A/B/C/D… |
+#### Arborescence cible
 
-Dependencies : aucune lourde. Juste `zod` (peer) pour valider les réponses HTTP. **Pas** de Hono côté plugin (ce sont des clients HTTP appelés depuis des operations Aura, pas des routes).
+```
+packages/plugins/sms-providers/
+├── package.json                              # name: "@aura/sms-providers", exports ./, ./client, ./icons
+├── tsconfig.json
+├── fixtures/                                 # ✅ déjà créé — réponses API live pour tests
+│   ├── sms-online-pro-getCountries.json
+│   ├── sms-online-pro-getPrices-cameroon.json
+│   └── tiger-sms-getPrices-cameroon.json
+└── src/
+    ├── index.ts                              # exports getProvider, listProviders, anonymizeProvider, types
+    ├── core/
+    │   ├── types.ts                          # ProviderClient interface + error sentinels + currency union
+    │   ├── base-client.ts                    # classe abstraite : http GET, retry exponentiel, throw sur sentinelles
+    │   ├── currency.ts                       # toUsd(amount, currency) + tier de change configurable
+    │   └── cache.ts                          # TTLCache (port de src/services/grizzly/cache.ts de main)
+    ├── providers/
+    │   ├── grizzly-sms.ts                    # port direct de src/services/grizzly/client.ts (main)
+    │   ├── sms-online-pro.ts                 # variantes : getNumberV2 JSON, getCountries dispo, getNumbersStatus dispo
+    │   └── tiger-sms.ts                      # variantes : base URL api.tiger-sms.com, cost en string, parser HTML pour getProviders
+    ├── mappings/
+    │   ├── countries.ts                      # ✅ déjà créé — 191 pays, CAMEROON_ID=41
+    │   ├── sms-online-pro-sprite.ts          # ✅ déjà créé — 2035 services + coords sprite
+    │   └── service-names.ts                  # à créer — code → nom humain (whatsapp, telegram, etc.) pour les services connus
+    ├── icons/
+    │   ├── ServiceIcon.tsx                   # composant React unifié sprite + emoji fallback
+    │   └── emoji-map.ts                      # mapping code → emoji pour fallback (~50 services courants)
+    ├── anonymizer.ts                         # déterministe : hash(code) → letter A/B/C/D + couleur d'accent
+    └── registry.ts                           # getProvider(code), listProviders() — lit depuis DB Provider + env keys
+```
+
+#### Détail des fichiers
+
+| Fichier | Rôle / signature clé |
+|---|---|
+| `src/core/types.ts` | `interface ProviderClient` (cf. §2.2), `type ProviderCode = 'sms_online_pro' \| 'tiger_sms' \| 'grizzly_sms'`, `type Currency = 'USD' \| 'RUB'`, `const ERROR_SENTINELS = ['BAD_KEY', 'NO_NUMBERS', 'NO_ACTIVATION', 'BAD_SERVICE', 'BAD_STATUS', 'BAD_ACTION', 'ERROR_SQL', 'SERVICE_UNAVAILABLE_REGION', 'NO_BALANCE'] as const` |
+| `src/core/base-client.ts` | `abstract class BaseProviderClient` avec `protected async httpGetText(params): Promise<string>`, `protected async httpGetJson<T>(params): Promise<T>`, `protected checkSentinels(raw: string): void` qui throw `ProviderError`. Retry exponentiel 3x avec backoff 200/600/1800ms sur erreurs réseau (PAS sur sentinelles métier). |
+| `src/core/currency.ts` | `convertToUsd(amount: number, currency: Currency, rates: { rubToUsd: number }): number` — rates passés en argument (jamais hardcodés), lus depuis `PricingConfig` |
+| `src/providers/grizzly-sms.ts` | Port quasi-direct de `src/services/grizzly/client.ts` (main). Base URL `https://api.grizzlysms.com/stubs/handler_api.php`. Currency `USD`. |
+| `src/providers/sms-online-pro.ts` | Base URL `https://sms-online.pro/stubs/handler_api.php`. Currency `USD`. `getNumberV2` JSON. `getCountries` actif. `getPrices` parse `cost` en number. |
+| `src/providers/tiger-sms.ts` | Base URL `https://api.tiger-sms.com/stubs/handler_api.php` (⚠️ `api.` requis). Currency `RUB`. `getPrices` parse `cost` via `Number(string)`. `listCountries()` lit `mappings/countries.ts` (puisque Tiger ne supporte pas `getCountries`). `getProviders()` : strip `<html>...<body>(.+)</body>...</html>` avant JSON.parse. |
+| `src/anonymizer.ts` | `anonymizeProvider(code: ProviderCode): { letter: string; displayName: string; accentColor: string }` — déterministe : `letter = String.fromCharCode(65 + hash(code) % 26)`. Couleurs fixes par hash. |
+| `src/registry.ts` | `getProvider(code: ProviderCode): Promise<ProviderClient>` lit `Provider` Prisma + déchiffre `apiKeyCipher`, mémoïze l'instance. `listProviders()` retourne tous les `Provider.isActive`. |
+| `src/icons/ServiceIcon.tsx` | Composant React unifié `<ServiceIcon code="wa" size={40} />` : utilise `SMS_ONLINE_PRO_SPRITE` si code dispo, sinon `EMOJI_MAP[code]`, sinon `📱` générique. Accessibilité : `role="img"`, `aria-label={serviceNames[code] ?? code}`. |
+| `src/icons/emoji-map.ts` | Mapping minimaliste pour les 7 services Tiger-only + emoji-friendly courants : `{ wa: '💬', tg: '✈️', ig: '📷', fb: '👥', go: '🔍', tw: '🐦', vk: '🎵', wb: '🐦', ot: '🛒', ub: '🚗', cle: '🧹', snb: '👟', rhw: '📱' }`. |
+| `src/mappings/service-names.ts` | `SERVICE_NAMES: Record<string, string>` — codes les plus courants vers noms humains. Source : déductions sur prefixes + branding connus. ~50 entrées en v1 (`wa: 'WhatsApp', tg: 'Telegram', ig: 'Instagram', fb: 'Facebook', go: 'Google', am: 'Amazon', ...`). Le reste affiche le code en uppercase. |
+
+#### Stub `core/types.ts`
+
+```typescript
+export type ProviderCode = 'sms_online_pro' | 'tiger_sms' | 'grizzly_sms'
+export type Currency = 'USD' | 'RUB'
+
+export const ERROR_SENTINELS = [
+  'BAD_KEY', 'NO_NUMBERS', 'NO_ACTIVATION', 'BAD_SERVICE', 'BAD_STATUS',
+  'BAD_ACTION', 'ERROR_SQL', 'SERVICE_UNAVAILABLE_REGION', 'NO_BALANCE',
+  'WRONG_MAX_PRICE', 'BANNED', 'WRONG_EXCEPTION_PHONE', 'NO_BALANCE_FORWARD',
+] as const
+export type ErrorSentinel = (typeof ERROR_SENTINELS)[number]
+
+export class ProviderError extends Error {
+  constructor(public sentinel: ErrorSentinel, public providerCode: ProviderCode, public raw: string) {
+    super(`[${providerCode}] ${sentinel}: ${raw.slice(0, 200)}`)
+  }
+}
+
+export interface PriceQuote {
+  service: string
+  country: number
+  priceUsd: number       // toujours USD interne (RUB → USD au niveau client)
+  stockCount: number
+}
+
+export interface ActivationResult {
+  activationId: string   // string par sécurité (Tiger renvoie int, SOP renvoie int → on stringify)
+  phoneNumber: string
+  activationCostUsd: number
+  activationCostNative: number
+  nativeCurrency: Currency
+  countryCode: string
+  activationTime: string // ISO 8601
+}
+
+export type SetStatusCode = 1 | 3 | 6 | 8 | -1
+
+export interface StatusV2 {
+  verificationType: number
+  sms: { dateTime: string; code: string; text: string } | null
+}
+
+export interface ProviderClient {
+  readonly code: ProviderCode
+  readonly currency: Currency
+  getBalance(): Promise<{ amount: number; currency: Currency; amountUsd: number }>
+  getNumberV2(input: { service: string; country: number; maxPriceUsd?: number; operator?: string }): Promise<ActivationResult>
+  setStatus(activationId: string, code: SetStatusCode): Promise<{ status: string }>
+  getStatusV2(activationId: string): Promise<StatusV2>
+  getStatusV1(activationId: string): Promise<string | { remainingSeconds: number }>
+  getPrices(country?: number): Promise<Record<number, Record<string, { priceUsd: number; count: number }>>>
+  listCountries(): Promise<Array<{ id: number; name: string; iso: string | null }>>
+  listServices(country: number): Promise<Array<{ code: string; priceUsd: number; count: number }>>
+}
+```
+
+#### Stub `icons/ServiceIcon.tsx`
+
+```tsx
+import { SMS_ONLINE_PRO_SPRITE, SMS_ONLINE_PRO_SPRITE_URL, SMS_ONLINE_PRO_ICON_STRIDE } from '../mappings/sms-online-pro-sprite'
+import { EMOJI_MAP } from './emoji-map'
+import { SERVICE_NAMES } from '../mappings/service-names'
+
+interface Props {
+  code: string
+  size?: number          // defaults to 40
+  className?: string
+}
+
+export function ServiceIcon({ code, size = 40, className }: Props) {
+  const label = SERVICE_NAMES[code] ?? code.toUpperCase()
+  const coords = SMS_ONLINE_PRO_SPRITE[code]
+  if (coords) {
+    const scale = size / SMS_ONLINE_PRO_ICON_STRIDE
+    return (
+      <span
+        className={className}
+        role="img"
+        aria-label={label}
+        title={label}
+        style={{
+          display: 'inline-block',
+          width: size,
+          height: size,
+          backgroundImage: `url(${SMS_ONLINE_PRO_SPRITE_URL})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: `-${coords.x * scale}px -${coords.y * scale}px`,
+          backgroundSize: `${1280 * scale}px ${2560 * scale}px`,
+        }}
+      />
+    )
+  }
+  const emoji = EMOJI_MAP[code] ?? '📱'
+  return (
+    <span className={className} role="img" aria-label={label} title={label} style={{ fontSize: size * 0.9, lineHeight: 1 }}>
+      {emoji}
+    </span>
+  )
+}
+```
+
+#### Stub `package.json`
+
+```json
+{
+  "name": "@aura/sms-providers",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": { "types": "./src/index.ts", "default": "./src/index.ts" },
+    "./client": { "types": "./src/icons/ServiceIcon.tsx", "default": "./src/icons/ServiceIcon.tsx" },
+    "./mappings": { "types": "./src/mappings/index.ts", "default": "./src/mappings/index.ts" },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {},
+  "peerDependencies": { "react": ">=18" },
+  "devDependencies": { "@types/react": "^19.2.0", "typescript": "^6.0.2" }
+}
+```
+
+Dependencies : aucune lourde. `zod` (peer) pour valider les réponses HTTP. **Pas** de Hono côté plugin (ce sont des clients HTTP appelés depuis des operations Aura, pas des routes).
 
 ### 6.2 `@aura/fapshi` (NOUVEAU)
 
@@ -728,22 +903,28 @@ Banner cookies obligatoire (composant shadcn `Alert` flottant) qui demande conse
 
 ## 11. Ordre d'exécution (phases)
 
-### PHASE 0 — Vérification APIs providers (CRITIQUE, ~2h)
+### PHASE 0 — Vérification APIs providers (✅ TERMINÉE 2026-05-29)
 
-**Avant tout code**, l'agent doit :
-- `curl` chaque provider avec une clé valide pour confirmer : URL exacte, params, format réponse `getPricesV3`, format des codes pays/services, présence ou non d'un webhook push.
-- Documenter dans `packages/plugins/sms-providers/README.md` les divergences trouvées (l'utilisateur les a annoncées).
+Statut : **terminé**. Réponses live capturées dans `packages/plugins/sms-providers/fixtures/` (cf. §2.1). Documentation détaillée dans `SMS_PROVIDERS_API_COMPLETE_ANALYSIS.md`. Correction critique : Cameroun = id `41` (pas `187`), Tiger base URL = `api.tiger-sms.com`, sprite = **2035 services** (pas 644).
 
-Sans cette étape, le code des providers sera spéculatif et cassera en runtime.
+### PHASE 1 — Plugin `@aura/sms-providers` + foundations Prisma (~1.5 jour)
 
-### PHASE 1 — Backend foundations (~1 jour)
+**1.a Plugin** (sans toucher à Prisma — clés API lues depuis env temporairement, refactor vers `Provider.apiKeyCipher` en Phase 8) :
+1. `package.json` + `tsconfig.json` (template depuis `packages/plugins/realtime/`).
+2. `src/core/{types,base-client,currency,cache}.ts` — voir stubs §6.1.
+3. `src/providers/sms-online-pro.ts` — implémente les **11 endpoints d'activation** (getNumber, getNumberV2, setStatus, getStatus, getStatusV2, getBalance, getNumbersStatus, getPrices, getCountries, getOperators, getTopCountriesByService) + tests unitaires utilisant les fixtures JSON.
+4. `src/providers/tiger-sms.ts` — implémente les **6 endpoints supportés** (getNumber, getNumberV2, setStatus, getStatus, getBalance, getPrices, getProviders avec parser HTML). Méthodes `listCountries()` / `getNumbersStatus()` retournent depuis `mappings/countries.ts` / deriving from `getPrices` puisque indispos côté Tiger.
+5. `src/providers/grizzly-sms.ts` — port direct de `src/services/grizzly/client.ts` (main), adapté à l'interface `ProviderClient`.
+6. `src/anonymizer.ts` + `src/registry.ts` + `src/index.ts`.
+7. `src/icons/ServiceIcon.tsx` + `src/icons/emoji-map.ts` + `src/mappings/service-names.ts`.
+8. `bun x tsc --noEmit -p packages/plugins/sms-providers` → zéro erreur.
 
-1. Schéma Prisma : ajouter §3.1 → §3.6, `prisma generate`, `prisma migrate dev --name init-numzero`.
-2. Plugin `@aura/sms-providers` — port Grizzly d'abord (référence connue), squelettes pour les 2 autres.
-3. Plugin `@aura/fapshi` — port direct de `src/services/fapshi/client.ts` (main).
-4. Plugin `@aura/tracking` — routes + helpers client.
-5. Operations `catalog/*` et `wallet/*` (les plus simples, queries).
-6. `bun x tsc --noEmit` sur `packages/aura`, `packages/plugins/*`, `apps/app` — zéro erreur.
+**1.b Schéma Prisma + operations basiques** :
+1. Ajouter §3.1 → §3.6 à `apps/app/prisma/schema.prisma`. `prisma generate`, `prisma migrate dev --name init-numzero`.
+2. Plugin `@aura/fapshi` — port direct de `src/services/fapshi/client.ts` (main).
+3. Plugin `@aura/tracking` — routes + helpers client.
+4. Operations `catalog/*` (queries publiques utilisant le plugin sms-providers) et `wallet/*` (queries auth).
+5. `bun x tsc --noEmit` sur `packages/aura`, `packages/plugins/*`, `apps/app` — zéro erreur.
 
 ### PHASE 2 — Activation flow (~1 jour)
 

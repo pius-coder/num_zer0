@@ -1,0 +1,364 @@
+{
+  "41": {
+    "am": {
+      "cost": 0.039,
+      "count": 24089,
+      "physicalCount": 23729
+    },
+    "bd": {
+      "cost": 0.052,
+      "count": 980,
+      "physicalCount": 790
+    },
+    "bf": {
+      "cost": 0.364,
+      "count": 6184,
+      "physicalCount": 6184
+    },
+    "bl": {
+      "cost": 0.065,
+      "count": 9855,
+      "physicalCount": 9322
+    },
+    "blz": {
+      "cost": 0.0975,
+      "count": 983,
+      "physicalCount": 793
+    },
+    "bvz": {
+      "cost": 0.325,
+      "count": 0,
+      "physicalCount": 1457
+    },
+    "bz": {
+      "cost": 0.065,
+      "count": 11918,
+      "physicalCount": 11330
+    },
+    "ccu": {
+      "cost": 0.052,
+      "count": 1230,
+      "physicalCount": 793
+    },
+    "dh": {
+      "cost": 0.195,
+      "count": 14741,
+      "physicalCount": 14109
+    },
+    "ds": {
+      "cost": 0.013,
+      "count": 13558,
+      "physicalCount": 12807
+    },
+    "ew": {
+      "cost": 0.0975,
+      "count": 13168,
+      "physicalCount": 12582
+    },
+    "fb": {
+      "cost": 0.0975,
+      "count": 19030,
+      "physicalCount": 18059
+    },
+    "fd": {
+      "cost": 0.039,
+      "count": 993,
+      "physicalCount": 793
+    },
+    "fu": {
+      "cost": 0.065,
+      "count": 11629,
+      "physicalCount": 11113
+    },
+    "go": {
+      "cost": 0.065,
+      "count": 13577,
+      "physicalCount": 12913
+    },
+    "hw": {
+      "cost": 0.065,
+      "count": 10191,
+      "physicalCount": 9462
+    },
+    "ig": {
+      "cost": 0.052,
+      "count": 19129,
+      "physicalCount": 18143
+    },
+    "im": {
+      "cost": 0.156,
+      "count": 11058,
+      "physicalCount": 10405
+    },
+    "iq": {
+      "cost": 0.2427,
+      "count": 6345,
+      "physicalCount": 6345
+    },
+    "jg": {
+      "cost": 0.0975,
+      "count": 9794,
+      "physicalCount": 9294
+    },
+    "ka": {
+      "cost": 0.2739,
+      "count": 14054,
+      "physicalCount": 12683
+    },
+    "kp": {
+      "cost": 0.13,
+      "count": 6183,
+      "physicalCount": 6183
+    },
+    "kt": {
+      "cost": 0.2912,
+      "count": 12983,
+      "physicalCount": 12440
+    },
+    "lf": {
+      "cost": 0.0325,
+      "count": 17069,
+      "physicalCount": 15558
+    },
+    "ls": {
+      "cost": 0.364,
+      "count": 8287,
+      "physicalCount": 7828
+    },
+    "ma": {
+      "cost": 0.234,
+      "count": 1035,
+      "physicalCount": 793
+    },
+    "mb": {
+      "cost": 0.039,
+      "count": 15236,
+      "physicalCount": 14055
+    },
+    "mc": {
+      "cost": 0.2548,
+      "count": 7754,
+      "physicalCount": 7754
+    },
+    "me": {
+      "cost": 0.26,
+      "count": 14887,
+      "physicalCount": 14393
+    },
+    "mm": {
+      "cost": 0.013,
+      "count": 12985,
+      "physicalCount": 11914
+    },
+    "mt": {
+      "cost": 0.065,
+      "count": 11165,
+      "physicalCount": 10568
+    },
+    "nf": {
+      "cost": 0.364,
+      "count": 13371,
+      "physicalCount": 12956
+    },
+    "nv": {
+      "cost": 0.065,
+      "count": 13117,
+      "physicalCount": 12550
+    },
+    "nz": {
+      "cost": 0.364,
+      "count": 12927,
+      "physicalCount": 12377
+    },
+    "oi": {
+      "cost": 0.0325,
+      "count": 20224,
+      "physicalCount": 19173
+    },
+    "ok": {
+      "cost": 0.0195,
+      "count": 1025,
+      "physicalCount": 793
+    },
+    "ot": {
+      "cost": 0.065,
+      "count": 1323,
+      "physicalCount": 764
+    },
+    "pf": {
+      "cost": 0.065,
+      "count": 12844,
+      "physicalCount": 12520
+    },
+    "pm": {
+      "cost": 0.013,
+      "count": 10840,
+      "physicalCount": 9374
+    },
+    "qq": {
+      "cost": 0.1734,
+      "count": 11101,
+      "physicalCount": 10663
+    },
+    "re": {
+      "cost": 0.364,
+      "count": 14568,
+      "physicalCount": 14368
+    },
+    "rm": {
+      "cost": 0.1734,
+      "count": 0,
+      "physicalCount": 0
+    },
+    "rr": {
+      "cost": 0.2739,
+      "count": 9796,
+      "physicalCount": 9332
+    },
+    "rt": {
+      "cost": 0.2739,
+      "count": 8462,
+      "physicalCount": 8017
+    },
+    "sf": {
+      "cost": 0.26,
+      "count": 5820,
+      "physicalCount": 5820
+    },
+    "sn": {
+      "cost": 0.195,
+      "count": 9832,
+      "physicalCount": 9291
+    },
+    "ss": {
+      "cost": 0.195,
+      "count": 6161,
+      "physicalCount": 6161
+    },
+    "tg": {
+      "cost": 0.455,
+      "count": 16184,
+      "physicalCount": 15230
+    },
+    "tn": {
+      "cost": 0.039,
+      "count": 14444,
+      "physicalCount": 13132
+    },
+    "ts": {
+      "cost": 0.325,
+      "count": 14276,
+      "physicalCount": 13823
+    },
+    "tw": {
+      "cost": 0.0325,
+      "count": 11222,
+      "physicalCount": 10566
+    },
+    "tx": {
+      "cost": 0.2184,
+      "count": 11520,
+      "physicalCount": 10916
+    },
+    "ub": {
+      "cost": 0.0975,
+      "count": 14227,
+      "physicalCount": 13555
+    },
+    "uk": {
+      "cost": 0.65,
+      "count": 10107,
+      "physicalCount": 9664
+    },
+    "uz": {
+      "cost": 0.2375,
+      "count": 10030,
+      "physicalCount": 9454
+    },
+    "vi": {
+      "cost": 0.0325,
+      "count": 14893,
+      "physicalCount": 14161
+    },
+    "vk": {
+      "cost": 0.065,
+      "count": 1101,
+      "physicalCount": 793
+    },
+    "wa": {
+      "cost": 0.2275,
+      "count": 904,
+      "physicalCount": 511
+    },
+    "wb": {
+      "cost": 0.13,
+      "count": 11483,
+      "physicalCount": 10447
+    },
+    "wc": {
+      "cost": 0.364,
+      "count": 11200,
+      "physicalCount": 10802
+    },
+    "we": {
+      "cost": 0.195,
+      "count": 1025,
+      "physicalCount": 793
+    },
+    "wg": {
+      "cost": 0.182,
+      "count": 10143,
+      "physicalCount": 9666
+    },
+    "xv": {
+      "cost": 0.182,
+      "count": 6880,
+      "physicalCount": 6880
+    },
+    "xz": {
+      "cost": 0.2739,
+      "count": 9057,
+      "physicalCount": 8654
+    },
+    "ya": {
+      "cost": 0.0975,
+      "count": 1034,
+      "physicalCount": 792
+    },
+    "yl": {
+      "cost": 0.2548,
+      "count": 11671,
+      "physicalCount": 11265
+    },
+    "ym": {
+      "cost": 0.13,
+      "count": 1025,
+      "physicalCount": 793
+    },
+    "yw": {
+      "cost": 0.013,
+      "count": 9284,
+      "physicalCount": 8578
+    },
+    "za": {
+      "cost": 0.2262,
+      "count": 9667,
+      "physicalCount": 9323
+    },
+    "zh": {
+      "cost": 0.2184,
+      "count": 10732,
+      "physicalCount": 10106
+    },
+    "zk": {
+      "cost": 0.364,
+      "count": 9454,
+      "physicalCount": 8747
+    },
+    "zr": {
+      "cost": 1.3,
+      "count": 12122,
+      "physicalCount": 11577
+    }
+  }
+}
