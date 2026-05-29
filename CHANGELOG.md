@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-05-29 | Landing Page | Ajouté
+
+**Nouvelle app Next.js pour la landing page**
+
+- `apps/landing/` — Nouveau package `@num-zer0/landing`
+  - App Router + Tailwind CSS v4
+  - Layout avec metadata, page d'accueil minimale
+  - PostCSS config, TypeScript strict, next.config.ts
+- `package.json` racine — Workspace `apps/landing` ajouté, scripts `dev:landing` et `build:landing`
+- `.gitignore` racine — `.next/` déjà présent
+- Port 3002 (ne conflit pas avec l'app 3000 / backend 3001)
+
+---
+
 ## 2026-05-27 | Cross-Origin SameSite | Modifié
 
 **SameSite cookie configurable via env var AURA_SAMESITE**

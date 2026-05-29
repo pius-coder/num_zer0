@@ -77,7 +77,8 @@ num_zer0/
 │       ├── vector-pgvector/  ← @aura/vector-pgvector
 │       └── pagination-prisma/← @aura/pagination-prisma
 ├── apps/
-│   └── app/                  ← Projet utilisateur
+│   ├── app/                  ← Projet utilisateur (TanStack Start)
+│   └── landing/              ← Landing page (Next.js)
 │       ├── aura.config.ts    ← Sélectionne les plugins
 │       └── src/operations/   ← Ops utilisateur
 ├── PROMPT.md                 ← Prompt architecte original
@@ -182,10 +183,11 @@ num_zer0/
 | 2026-05-26 | Thème 5: Sécurité Production — 7 correctifs bloquants | ✅ | *(courant)* |
 | 2026-05-26 | Login/Register UI — auth ops import, routes, AuraGuard | ✅ | *(courant)* |
 | 2026-05-26 | Split Déploiement — résolution robuste Dashboard SPA Docker | ✅ | *(courant)* |
+| 2026-05-29 | Landing Page — app Next.js dans le monorepo | ✅ | *(courant)* |
 
 ## Prochaine action
 
-**Test manuel : démarrer l'app, créer un compte, se connecter, vérifier accès todos avec ownership.**
+**Développer la landing page dans `apps/landing/`.**
 
 ---
 
@@ -212,6 +214,21 @@ num_zer0/
 | D15 | **NOUVEAU** `AuraService` = classe base pour la logique métier (backporté de luminous) | Les operations deviennent des thin handlers qui délèguent à `new Service(ctx).method()`. `AuraService` wrappe toutes les propriétés du contexte via des getters (`this.db`, `this.user`, `this.agent`, etc.). |
 | D16 | **NOUVEAU** Per-primitive context types (`AuraQueryContext`, `AuraMutationContext`, `AuraActionContext`) importés dans `packages/core/src/types.ts` | Narrowing type-safe du DB access par type d'opération. |
 | D17 | **NOUVEAU** 2 services déploiement : frontend (SSR pur, port 3000) + backend (Hono API + WS, port 3001) | Le WS broadcast est fusionné dans le backend Hono. Plus de serveur realtime standalone. |
+
+---
+
+## Session 2026-05-29: Landing Page Next.js
+
+**Thème :** Landing Page
+
+**Statut :** DONE
+
+**Changements :**
+- `apps/landing/` — Nouveau package `@num-zer0/landing` (Next.js 15, App Router, Tailwind v4)
+- `package.json` racine — Workspace + scripts `dev:landing` / `build:landing`
+- `TRACKER.md` — Mise à jour architecture + session
+
+**Vérification :** `bun install` pour lier le workspace. `bun run dev:landing` pour lancer sur port 3002.
 
 ---
 
