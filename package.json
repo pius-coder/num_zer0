@@ -12,6 +12,8 @@
     "dev:backend": "bun run --filter @aura-js/app dev:backend",
     "build": "bun run --filter @aura-js/core build && bun run --filter @aura-js/app build",
     "test": "bun run --filter @aura-js/core test && bun run --filter @aura-js/app test",
+    "dev:landing": "bun run --filter @num-zer0/landing dev",
+    "build:landing": "bun run --filter @num-zer0/landing build",
     "clean": "rm -rf packages/*/{dist,.output,node_modules} apps/*/{dist,.output,node_modules} node_modules"
   },
   "dependencies": {

@@ -77,7 +77,8 @@ num_zer0/
 │       ├── vector-pgvector/  ← @aura/vector-pgvector
 │       └── pagination-prisma/← @aura/pagination-prisma
 ├── apps/
-│   └── app/                  ← Projet utilisateur
+│   ├── app/                  ← Projet utilisateur (TanStack Start)
+│   └── landing/              ← Landing page (Next.js)
 │       ├── aura.config.ts    ← Sélectionne les plugins
 │       └── src/operations/   ← Ops utilisateur
 ├── PROMPT.md                 ← Prompt architecte original
@@ -182,10 +183,11 @@ num_zer0/
 | 2026-05-26 | Thème 5: Sécurité Production — 7 correctifs bloquants | ✅ | *(courant)* |
 | 2026-05-26 | Login/Register UI — auth ops import, routes, AuraGuard | ✅ | *(courant)* |
 | 2026-05-26 | Split Déploiement — résolution robuste Dashboard SPA Docker | ✅ | *(courant)* |
+| 2026-05-29 | Landing Page — app Next.js dans le monorepo | ✅ | *(courant)* |
 
 ## Prochaine action
 
-**Test manuel : démarrer l'app, créer un compte, se connecter, vérifier accès todos avec ownership.**
+**Développer la landing page dans `apps/landing/`.**
 
 ---
 
@@ -215,19 +217,18 @@ num_zer0/
 
 ---
 
-## Session 2026-05-27: CSRF Origin Header Check (Copenhagen Book)
+## Session 2026-05-29: Landing Page Next.js
 
-**Thème :** Sécurité CSRF — première ligne de défense Origin
+**Thème :** Landing Page
 
 **Statut :** DONE
 
 **Changements :**
-- `packages/aura/src/server/middleware/csrf.ts` — Ajout Origin header check avant la validation token CSRF. Si Origin présent et match `AURA_APP_URL`, skip vérification token. Si Origin présent mais mismatch, 403. Si absent, fallback token.
-- `packages/aura/src/server/middleware/csrf.test.ts` — 6 nouveaux tests pour Origin check (matching, mismatched, absent, vide, safe method).
-- `packages/aura/src/server/routes/bridge.ts` — Suppression des 3 headers anti-cache (`Cache-Control`, `Pragma`, `Expires`) du handler `GET /_manifest`.
-- `packages/aura/src/client/transport.ts` — Suppression de `setCsrfCookie()` et ses 2 call sites.
+- `apps/landing/` — Nouveau package `@num-zer0/landing` (Next.js 15, App Router, Tailwind v4)
+- `package.json` racine — Workspace + scripts `dev:landing` / `build:landing`
+- `TRACKER.md` — Mise à jour architecture + session
 
-**Vérification :** typecheck OK (aucune nouvelle erreur dans les fichiers modifiés, seules erreurs pré-existantes dans packages/aura/src/ui/)
+**Vérification :** `bun install` pour lier le workspace. `bun run dev:landing` pour lancer sur port 3002.
 
 ---
 
