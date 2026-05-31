@@ -12,9 +12,10 @@ export default [
       '@typescript-eslint/array-type': 'off',
       '@typescript-eslint/require-await': 'off',
       'pnpm/json-enforce-catalog': 'off',
+      'max-lines': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
     },
   },
   {
-    ignores: ['eslint.config.js', 'prettier.config.js'],
+    ignores: ['eslint.config.js', 'prettier.config.js', 'src/routeTree.gen.ts'],
   },
 ]

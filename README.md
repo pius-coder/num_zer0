@@ -64,6 +64,12 @@ The build output is a self-contained Node server. To deploy, push the `dist/` di
 For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
 
 
+## Setting up Convex
+
+- Set the `VITE_CONVEX_URL` and `CONVEX_DEPLOYMENT` environment variables in your `.env.local`. (Or run `bunx --bun convex init` to set them automatically.)
+- Run `bunx --bun convex dev` to start the Convex server.
+
+
 
 ## Routing
 

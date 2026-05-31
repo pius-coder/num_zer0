@@ -11,10 +11,13 @@
   "install": true,
   "routerOnly": false,
   "version": 1,
+  "addOns": true,
+  "intent": true,
   "framework": "react",
   "chosenAddOns": [
     "eslint",
     "nitro",
-    "compiler"
+    "compiler",
+    "convex"
   ]
 }

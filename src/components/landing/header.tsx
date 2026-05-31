@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import ThemeToggle from './ThemeToggle'
+import { ThemeToggle } from './theme-toggle'
 
 export default function Header() {
   return (
@@ -23,21 +23,19 @@ export default function Header() {
           >
             Home
           </Link>
-          <Link
-            to="/about"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            About
-          </Link>
-          <a
-            href="https://tanstack.com/start/latest/docs/framework/react/overview"
-            className="nav-link"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Docs
-          </a>
+          <details className="relative w-full sm:w-auto">
+            <summary className="nav-link list-none cursor-pointer">
+              Demos
+            </summary>
+            <div className="mt-2 min-w-56 rounded-xl border border-[var(--line)] bg-[var(--header-bg)] p-2 shadow-lg sm:absolute sm:right-0">
+              <a
+                href="/demo/convex"
+                className="block rounded-lg px-3 py-2 text-sm text-[var(--sea-ink-soft)] no-underline transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]"
+              >
+                Convex
+              </a>
+            </div>
+          </details>
         </div>
 
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
