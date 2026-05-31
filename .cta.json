@@ -1,14 +1,12 @@
 {
-  "projectName": "new",
+  "projectName": "n",
   "mode": "file-router",
   "typescript": true,
   "packageManager": "bun",
   "includeExamples": true,
   "tailwind": true,
   "addOnOptions": {},
-  "envVarValues": {
-    "VITE_CONVEX_URL": "https://dashboard-baas-server-prod.globalimex.online/"
-  },
+  "envVarValues": {},
   "git": false,
   "install": true,
   "routerOnly": false,
@@ -17,15 +15,6 @@
   "chosenAddOns": [
     "eslint",
     "nitro",
-    "convex",
-    "compiler",
-    "form",
-    "paraglide",
-    "shadcn",
-    "t3env",
-    "table",
-    "better-auth",
-    "store",
-    "events"
+    "compiler"
   ]
 }

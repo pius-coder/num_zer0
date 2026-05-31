@@ -1,205 +1,87 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { ArrowRight, Calendar, MapPin, Users } from 'lucide-react'
+import { createFileRoute } from '@tanstack/react-router'
 
-import { allSpeakers, allTalks } from 'content-collections'
+export const Route = createFileRoute('/')({ component: App })
 
-import SpeakerCard from '#/components/SpeakerCard'
-import TalkCard from '#/components/TalkCard'
-import RemyAssistant from '#/components/RemyAssistant'
-import HeroCarousel from '#/components/HeroCarousel'
-
-export const Route = createFileRoute('/')({
-  component: HomePage,
-})
-
-function HomePage() {
-  const featuredSpeakers = allSpeakers.slice(0, 3)
-  const featuredTalks = allTalks.slice(0, 4)
-
+function App() {
   return (
-    <>
-      <RemyAssistant />
-
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center px-6 overflow-hidden">
-        {/* Background carousel */}
-        <HeroCarousel />
-
-        <div className="relative max-w-5xl mx-auto text-center z-10">
-          {/* Event date badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-copper/10 border border-copper/30 text-copper-light text-sm font-medium">
-            <Calendar className="w-4 h-4" />
-            <span>March 15-17, 2026</span>
-            <span className="mx-2 text-copper/40">•</span>
-            <MapPin className="w-4 h-4" />
-            <span>Paris, France</span>
-          </div>
-
-          {/* Main title */}
-          <h1 className="font-display text-6xl md:text-8xl font-bold text-cream mb-6 leading-tight">
-            Haute
-            <span className="block text-gold italic">Pâtisserie</span>
-          </h1>
-
-          <p className="text-xl md:text-2xl text-cream/70 font-body max-w-3xl mx-auto mb-10 leading-relaxed">
-            Join the world's most celebrated pastry chefs and master bakers for
-            three extraordinary days of masterclasses, demonstrations, and
-            culinary inspiration.
-          </p>
-
-          {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-8 mb-12">
-            <div className="text-center">
-              <div className="text-4xl font-display font-bold text-gold">
-                {allSpeakers.length}
-              </div>
-              <div className="text-cream/50 text-sm uppercase tracking-wider">
-                Master Chefs
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-display font-bold text-gold">
-                {allTalks.length}
-              </div>
-              <div className="text-cream/50 text-sm uppercase tracking-wider">
-                Sessions
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-display font-bold text-gold">3</div>
-              <div className="text-cream/50 text-sm uppercase tracking-wider">
-                Days
-              </div>
-            </div>
-          </div>
-
-          {/* CTA buttons */}
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              to="/speakers"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-copper to-copper-dark text-charcoal font-semibold text-lg transition-all hover:shadow-lg hover:shadow-copper/30 hover:scale-[1.02]"
-            >
-              <Users className="w-5 h-5" />
-              Meet Our Speakers
-            </Link>
-            <Link
-              to="/talks"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full border-2 border-gold/50 text-gold font-semibold text-lg transition-all hover:bg-gold/10 hover:border-gold"
-            >
-              View Sessions
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
+    <main className="page-wrap px-4 pb-8 pt-14">
+      <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
+        <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
+        <div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
+        <p className="island-kicker mb-3">TanStack Start Base Template</p>
+        <h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-[var(--sea-ink)] sm:text-6xl">
+          Start simple, ship quickly.
+        </h1>
+        <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
+          This base starter intentionally keeps things light: two routes, clean
+          structure, and the essentials you need to build from scratch.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <a
+            href="/about"
+            className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-[var(--lagoon-deep)] no-underline transition hover:-translate-y-0.5 hover:bg-[rgba(79,184,178,0.24)]"
+          >
+            About This Starter
+          </a>
+          <a
+            href="https://tanstack.com/router"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-[rgba(23,58,64,0.2)] bg-white/50 px-5 py-2.5 text-sm font-semibold text-[var(--sea-ink)] no-underline transition hover:-translate-y-0.5 hover:border-[rgba(23,58,64,0.35)]"
+          >
+            Router Guide
+          </a>
         </div>
       </section>
 
-      {/* Featured Speakers Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-cream mb-3">
-                Featured <span className="text-gold italic">Speakers</span>
-              </h2>
-              <p className="text-cream/60 text-lg font-body">
-                Learn from award-winning pastry chefs and master bakers
-              </p>
-            </div>
-            <Link
-              to="/speakers"
-              className="hidden md:inline-flex items-center gap-2 text-gold hover:text-gold/80 transition-colors font-medium"
-            >
-              View all speakers
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredSpeakers.map((speaker) => (
-              <SpeakerCard key={speaker.slug} speaker={speaker} featured />
-            ))}
-          </div>
-
-          <div className="md:hidden mt-8 text-center">
-            <Link
-              to="/speakers"
-              className="inline-flex items-center gap-2 text-gold hover:text-gold/80 transition-colors font-medium"
-            >
-              View all speakers
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
+      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          [
+            'Type-Safe Routing',
+            'Routes and links stay in sync across every page.',
+          ],
+          [
+            'Server Functions',
+            'Call server code from your UI without creating API boilerplate.',
+          ],
+          [
+            'Streaming by Default',
+            'Ship progressively rendered responses for faster experiences.',
+          ],
+          [
+            'Tailwind Native',
+            'Design quickly with utility-first styling and reusable tokens.',
+          ],
+        ].map(([title, desc], index) => (
+          <article
+            key={title}
+            className="island-shell feature-card rise-in rounded-2xl p-5"
+            style={{ animationDelay: `${index * 90 + 80}ms` }}
+          >
+            <h2 className="mb-2 text-base font-semibold text-[var(--sea-ink)]">
+              {title}
+            </h2>
+            <p className="m-0 text-sm text-[var(--sea-ink-soft)]">{desc}</p>
+          </article>
+        ))}
       </section>
 
-      {/* Divider */}
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-      </div>
-
-      {/* Featured Sessions Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-cream mb-3">
-                Featured <span className="text-gold italic">Sessions</span>
-              </h2>
-              <p className="text-cream/60 text-lg font-body">
-                Masterclasses and demonstrations to elevate your craft
-              </p>
-            </div>
-            <Link
-              to="/talks"
-              className="hidden md:inline-flex items-center gap-2 text-gold hover:text-gold/80 transition-colors font-medium"
-            >
-              View all sessions
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {featuredTalks.map((talk) => (
-              <TalkCard key={talk.slug} talk={talk} featured />
-            ))}
-          </div>
-
-          <div className="md:hidden mt-8 text-center">
-            <Link
-              to="/talks"
-              className="inline-flex items-center gap-2 text-gold hover:text-gold/80 transition-colors font-medium"
-            >
-              View all sessions
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
+      <section className="island-shell mt-8 rounded-2xl p-6">
+        <p className="island-kicker mb-2">Quick Start</p>
+        <ul className="m-0 list-disc space-y-2 pl-5 text-sm text-[var(--sea-ink-soft)]">
+          <li>
+            Edit <code>src/routes/index.tsx</code> to customize the home page.
+          </li>
+          <li>
+            Update <code>src/components/Header.tsx</code> and{' '}
+            <code>src/components/Footer.tsx</code> for brand links.
+          </li>
+          <li>
+            Add routes in <code>src/routes</code> and tweak visual tokens in{' '}
+            <code>src/styles.css</code>.
+          </li>
+        </ul>
       </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="relative p-12 rounded-3xl bg-gradient-to-br from-card to-charcoal border border-border/50 overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-copper/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-gold/5 rounded-full blur-3xl" />
-
-            <div className="relative">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-cream mb-4">
-                Ready to Elevate Your Craft?
-              </h2>
-              <p className="text-cream/60 text-lg font-body mb-8 max-w-2xl mx-auto">
-                Join us in Paris for an unforgettable experience with the
-                world's finest pastry artisans.
-              </p>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/30 text-gold text-sm font-medium">
-                <span>🥐</span>
-                <span>Registration opens January 2026</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+    </main>
   )
 }
