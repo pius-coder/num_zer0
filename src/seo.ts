@@ -2,12 +2,11 @@ export const seo = {
   landing: {
     meta: [
       {
-        title: 'TanStack Start Starter',
+        title: 'Numzero',
       },
       {
         name: 'description',
-        content:
-          'A starter template for TanStack Start, the full-stack React framework.',
+        content: 'Numzero — coming soon.',
       },
     ],
   },

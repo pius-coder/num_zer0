@@ -1,5 +1,11 @@
 # Todo — Changelog
 
+## [1.1.0] — 2026-05-31
+
+### Changed
+- Demo route moved from `/demo/convex` to `/demo` (afreeserv)
+- Demo page rebranded from "Convex Todos" to "Internal Features" showcase (afreeserv)
+
 ## [1.0.0] — 2026-05-31
 
 ### Added

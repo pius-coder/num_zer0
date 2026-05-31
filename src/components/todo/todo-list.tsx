@@ -10,7 +10,7 @@ export function TodoList() {
   const totalCount = todos?.length ?? 0
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
       {isLoading ? (
         <div className="flex flex-col items-center gap-3 p-8 text-sm text-gray-500 dark:text-gray-400">
           <div className="size-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-600 dark:border-t-gray-300" />

@@ -9,68 +9,118 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoConvexRouteImport } from './routes/demo/convex'
+import { Route as landingRouteRouteImport } from './routes/(landing)/route'
+import { Route as appRouteRouteImport } from './routes/(app)/route'
+import { Route as landingIndexRouteImport } from './routes/(landing)/index'
+import { Route as appAppRouteImport } from './routes/(app)/app'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const landingRouteRoute = landingRouteRouteImport.update({
+  id: '/(landing)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoConvexRoute = DemoConvexRouteImport.update({
-  id: '/demo/convex',
-  path: '/demo/convex',
+const appRouteRoute = appRouteRouteImport.update({
+  id: '/(app)',
   getParentRoute: () => rootRouteImport,
+} as any)
+const landingIndexRoute = landingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => landingRouteRoute,
+} as any)
+const appAppRoute = appAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => appRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/demo/convex': typeof DemoConvexRoute
+  '/app': typeof appAppRoute
+  '/': typeof landingIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/demo/convex': typeof DemoConvexRoute
+  '/app': typeof appAppRoute
+  '/': typeof landingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/demo/convex': typeof DemoConvexRoute
+  '/(app)': typeof appRouteRouteWithChildren
+  '/(landing)': typeof landingRouteRouteWithChildren
+  '/(app)/app': typeof appAppRoute
+  '/(landing)/': typeof landingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/demo/convex'
+  fullPaths: '/app' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/demo/convex'
-  id: '__root__' | '/' | '/demo/convex'
+  to: '/app' | '/'
+  id: '__root__' | '/(app)' | '/(landing)' | '/(app)/app' | '/(landing)/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  DemoConvexRoute: typeof DemoConvexRoute
+  appRouteRoute: typeof appRouteRouteWithChildren
+  landingRouteRoute: typeof landingRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/(landing)': {
+      id: '/(landing)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof landingRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/convex': {
-      id: '/demo/convex'
-      path: '/demo/convex'
-      fullPath: '/demo/convex'
-      preLoaderRoute: typeof DemoConvexRouteImport
+    '/(app)': {
+      id: '/(app)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof appRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(landing)/': {
+      id: '/(landing)/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof landingIndexRouteImport
+      parentRoute: typeof landingRouteRoute
+    }
+    '/(app)/app': {
+      id: '/(app)/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof appAppRouteImport
+      parentRoute: typeof appRouteRoute
     }
   }
 }
 
+interface appRouteRouteChildren {
+  appAppRoute: typeof appAppRoute
+}
+
+const appRouteRouteChildren: appRouteRouteChildren = {
+  appAppRoute: appAppRoute,
+}
+
+const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
+  appRouteRouteChildren,
+)
+
+interface landingRouteRouteChildren {
+  landingIndexRoute: typeof landingIndexRoute
+}
+
+const landingRouteRouteChildren: landingRouteRouteChildren = {
+  landingIndexRoute: landingIndexRoute,
+}
+
+const landingRouteRouteWithChildren = landingRouteRoute._addFileChildren(
+  landingRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  DemoConvexRoute: DemoConvexRoute,
+  appRouteRoute: appRouteRouteWithChildren,
+  landingRouteRoute: landingRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
