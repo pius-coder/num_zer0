@@ -13,6 +13,7 @@ import { Route as landingRouteRouteImport } from './routes/(landing)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as landingIndexRouteImport } from './routes/(landing)/index'
 import { Route as appAppRouteImport } from './routes/(app)/app'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const landingRouteRoute = landingRouteRouteImport.update({
   id: '/(landing)',
@@ -32,14 +33,21 @@ const appAppRoute = appAppRouteImport.update({
   path: '/app',
   getParentRoute: () => appRouteRoute,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/app': typeof appAppRoute
   '/': typeof landingIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/app': typeof appAppRoute
   '/': typeof landingIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -47,18 +55,26 @@ export interface FileRoutesById {
   '/(landing)': typeof landingRouteRouteWithChildren
   '/(app)/app': typeof appAppRoute
   '/(landing)/': typeof landingIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/app' | '/'
+  fullPaths: '/app' | '/' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/app' | '/'
-  id: '__root__' | '/(app)' | '/(landing)' | '/(app)/app' | '/(landing)/'
+  to: '/app' | '/' | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/(app)'
+    | '/(landing)'
+    | '/(app)/app'
+    | '/(landing)/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
   landingRouteRoute: typeof landingRouteRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -91,6 +107,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appAppRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -121,6 +144,7 @@ const landingRouteRouteWithChildren = landingRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
   landingRouteRoute: landingRouteRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

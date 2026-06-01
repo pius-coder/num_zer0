@@ -1,13 +1,3 @@
-# Todo — Todos
-
-## Pending
-- [ ] Add edit-in-place for todo text description
-- [ ] Add due dates or priority levels to schema
-- [ ] Add filtering tabs (all / active / completed)
-- [ ] Use TanStack Router loader with `ensureQueryData` for SSR prefetch
-- [ ] Add optimistic rollback on mutation error
-- [ ] Add pagination for large lists
-
 ## Completed
 - [x] Extract todo feature from route into `components/todo/`
 - [x] Create `hooks/use-todos.ts` with query descriptors + mutation hooks
@@ -16,3 +6,10 @@
 - [x] Create barrel `index.ts`
 - [x] Slim route page to thin shell
 - [x] Add `docs/` lifecycle documentation
+- [x] Redesign entire UI to match landing page design language
+- [x] Complete SPA restructure (no page scroll, view switching)
+- [x] Bottom nav: N0 brand bottom-left + hamburger FAB bottom-right
+- [x] Dashboard view with stats, progress ring, tips, activity ticker
+- [x] Tasks view with filters, search, landing card patterns
+- [x] Hamburger menu overlay with backdrop blur
+- [x] Exhaustive use of ALL landing component patterns
