@@ -9,12 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ConvertRouteImport } from './routes/convert'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as landingRouteRouteImport } from './routes/(landing)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as landingIndexRouteImport } from './routes/(landing)/index'
 import { Route as appAppRouteImport } from './routes/(app)/app'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const ConvertRoute = ConvertRouteImport.update({
+  id: '/convert',
+  path: '/convert',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const landingRouteRoute = landingRouteRouteImport.update({
   id: '/(landing)',
   getParentRoute: () => rootRouteImport,
@@ -40,11 +52,15 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/admin': typeof AdminRoute
+  '/convert': typeof ConvertRoute
   '/app': typeof appAppRoute
   '/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
+  '/admin': typeof AdminRoute
+  '/convert': typeof ConvertRoute
   '/app': typeof appAppRoute
   '/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -53,19 +69,23 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(app)': typeof appRouteRouteWithChildren
   '/(landing)': typeof landingRouteRouteWithChildren
+  '/admin': typeof AdminRoute
+  '/convert': typeof ConvertRoute
   '/(app)/app': typeof appAppRoute
   '/(landing)/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/app' | '/' | '/api/auth/$'
+  fullPaths: '/admin' | '/convert' | '/app' | '/' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/app' | '/' | '/api/auth/$'
+  to: '/admin' | '/convert' | '/app' | '/' | '/api/auth/$'
   id:
     | '__root__'
     | '/(app)'
     | '/(landing)'
+    | '/admin'
+    | '/convert'
     | '/(app)/app'
     | '/(landing)/'
     | '/api/auth/$'
@@ -74,11 +94,27 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
   landingRouteRoute: typeof landingRouteRouteWithChildren
+  AdminRoute: typeof AdminRoute
+  ConvertRoute: typeof ConvertRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/convert': {
+      id: '/convert'
+      path: '/convert'
+      fullPath: '/convert'
+      preLoaderRoute: typeof ConvertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(landing)': {
       id: '/(landing)'
       path: ''
@@ -144,6 +180,8 @@ const landingRouteRouteWithChildren = landingRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
   landingRouteRoute: landingRouteRouteWithChildren,
+  AdminRoute: AdminRoute,
+  ConvertRoute: ConvertRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

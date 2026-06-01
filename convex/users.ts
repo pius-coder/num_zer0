@@ -42,6 +42,8 @@ export const syncUser = mutation({
     name: v.optional(v.string()),
     isAnonymous: v.boolean(),
     accessExpiresAt: v.optional(v.number()),
+    hasMadeDeposit: v.optional(v.boolean()),
+    country: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const now = Date.now()
@@ -52,12 +54,18 @@ export const syncUser = mutation({
       )
       .unique()
 
+    const usersCount = (await ctx.db.query('users').collect()).length
+    const isAdmin = args.email?.endsWith('@numzero.com') || args.email === 'admin@gmail.com' || usersCount === 0 || false
+
     if (existing) {
       await ctx.db.patch(existing._id, {
         email: args.email ?? existing.email,
         name: args.name ?? existing.name,
         isAnonymous: args.isAnonymous,
         accessExpiresAt: args.accessExpiresAt ?? existing.accessExpiresAt,
+        hasMadeDeposit: args.hasMadeDeposit ?? existing.hasMadeDeposit,
+        country: args.country ?? existing.country,
+        isAdmin: existing.isAdmin ?? isAdmin,
         updatedAt: now,
       })
       return existing._id
@@ -69,9 +77,40 @@ export const syncUser = mutation({
       name: args.name,
       isAnonymous: args.isAnonymous,
       accessExpiresAt: args.accessExpiresAt,
+      hasMadeDeposit: args.hasMadeDeposit ?? false,
+      country: args.country,
+      isAdmin: isAdmin,
       createdAt: now,
       updatedAt: now,
     })
+  },
+})
+
+export const completeDeposit = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error('Not authenticated')
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) =>
+        q.eq('betterAuthUserId', identity.subject)
+      )
+      .unique()
+
+    if (!user) throw new Error('User not found')
+
+    const now = Date.now()
+    const fortyEightHoursMs = 48 * 60 * 60 * 1000
+
+    await ctx.db.patch(user._id, {
+      hasMadeDeposit: true,
+      accessExpiresAt: now + fortyEightHoursMs,
+      updatedAt: now,
+    })
+
+    return { success: true }
   },
 })
 
@@ -129,5 +168,97 @@ export const hasAccess = query({
     if (!user.accessExpiresAt) return true
 
     return Date.now() < user.accessExpiresAt
+  },
+})
+
+export const checkUserExists = query({
+  args: { identifier: v.string() },
+  handler: async (ctx, args) => {
+    const emailMatch = await ctx.db
+      .query('users')
+      .withIndex('by_email', (q) => q.eq('email', args.identifier))
+      .unique()
+    
+    if (emailMatch) {
+      return { exists: true }
+    }
+
+    const allUsers = await ctx.db.query('users').collect()
+    const match = allUsers.find(
+      (u) => 
+        u.email?.toLowerCase() === args.identifier.toLowerCase() ||
+        u.name?.toLowerCase() === args.identifier.toLowerCase()
+    )
+
+    return { exists: !!match }
+  },
+})
+
+export const getAllUsers = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new Error('Non authentifié')
+    }
+
+    const currentUser = await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) =>
+        q.eq('betterAuthUserId', identity.subject)
+      )
+      .unique()
+
+    if (!currentUser || !currentUser.isAdmin) {
+      throw new Error('Non autorisé — Administrateur uniquement')
+    }
+
+    return await ctx.db.query('users').order('desc').collect()
+  },
+})
+
+export const updateUserCountry = mutation({
+  args: { country: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error('Not authenticated')
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) =>
+        q.eq('betterAuthUserId', identity.subject)
+      )
+      .unique()
+
+    if (!user) throw new Error('User not found')
+
+    await ctx.db.patch(user._id, {
+      country: args.country,
+      updatedAt: Date.now(),
+    })
+
+    return { success: true }
+  },
+})
+
+export const deleteUser = mutation({
+  args: { userId: v.id('users') },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error('Not authenticated')
+
+    const admin = await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) =>
+        q.eq('betterAuthUserId', identity.subject)
+      )
+      .unique()
+
+    if (!admin || !admin.isAdmin) {
+      throw new Error('Non autorisé — Administrateur uniquement')
+    }
+
+    await ctx.db.delete(args.userId)
+    return { success: true }
   },
 })

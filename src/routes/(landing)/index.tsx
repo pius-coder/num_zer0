@@ -1,5 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { convexQuery } from '@convex-dev/react-query'
+import { api } from '../../../convex/_generated/api'
 import { seo } from '#/seo'
 import '#/components/landing/animations.css'
 import Navbar from '#/components/landing/navbar'
@@ -12,6 +15,8 @@ import FaqSection from '#/components/landing/faq'
 import FooterSection from '#/components/landing/footer'
 import Testimonials from '#/components/landing/testimonials'
 import CountryFlags from '#/components/landing/country-flags'
+import { AccessBanner } from '#/components/auth'
+import { trackers } from '#/lib/trackers'
 
 export const Route = createFileRoute('/(landing)/')({
   head: () => seo.landing,
@@ -21,7 +26,14 @@ export const Route = createFileRoute('/(landing)/')({
 function RouteComponent() {
   const [showCart, setShowCart] = useState(false)
 
+  const { data: accessStatus } = useQuery(
+    convexQuery(api.users.getAccessStatus, {})
+  )
+
+  const isAuthenticated = !!accessStatus?.user && !accessStatus.isExpired
+
   useEffect(() => {
+    trackers.init()
     const onScroll = () => setShowCart(window.scrollY > window.innerHeight)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -30,8 +42,9 @@ function RouteComponent() {
 
   return (
     <>
-      <Navbar />
-      <Hero />
+      <AccessBanner />
+      <Navbar isAuthenticated={isAuthenticated} />
+      <Hero isAuthenticated={isAuthenticated} />
       <a
         href="https://wa.me/237XXXXXXXXX"
         target="_blank"

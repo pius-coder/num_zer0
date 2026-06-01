@@ -1,168 +1,373 @@
-import { useState, useCallback, useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
-import { DashboardView } from '#/components/todo/dashboard-view'
-import { TasksView } from '#/components/todo/tasks-view'
-import { AddTaskModal } from '#/components/todo/add-task-modal'
+import { useState } from 'react'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
+import { api } from '../../../convex/_generated/api'
+import { authClient } from '#/lib/auth-client'
+import { AccessBanner, ExpiredPage, AuthModal } from '#/components/auth'
 import { SITE } from '#/components/landing/data'
-import '#/components/landing/animations.css'
-import type { Doc, Id } from '../../../convex/_generated/dataModel'
-
-type Todo = Doc<'todos'>
-export type View = 'dashboard' | 'tasks'
-
-const REMIX_SHADOW = "rgba(0,0,0,0.68) 0px -0.48175px 0.48175px -1.25px inset, rgba(0,0,0,0.596) 0px -1.83083px 1.83083px -2.5px inset, rgba(0,0,0,0.235) 0px -8px 8px -3.75px inset"
-
-export interface AddModalState {
-  open: boolean
-  mode: 'create' | 'edit'
-  text?: string
-  priority?: 'p1' | 'p2' | 'p3' | 'p4'
-  editId?: Id<'todos'>
-  category?: string
-  dueDateLabel?: string
-  notes?: string
-  recurring?: 'daily' | 'weekly' | 'monthly'
-}
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/(app)/app')({
-  ssr: false,
+  ssr: true,
   component: AppPage,
 })
 
-export interface NavigateOptions {
-  view: View
-  filter?: string
-}
-
 function AppPage() {
-  const [view, setView] = useState<View>(() => {
-    if (typeof window === 'undefined') return 'dashboard'
-    return (localStorage.getItem('n0_view') as View) || 'dashboard'
-  })
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [addModal, setAddModal] = useState<AddModalState>({ open: false, mode: 'create' })
-  const [initialFilter, setInitialFilter] = useState<string | undefined>()
+  const { data: accessStatus, isLoading } = useQuery(
+    convexQuery(api.users.getAccessStatus, {})
+  )
 
-  useEffect(() => {
-    localStorage.setItem('n0_view', view)
-  }, [view])
-
-  const navigate = useCallback((v: View, filter?: string) => {
-    setView(v)
-    setInitialFilter(filter)
-    setMenuOpen(false)
-  }, [])
-
-  function openAddModal(text?: string) {
-    setAddModal({ open: true, mode: 'create', text })
-    setMenuOpen(false)
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-[#0f0f0f]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#25D366] border-t-transparent" />
+          <div className="text-white/50 font-figtree">Chargement de votre session...</div>
+        </div>
+      </div>
+    )
   }
 
-  function openEditModal(todo: Todo) {
-    setAddModal({
-      open: true,
-      mode: 'edit',
-      text: todo.text,
-      priority: todo.priority ?? 'p3',
-      editId: todo._id,
-      category: todo.category,
-      dueDateLabel: todo.dueDateLabel,
-      notes: todo.notes,
-      recurring: todo.recurring,
-    })
+  if (accessStatus?.user && accessStatus.isExpired) {
+    return <ExpiredPage />
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-[#0f0f0f] flex flex-col relative">
-      <div className="flex-1 relative">
-        {view === 'dashboard'
-          ? <DashboardView onAddTask={() => openAddModal()} onNavigate={navigate} />
-          : <TasksView onAddTask={() => openAddModal()} onEditTask={openEditModal} initialFilter={initialFilter} />
-        }
-      </div>
+    <DashboardContent
+      user={accessStatus?.user || null}
+      accessStatus={accessStatus || null}
+    />
+  )
+}
 
-      <span className="fixed top-3 left-3 z-10 font-figtree font-bold text-[22px] text-[#25D366] md:text-xl md:left-6 md:top-6">
-        {SITE.shortName}
-      </span>
+function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any }) {
+  const navigate = useNavigate()
+  const [loggingOut, setLoggingOut] = useState(false)
+  const [simulating, setSimulating] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
+  const triggerDeposit = useConvexMutation(api.users.completeDeposit)
 
-      <button
-        onClick={() => view === 'tasks' ? navigate('dashboard') : setMenuOpen(!menuOpen)}
-        className="fixed bottom-3 right-3 z-10 w-14 h-14 rounded-[16px] border border-dark-700 bg-dark-800 text-white shadow-lg flex items-center justify-center md:bottom-6 md:right-6 hover:brightness-110 transition-all cursor-pointer"
-        aria-label={view === 'tasks' ? 'Back to Dashboard' : 'Menu'}
-      >
-        {view === 'tasks' ? (
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className="w-6 h-6 fill-white">
-            <path d="M216,128a6,6,0,0,1-6,6H67.31l58.35,58.34a6,6,0,0,1-8.49,8.49l-68-68a6,6,0,0,1,0-8.49l68-68a6,6,0,0,1,8.49,8.49L67.31,122H210A6,6,0,0,1,216,128Z" />
-          </svg>
-        ) : menuOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className="w-6 h-6 fill-white">
-            <path d="M204.24,195.76a6,6,0,1,1-8.48,8.48L128,136.49,60.24,204.24a6,6,0,0,1-8.48-8.48L119.51,128,51.76,60.24a6,6,0,0,1,8.48-8.48L128,119.51l67.76-67.75a6,6,0,0,1,8.48,8.48L136.49,128Z" />
-          </svg>
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    try {
+      await authClient.signOut()
+      toast.success('Déconnexion réussie')
+      navigate({ to: '/' })
+    } catch (error) {
+      console.error('Logout failed:', error)
+      toast.error('Erreur lors de la déconnexion')
+    } finally {
+      setLoggingOut(false)
+    }
+  }
+
+  const handleSimulateDeposit = async () => {
+    if (!user) {
+      setAuthOpen(true)
+      return
+    }
+    setSimulating(true)
+    try {
+      await triggerDeposit()
+      toast.success('Dépôt simulé avec succès ! Votre accès de 48h est actif.')
+    } catch (error) {
+      console.error('Simulation failed:', error)
+      toast.error('Erreur lors de la simulation de dépôt')
+    } finally {
+      setSimulating(false)
+    }
+  }
+
+  const formatRemainingTime = () => {
+    if (!user) return 'Accès non configuré'
+    if (!user.hasMadeDeposit) return 'Attente de premier dépôt'
+    if (!accessStatus || !accessStatus.remainingMs || accessStatus.remainingMs === Infinity) return ''
+    const totalMinutes = Math.floor(accessStatus.remainingMs / 60000)
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    return `${hours}h ${minutes}m`
+  }
+
+  const creationDate = user
+    ? new Date(user.createdAt).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : ''
+
+  const expirationDate = user && user.accessExpiresAt
+    ? new Date(user.accessExpiresAt).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : null
+
+  return (
+    <div className="min-h-screen bg-[#0f0f0f] text-white flex flex-col font-figtree relative">
+      <AccessBanner />
+
+      {/* Header */}
+      <header className="border-b border-white/5 bg-[#141414]/50 backdrop-blur-md px-6 py-4 flex items-center justify-between z-10">
+        <div className="flex items-center gap-6">
+          <Link to="/" className="font-figtree font-bold text-2xl tracking-tight text-[#25D366] no-underline">
+            {SITE.shortName}
+          </Link>
+          {user && user.isAdmin && (
+            <Link
+              to="/admin"
+              className="text-xs font-bold text-red-400 hover:text-red-300 transition-colors uppercase tracking-wider bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full no-underline"
+            >
+              Admin Panel
+            </Link>
+          )}
+        </div>
+        {user ? (
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white transition-all text-sm font-semibold cursor-pointer disabled:opacity-50 bg-transparent"
+          >
+            {loggingOut ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            )}
+            Déconnexion
+          </button>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className="w-6 h-6 fill-white">
-            <path d="M222,128a6,6,0,0,1-6,6H40a6,6,0,0,1,0-12H216A6,6,0,0,1,222,128ZM40,70H216a6,6,0,0,0,0-12H40a6,6,0,0,0,0,12ZM216,186H40a6,6,0,0,0,0,12H216a6,6,0,0,0,0-12Z" />
-          </svg>
+          <button
+            onClick={() => setAuthOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F97316] text-white hover:brightness-110 transition-all text-sm font-bold cursor-pointer border-none"
+          >
+            Connexion / Inscription
+          </button>
         )}
-      </button>
+      </header>
 
-      {menuOpen && (
-        <div className="fixed inset-0 z-20" onClick={() => setMenuOpen(false)}>
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
-          <div className="absolute bottom-24 left-3 right-3 md:bottom-28 md:left-auto md:right-6 md:w-[400px]">
-            <div className="border border-dark-700 bg-dark-800 rounded-[16px] md:rounded-[72px] overflow-hidden" onClick={(e) => e.stopPropagation()}>
-              <div className="flex flex-col gap-[22px] px-5 pt-6 pb-5">
-                <div className="flex flex-col gap-3">
-                  {([
-                    { key: 'dashboard' as View, label: 'Dashboard', desc: 'Overview & stats' },
-                    { key: 'tasks' as View, label: 'Tasks', desc: 'Manage your tasks' },
-                  ]).map((item) => (
-                    <button
-                      key={item.key}
-                      onClick={() => navigate(item.key)}
-                      className={`block bg-transparent w-full text-left cursor-pointer border-none p-0 group ${
-                        view === item.key ? 'opacity-100' : 'opacity-50 hover:opacity-80'
-                      } transition-opacity`}
-                    >
-                      <h3 className="font-figtree font-medium text-[32px] tracking-[-0.04em] leading-[1.4] text-white m-0">
-                        {item.label}
-                      </h3>
-                      <p className="font-figtree text-sm tracking-[-0.01em] text-white/40 m-0 mt-[-2px]">
-                        {item.desc}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => openAddModal()}
-                    className="flex-1 flex items-center justify-center h-11 px-4 py-3 rounded-[14px] bg-[#F97316] border-none cursor-pointer anim-glow-pulse"
-                  >
-                    <span className="font-figtree font-semibold text-lg tracking-[-0.04em] leading-[1.4] text-white">
-                      + New Task
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => setMenuOpen(false)}
-                    className="flex-none w-11 h-11 flex items-center justify-center rounded-[14px] border border-dark-700 bg-dark-700 cursor-pointer"
-                    style={{ boxShadow: REMIX_SHADOW }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className="w-5 h-5 fill-white">
-                      <path d="M204.24,195.76a6,6,0,1,1-8.48,8.48L128,136.49,60.24,204.24a6,6,0,0,1-8.48-8.48L119.51,128,51.76,60.24a6,6,0,0,1,8.48-8.48L128,119.51l67.76-67.75a6,6,0,0,1,8.48,8.48L136.49,128Z" />
-                    </svg>
-                  </button>
-                </div>
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onSuccess={() => {
+          // Re-fetch automatically happens via convex query
+        }}
+      />
+
+      {/* Main Dashboard Area */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-8 md:py-12 flex flex-col gap-8">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-tight text-white mb-2">
+            Tableau de Bord
+          </h1>
+          <p className="text-white/60 text-sm md:text-base">
+            Bienvenue sur votre espace personnel. Gérez votre session et accédez à vos services.
+          </p>
+        </div>
+
+        {/* Info Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card 1: Account Type */}
+          <div className="bg-[#141414] border border-white/5 rounded-3xl p-6 flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">Type de Compte</div>
+              <div className="text-xl font-bold flex items-center gap-2">
+                {!user ? (
+                  <>
+                    <span className="inline-block w-2.5 h-2.5 rounded-full bg-white/20" />
+                    Non Connecté
+                  </>
+                ) : user.isAnonymous ? (
+                  <>
+                    <span className="inline-block w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse" />
+                    Accès Temporaire
+                  </>
+                ) : (
+                  <>
+                    <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#25D366]" />
+                    Compte Permanent
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="mt-4 text-sm text-white/60">
+              {!user ? 'Créez un compte pour commencer' : user.isAnonymous ? 'Expire automatiquement après 48h' : 'Accès illimité et sécurisé'}
+            </div>
+          </div>
+
+          {/* Card 2: Expiration / Status */}
+          <div className="bg-[#141414] border border-white/5 rounded-3xl p-6 flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">
+                {!user ? 'Statut de session' : user.isAnonymous ? 'Temps Restant' : 'Statut de Compte'}
+              </div>
+              <div className="text-xl font-bold text-orange-400">
+                {!user
+                  ? 'Indisponible'
+                  : user.isAnonymous
+                    ? user.hasMadeDeposit
+                      ? formatRemainingTime()
+                      : 'Attente de dépôt'
+                    : 'Actif / Illimité'}
+              </div>
+            </div>
+            <div className="mt-4 text-sm text-white/60">
+              {!user
+                ? 'Activez vos 48h en vous connectant'
+                : user.isAnonymous
+                  ? user.hasMadeDeposit
+                    ? `Valable jusqu'au ${expirationDate}`
+                    : 'Faites un dépôt pour activer vos 48h'
+                  : `Créé le ${creationDate}`}
+            </div>
+          </div>
+
+          {/* Card 3: User Details */}
+          <div className="bg-[#141414] border border-white/5 rounded-3xl p-6 flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">Identité</div>
+              <div className="text-lg font-bold truncate">
+                {!user ? 'Visiteur' : user.name || 'Utilisateur Anonyme'}
+              </div>
+              <div className="text-sm text-white/50 truncate mt-1">
+                {!user ? 'Session publique' : user.email || 'Aucune adresse email'}
+              </div>
+            </div>
+            <div className="mt-4 text-xs text-white/40 font-mono truncate">
+              {!user ? 'Non connecté' : `ID: ${user.betterAuthUserId}`}
+            </div>
+          </div>
+        </div>
+
+        {/* Visitor CTA Block */}
+        {!user && (
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+            <div className="flex flex-col items-start gap-3 max-w-lg text-center md:text-left">
+              <span className="px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-bold uppercase tracking-wider">
+                Démarrer immédiatement
+              </span>
+              <h2 className="text-2xl font-bold tracking-tight text-white">
+                Prêt à acquérir vos numéros ?
+              </h2>
+              <p className="text-white/70 text-sm md:text-base leading-relaxed">
+                Rejoignez la plateforme en quelques secondes. Choisissez l'accès invité rapide de 48 heures ou créez un compte permanent.
+              </p>
+            </div>
+            <button
+              onClick={() => setAuthOpen(true)}
+              className="shrink-0 flex items-center gap-2 px-6 py-3.5 rounded-[14px] font-bold text-neutral-900 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer !bg-[#25D366] border-none shadow-lg shadow-[#25D366]/20"
+            >
+              Créer mon accès rapide
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {/* Main CTA Block for Anons */}
+        {user && user.isAnonymous && (
+          <div className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+            <div className="flex flex-col items-start gap-3 max-w-lg text-center md:text-left">
+              <span className="px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-wider">
+                Sauvegardez vos données
+              </span>
+              <h2 className="text-2xl font-bold tracking-tight text-white">
+                Sécurisez votre compte maintenant
+              </h2>
+              <p className="text-white/70 text-sm md:text-base leading-relaxed">
+                {user.hasMadeDeposit ? (
+                  <>
+                    Votre session temporaire et vos données associées expireront dans{' '}
+                    <strong className="text-orange-400 font-bold">{formatRemainingTime()}</strong>. 
+                    Convertissez gratuitement votre accès rapide en compte permanent pour ne rien perdre.
+                  </>
+                ) : (
+                  <>
+                    Votre session temporaire est active. Convertissez gratuitement votre accès rapide en compte permanent dès maintenant pour conserver vos numéros et historique sans limite de temps.
+                  </>
+                )}
+              </p>
+            </div>
+            <button
+              onClick={() => navigate({ to: '/convert' })}
+              className="shrink-0 flex items-center gap-2 px-6 py-3.5 rounded-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer border-[#F97316] !bg-[#F97316] anim-glow-pulse border-none shadow-lg shadow-orange-500/20"
+            >
+              Passer au compte permanent
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {/* Simuler un Dépôt pour Tester */}
+        {(!user || (user.isAnonymous && !user.hasMadeDeposit)) && (
+          <div className="bg-[#141414] border border-dashed border-[#25D366]/30 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h4 className="font-bold text-white">Simuler un Dépôt</h4>
+              <p className="text-white/50 text-xs leading-relaxed max-w-lg">
+                {!user ? 'Veuillez vous connecter pour simuler un dépôt sur votre compte.' : 'Activez l\'accès complet de 48 heures et démarrez le compte à rebours de l\'accès temporaire pour tester le flux de recharge.'}
+              </p>
+            </div>
+            <button
+              onClick={handleSimulateDeposit}
+              disabled={simulating}
+              className="shrink-0 inline-flex items-center justify-center px-5 py-2.5 rounded-[14px] text-xs font-bold transition-all border border-[#25D366] !bg-[#25D366] text-neutral-900 cursor-pointer hover:scale-105 active:scale-95 shadow-lg shadow-[#25D366]/20 border-none"
+            >
+              {simulating ? 'Activation...' : !user ? 'Se connecter' : 'Simuler une Recharge'}
+            </button>
+          </div>
+        )}
+
+        {/* Feature Demonstration Area */}
+        <div className="bg-[#141414] border border-white/5 rounded-3xl p-8 shadow-lg flex flex-col gap-6">
+          <div>
+            <h3 className="text-xl font-bold text-white mb-2">Vos Services & Fonctionnalités</h3>
+            <p className="text-white/60 text-sm">
+              Vous avez accès à l’ensemble des fonctionnalités de num_zer0. Obtenez et gérez vos numéros virtuels instantanément.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-white/5 bg-white/5 rounded-2xl p-5 flex items-start gap-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 shrink-0">
+                <svg className="h-5 w-5 text-[#25D366]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-white mb-1">Numéros WhatsApp</h4>
+                <p className="text-white/50 text-xs leading-relaxed">
+                  Obtenez des numéros virtuels dédiés à la vérification et l’activation instantanée de WhatsApp.
+                </p>
+              </div>
+            </div>
+
+            <div className="border border-white/5 bg-white/5 rounded-2xl p-5 flex items-start gap-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 shrink-0">
+                <svg className="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-white mb-1">Réception SMS</h4>
+                <p className="text-white/50 text-xs leading-relaxed">
+                  Consultez les codes de vérification SMS reçus en temps réel directement sur votre tableau de bord.
+                </p>
               </div>
             </div>
           </div>
         </div>
-      )}
-
-      {addModal.open && (
-        <AddTaskModal
-          initialState={addModal}
-          onClose={() => setAddModal({ open: false, mode: 'create' })}
-        />
-      )}
+      </main>
     </div>
   )
 }

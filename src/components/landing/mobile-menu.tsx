@@ -1,14 +1,18 @@
-import type { Dispatch, SetStateAction } from "react"
-import { MOBILE_MENU, CONTACT } from "./data"
+import type { Dispatch, SetStateAction } from 'react'
+import { Link } from '@tanstack/react-router'
+import { MOBILE_MENU } from './data'
 
 interface MobileMenuProps {
   isOpen: boolean
   setIsOpen: Dispatch<SetStateAction<boolean>>
+  isAuthenticated?: boolean
 }
 
-const REMIX_SHADOW = "rgba(0,0,0,0.68) 0px -0.48175px 0.48175px -1.25px inset, rgba(0,0,0,0.596) 0px -1.83083px 1.83083px -2.5px inset, rgba(0,0,0,0.235) 0px -8px 8px -3.75px inset"
-
-export default function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
+export default function MobileMenu({
+  isOpen,
+  setIsOpen,
+  isAuthenticated,
+}: MobileMenuProps) {
   if (!isOpen) return null
 
   return (
@@ -36,29 +40,13 @@ export default function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
       </div>
 
       <div className="flex-none h-11 w-full relative">
-        <a
-          href={CONTACT.whatsapp}
-          target="_blank"
-          rel="noopener"
-          className="flex items-center justify-center w-full h-full px-4 py-3 no-underline rounded-[14px] bg-[#F97316]"
+        <Link
+          to="/app"
+          onClick={() => setIsOpen(false)}
+          className="flex items-center justify-center w-full h-full px-4 py-3 no-underline rounded-[14px] bg-[#F97316] border-none cursor-pointer text-white font-figtree font-semibold text-xl tracking-[-0.04em] leading-[1.4]"
         >
-          <p className="font-figtree font-semibold text-xl tracking-[-0.04em] leading-[1.4] text-center text-white m-0 whitespace-pre">
-            Acheter un numéro
-          </p>
-        </a>
-      </div>
-      <div className="flex-none h-11 w-full relative">
-        <a
-          href={CONTACT.whatsapp}
-          target="_blank"
-          rel="noopener"
-          className="flex items-center justify-center w-full h-full px-4 py-3 no-underline border border-dark-700 bg-dark-700 rounded-[14px] shadow-[var(--remix-shadow)]"
-          style={{ boxShadow: REMIX_SHADOW }}
-        >
-          <p className="font-figtree font-medium text-xl tracking-[-0.04em] leading-[1.4] text-center text-white m-0 whitespace-pre">
-            Recharger
-          </p>
-        </a>
+          {isAuthenticated ? 'Tableau de Bord' : 'Commencer'}
+        </Link>
       </div>
     </div>
   )

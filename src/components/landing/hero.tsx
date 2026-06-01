@@ -1,19 +1,39 @@
-import PhoneMockup from "./phone-mockup"
-import BrowserBadges from "./browser-badges"
-import { Reveal } from "./hooks/reveal"
-import { HERO, CONTACT } from "./data"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/common/ui/button"
+import { Link } from '@tanstack/react-router'
+import PhoneMockup from './phone-mockup'
+import BrowserBadges from './browser-badges'
+import { Reveal } from './hooks/reveal'
+import { HERO } from './data'
+import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/common/ui/button'
 
 const StarIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-    <path d="M7 0L8.993 4.007L13 6L8.993 7.993L7 12L5.007 7.993L1 6L5.007 4.007L7 0Z" fill="#FFD700" />
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="shrink-0"
+  >
+    <path
+      d="M7 0L8.993 4.007L13 6L8.993 7.993L7 12L5.007 7.993L1 6L5.007 4.007L7 0Z"
+      fill="#FFD700"
+    />
   </svg>
 )
 
-export default function Hero() {
+import { trackers } from '#/lib/trackers'
+
+interface HeroProps {
+  isAuthenticated?: boolean
+}
+
+export default function Hero({ isAuthenticated }: HeroProps) {
   return (
-    <section id="hero" className="flex flex-col items-center justify-center w-full min-h-[800px] relative px-5 pt-20 pb-15 bg-warm-100 md:px-11 md:pt-[120px] md:pb-20 xl:pt-40 xl:pb-25">
+    <section
+      id="hero"
+      className="flex flex-col items-center justify-center w-full min-h-[800px] relative px-5 pt-20 pb-15 bg-warm-100 md:px-11 md:pt-[120px] md:pb-20 xl:pt-40 xl:pb-25"
+    >
       <div className="flex flex-col items-center w-full max-w-[1200px] relative z-2 gap-[50px] xl:gap-[150px]">
         <div className="flex flex-col items-center w-full gap-5 xl:flex-row xl:items-start xl:gap-20">
           <div className="mt-20 flex flex-col items-start w-full max-w-[600px] gap-5">
@@ -34,14 +54,22 @@ export default function Hero() {
                   <span className="inline-block px-[4px] rounded-[2px] [background:linear-gradient(100deg,transparent_0%,transparent_5%,rgba(37,211,102,0.3)_5%,rgba(37,211,102,0.3)_95%,transparent_95%,transparent_100%)]">
                     <span className="anim-typewriter">Top 1</span>
                   </span>
-                </span>{" "}
-                pour obtenir tes numéros virtuels{" "}
+                </span>{' '}
+                pour obtenir tes numéros virtuels{' '}
                 {HERO.services.map((s, i) => (
                   <span
                     key={i}
                     className="inline-flex shrink-0 items-center justify-center border bg-clip-padding transition-all outline-none select-none rounded-[20%] w-[clamp(38px,5vw,54px)] h-[clamp(38px,5vw,54px)] bg-dark-900 border-dark-900 hover:brightness-110 align-middle ml-1.5"
-                    >
-                      <img decoding="async" loading="lazy" width="24" height="auto" src={s.src} alt={s.alt} className="block object-contain w-[clamp(22px,3vw,34px)] h-auto brightness-0 invert" />
+                  >
+                    <img
+                      decoding="async"
+                      loading="lazy"
+                      width="24"
+                      height="auto"
+                      src={s.src}
+                      alt={s.alt}
+                      className="block object-contain w-[clamp(22px,3vw,34px)] h-auto brightness-0 invert"
+                    />
                   </span>
                 ))}
               </h1>
@@ -55,24 +83,22 @@ export default function Hero() {
 
             <Reveal direction="up" stagger={4}>
               <div className="flex flex-row flex-wrap items-center gap-2 w-full mt-2">
-                <a
-                  href={CONTACT.whatsapp}
-                  target="_blank"
-                  rel="noopener"
+                <Link
+                  to="/app"
+                  onClick={() => trackers.trackClick('click_buy')}
                   className={cn(
-                    buttonVariants({ variant: "default" }),
-                    "gap-2 px-5 py-[10px] rounded-[14px] no-underline text-base font-medium tracking-[-0.16px] h-auto md:px-6 md:py-3 anim-glow-pulse !bg-[#F97316] border-[#F97316]"
+                    buttonVariants({ variant: 'default' }),
+                    'gap-2 px-5 py-[10px] rounded-[14px] no-underline text-base font-bold tracking-[-0.16px] h-auto md:px-6 md:py-3 anim-glow-pulse !bg-[#F97316] border-[#F97316] cursor-pointer text-white'
                   )}
                 >
-                 
-                  {HERO.cta}
-              
-                </a>
+                  {isAuthenticated ? 'Accéder au Tableau de Bord' : HERO.cta}
+                </Link>
                 <a
                   href="#services"
+                  onClick={() => trackers.trackClick('click_services')}
                   className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "gap-2 px-5 py-[10px] rounded-[14px] no-underline text-base font-medium tracking-[-0.16px] h-auto md:px-6 md:py-3 !text-dark-900"
+                    buttonVariants({ variant: 'outline' }),
+                    'gap-2 px-5 py-[10px] rounded-[14px] no-underline text-base font-medium tracking-[-0.16px] h-auto md:px-6 md:py-3 !text-dark-900 font-semibold'
                   )}
                 >
                   {HERO.ctaSecondary}
@@ -117,8 +143,12 @@ export default function Hero() {
         </div>
 
         <div className="flex flex-col items-center gap-[10px] w-full xl:hidden">
-          <div className="anim-float"><PhoneMockup /></div>
-          <Reveal direction="up"><BrowserBadges /></Reveal>
+          <div className="anim-float">
+            <PhoneMockup />
+          </div>
+          <Reveal direction="up">
+            <BrowserBadges />
+          </Reveal>
         </div>
       </div>
 
