@@ -2,11 +2,11 @@ export const seo = {
   landing: {
     meta: [
       {
-        title: 'Numzero',
+        title: 'Numzero — #1 WhatsApp Verification',
       },
       {
         name: 'description',
-        content: 'Numzero — coming soon.',
+        content: '#1 WhatsApp Verification dans tous les pays. WhatsApp, Telegram, Facebook, ChatGPT et plus. Rechargez à partir de 2000 XAF.',
       },
     ],
   },
