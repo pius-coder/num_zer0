@@ -5,7 +5,7 @@ export function QuickAccessModal() {
   const navigate = useNavigate()
 
   const handleContinue = () => {
-    navigate({ to: '/app' })
+    navigate({ to: '/my-space' })
   }
 
   return (

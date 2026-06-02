@@ -20,7 +20,7 @@ export const WalletBalanceBreakdown = memo(function WalletBalanceBreakdown({
           <button
             type='button'
             onClick={onRecharge}
-            className='shrink-0 rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors'
+            className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer'
           >
             + Recharger
           </button>

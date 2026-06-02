@@ -1,6 +1,31 @@
 import { query, mutation } from './_generated/server'
 import { v } from 'convex/values'
 
+const XAF_TO_USD = 600
+
+export function xafToUsd(xaf: number): number {
+  return Math.round((xaf / XAF_TO_USD) * 100) / 100
+}
+
+export const getUserBalance = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) return { balanceUsd: 0, userId: null }
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) =>
+        q.eq('betterAuthUserId', identity.subject)
+      )
+      .unique()
+
+    if (!user) return { balanceUsd: 0, userId: null }
+
+    return { balanceUsd: user.balanceUsd, userId: user._id }
+  },
+})
+
 export const getAccessStatus = query({
   args: {},
   handler: async (ctx) => {
@@ -78,6 +103,7 @@ export const syncUser = mutation({
       isAnonymous: args.isAnonymous,
       accessExpiresAt: args.accessExpiresAt,
       hasMadeDeposit: args.hasMadeDeposit ?? false,
+      balanceUsd: 0,
       country: args.country,
       isAdmin: isAdmin,
       createdAt: now,

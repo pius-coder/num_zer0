@@ -31,38 +31,27 @@ export const PaymentMethodCard = memo(function PaymentMethodCard({
     <button
       type='button'
       onClick={() => onSelect(id)}
-      className={`
-        group relative flex w-full items-center gap-4 rounded-2xl border-2 p-4
-        text-left transition-all duration-200 ease-out
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50
-        ${
-          active
-            ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10'
-            : 'border-border bg-card hover:border-primary/20 hover:shadow-sm'
-        }
-      `}
+      className={`group relative flex w-full items-center gap-4 p-4 text-left transition-all duration-200 ease-out cursor-pointer focus-visible:outline-none ${
+        active ? 'scale-[1.02]' : ''
+      }`}
     >
       <div
-        className={`
-          flex h-12 w-12 shrink-0 items-center justify-center rounded-xl
-          transition-all duration-200
-          ${active ? activeColor : color}
-        `}
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
+          active ? activeColor : color
+        }`}
       >
         <PaymentMethodIcon src={iconSrc} alt={iconAlt} isWallet={isWallet} />
       </div>
 
       <div className='flex-1 min-w-0'>
-        <p
-          className={`
-            text-sm font-bold tracking-tight
-            font-[family-name:var(--font-bricolage-grotesque)]
-            ${active ? 'text-primary' : 'text-foreground'}
-          `}
-        >
+        <p className={`font-figtree text-[18px] font-medium tracking-[-0.04em] leading-[1.25] ${
+          active ? 'text-[#25D366]' : 'text-[var(--sea-ink)]'
+        }`}>
           {label}
         </p>
-        <p className='text-xs text-muted-foreground'>{desc}</p>
+        <p className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>
+          {desc}
+        </p>
       </div>
 
       <PaymentMethodCheck active={active} />

@@ -18,7 +18,6 @@ import { Route as appWalletRouteImport } from './routes/(app)/wallet'
 import { Route as appSupportRouteImport } from './routes/(app)/support'
 import { Route as appRechargeRouteImport } from './routes/(app)/recharge'
 import { Route as appMySpaceRouteImport } from './routes/(app)/my-space'
-import { Route as appAppRouteImport } from './routes/(app)/app'
 import { Route as appAccountRouteImport } from './routes/(app)/account'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -65,11 +64,6 @@ const appMySpaceRoute = appMySpaceRouteImport.update({
   path: '/my-space',
   getParentRoute: () => appRouteRoute,
 } as any)
-const appAppRoute = appAppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => appRouteRoute,
-} as any)
 const appAccountRoute = appAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -85,7 +79,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/convert': typeof ConvertRoute
   '/account': typeof appAccountRoute
-  '/app': typeof appAppRoute
   '/my-space': typeof appMySpaceRoute
   '/recharge': typeof appRechargeRoute
   '/support': typeof appSupportRoute
@@ -97,7 +90,6 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/convert': typeof ConvertRoute
   '/account': typeof appAccountRoute
-  '/app': typeof appAppRoute
   '/my-space': typeof appMySpaceRoute
   '/recharge': typeof appRechargeRoute
   '/support': typeof appSupportRoute
@@ -112,7 +104,6 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/convert': typeof ConvertRoute
   '/(app)/account': typeof appAccountRoute
-  '/(app)/app': typeof appAppRoute
   '/(app)/my-space': typeof appMySpaceRoute
   '/(app)/recharge': typeof appRechargeRoute
   '/(app)/support': typeof appSupportRoute
@@ -126,7 +117,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/convert'
     | '/account'
-    | '/app'
     | '/my-space'
     | '/recharge'
     | '/support'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/convert'
     | '/account'
-    | '/app'
     | '/my-space'
     | '/recharge'
     | '/support'
@@ -152,7 +141,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/convert'
     | '/(app)/account'
-    | '/(app)/app'
     | '/(app)/my-space'
     | '/(app)/recharge'
     | '/(app)/support'
@@ -234,13 +222,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appMySpaceRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/app': {
-      id: '/(app)/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof appAppRouteImport
-      parentRoute: typeof appRouteRoute
-    }
     '/(app)/account': {
       id: '/(app)/account'
       path: '/account'
@@ -260,7 +241,6 @@ declare module '@tanstack/react-router' {
 
 interface appRouteRouteChildren {
   appAccountRoute: typeof appAccountRoute
-  appAppRoute: typeof appAppRoute
   appMySpaceRoute: typeof appMySpaceRoute
   appRechargeRoute: typeof appRechargeRoute
   appSupportRoute: typeof appSupportRoute
@@ -269,7 +249,6 @@ interface appRouteRouteChildren {
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appAccountRoute: appAccountRoute,
-  appAppRoute: appAppRoute,
   appMySpaceRoute: appMySpaceRoute,
   appRechargeRoute: appRechargeRoute,
   appSupportRoute: appSupportRoute,

@@ -16,13 +16,13 @@ export const WalletBalanceTotal = memo(function WalletBalanceTotal({
     <div className='flex items-start justify-between gap-3'>
       {loading ? (
         <div className='flex items-center gap-2'>
-          <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
-          <p className='text-sm text-muted-foreground'>Chargement...</p>
+          <Loader2 className='h-4 w-4 animate-spin text-[var(--sea-ink-soft)]' />
+          <p className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Chargement...</p>
         </div>
       ) : (
         <div>
-          <p className='text-3xl font-bold tracking-tight text-foreground'>{total.toLocaleString('fr-FR')}</p>
-          <p className='text-xs text-muted-foreground'>FCFA disponibles</p>
+          <p className='font-figtree text-[var(--sea-ink)] text-[30px] font-medium tracking-[-0.04em] leading-[1.25]'>${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          <p className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>USD disponibles</p>
         </div>
       )}
     </div>

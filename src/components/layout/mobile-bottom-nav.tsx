@@ -1,9 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
-import { MenuIcon } from '@/components/landing/menu-icons'
-// import { TbMoneybagPlus } from 'react-icons/tb' // TODO: install bun add react-icons
+import { MenuIcon, CloseIcon } from '@/components/landing/menu-icons'
+import { useBottomNav } from './bottom-nav-store'
+import { useInitiateDirectPay } from '@/components/purchases/hooks'
+import { StepTopUp } from '@/components/recharge/step-topup'
+import { useCallback } from 'react'
+import type { PaymentMethod } from '@/components/recharge/step-method'
+import { authClient } from '#/lib/auth-client'
+import { useBalance } from '@/components/purchases/hooks'
 
 const NAV_ITEMS = [
   { path: '/my-space', label: 'Mon Espace' },
@@ -13,26 +18,93 @@ const NAV_ITEMS = [
   { path: '/support', label: 'Support' },
 ] as const
 
-export function MobileBottomNav() {
-  const [isOpen, setIsOpen] = useState(false)
+function NavPanel({ onNavigate }: { onNavigate: () => void }) {
   const { pathname } = useLocation()
-  const balance = 0
+
+  return (
+    <div className='flex flex-col gap-[18px] px-5 pt-4 pb-3'>
+      <div className='flex flex-col w-full gap-2'>
+        {NAV_ITEMS.map(({ path, label }) => {
+          const isActive = pathname === path || pathname.startsWith(path + '/')
+          return (
+            <Link
+              key={path}
+              to={path}
+              onClick={onNavigate}
+              className="block bg-transparent w-full no-underline"
+            >
+              <h3
+                className={`font-figtree font-medium text-[30px] tracking-[-0.04em] leading-[1.25] text-left m-0 ${
+                  isActive ? 'text-[#25D366]' : 'text-[var(--sea-ink)]'
+                }`}
+              >
+                {label}
+              </h3>
+            </Link>
+          )
+        })}
+      </div>
+      <div className='border-t border-[var(--line)]/40 pt-3 pb-1' />
+    </div>
+  )
+}
+
+function RechargePanel({ topUpAmount }: { topUpAmount?: number | null }) {
+  const directPayMutation = useInitiateDirectPay()
+
+  const handlePay = useCallback(
+    async (amount: number, phone: string, method: PaymentMethod, promoCode?: string) => {
+      const session = await authClient.getSession()
+      if (!session?.data) {
+        await authClient.signIn.anonymous()
+      }
+
+      const data = await directPayMutation.mutateAsync({
+        amount,
+        phone,
+        medium: method === 'mtn_momo' ? 'MTN Mobile Money' : 'Orange Money',
+        promoCode,
+      })
+      if (data.link) window.location.href = data.link
+    },
+    [directPayMutation]
+  )
+
+  return (
+    <div className='px-5 pt-4 pb-3'>
+      <StepTopUp
+        initialAmount={Math.max(1500, topUpAmount ?? 1500)}
+        onPay={handlePay}
+        isPending={directPayMutation.isPending}
+      />
+    </div>
+  )
+}
+
+export function MobileBottomNav() {
+  const { isOpen, activePanel, panelProps, closePanel, openPanel, toggleNav } = useBottomNav()
+  const { pathname } = useLocation()
+  const { data: balanceData } = useBalance()
+  const balanceUsd = balanceData?.balanceUsd ?? 0
+
+  const activeLabel = NAV_ITEMS.find(
+    ({ path }) => pathname === path || pathname.startsWith(path + '/')
+  )?.label
 
   return (
     <>
-      <div className="fixed p-1 left-3 text-center bottom-3 z-50 md:hidden flex flex-col items-center">
-        {NAV_ITEMS.map(({ path, label }) => {
-          const isActive = pathname === path || pathname.startsWith(path + '/')
-
-          return isActive ? (
-            <h3
-              className="font-figtree font-medium text-[30px] tracking-[-0.04em] leading-[1.25] text-left m-0 text-[#25D366]"
-            >
-              {label}
-            </h3>
-          ) : null
-        })}
+      <div
+        className={`fixed left-3 bottom-3 z-50 md:hidden transition-all duration-500 ease-out ${
+          isOpen ? '-translate-x-full opacity-0' : ''
+        }`}
+      >
+        {activeLabel && (
+          <h3 className='font-figtree font-medium text-[30px] tracking-[-0.04em] leading-[1.25] text-left m-0 text-[#25D366]'>
+            {activeLabel}
+          </h3>
+        )}
       </div>
+
       <div className="fixed right-3 bottom-3 z-50 md:hidden flex flex-col items-end">
         <div
           className="relative inline-flex w-fit max-w-[92vw] overflow-hidden rounded-[18px] transition-all duration-500 ease-out"
@@ -48,34 +120,39 @@ export function MobileBottomNav() {
             }}
           />
           <div className="relative flex flex-col-reverse">
-            {/* Compact bar: [+      0000] | XAF [HAMBURGER] */}
             <div className="flex items-center justify-between px-3 py-[10px]">
-              <div className="flex items-center justify-between flex-1 mr-3 min-w-0">
+              <Link
+                to="/wallet"
+                onClick={closePanel}
+                className="flex items-center justify-between flex-1 mr-3 min-w-0 no-underline"
+              >
                 <span className="text-[var(--sea-ink)] text-[18px] font-thin tabular-nums tracking-tight">
-                  {balance.toLocaleString('fr-FR')}
+                  ${balanceUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
                 <span className="text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider ml-3 shrink-0">
-                  XAF
+                  USD
                 </span>
-              </div>
+              </Link>
 
               <div className="flex items-center gap-2 shrink-0">
                 <span className="h-4 w-px bg-[var(--line)]/40" />
-                <span className="text-xl leading-none font-bold flex items-center justify-center w-[28px] h-[28px] text-[var(--sea-ink)]">
-                  {/* <TbMoneybagPlus /> */}+
-                </span>
+                <button
+                  onClick={() => openPanel('recharge')}
+                  className="text-xl leading-none font-bold flex items-center justify-center w-[28px] h-[28px] text-[var(--sea-ink)] bg-transparent border-none cursor-pointer"
+                >
+                  +
+                </button>
 
                 <button
-                  onClick={() => setIsOpen(!isOpen)}
+                  onClick={isOpen ? closePanel : toggleNav}
                   className="h-[30px] w-[30px] p-0 bg-transparent border-none cursor-pointer shrink-0 text-[var(--sea-ink)]"
-                  aria-label={isOpen ? 'Close menu' : 'Open menu'}
+                  aria-label={isOpen ? 'Fermer' : 'Menu'}
                 >
-                  <MenuIcon />
+                  {isOpen ? <CloseIcon /> : <MenuIcon />}
                 </button>
               </div>
             </div>
 
-            {/* Open panel: expands upward from bottom bar */}
             <div
               className="transition-all duration-500 ease-out"
               style={{
@@ -84,34 +161,9 @@ export function MobileBottomNav() {
                 overflow: 'hidden',
               }}
             >
-              <div className="flex flex-col gap-[18px] px-5 pt-4 pb-3">
-                <div className="flex flex-col w-full gap-2">
-                  {NAV_ITEMS.map(({ path, label }) => {
-                    const isActive =
-                      pathname === path || pathname.startsWith(path + '/')
-                    return (
-                      <Link
-                        key={path}
-                        to={path}
-                        onClick={() => setIsOpen(false)}
-                        className="block bg-transparent w-full no-underline"
-                      >
-                        <h3
-                          className={`font-figtree font-medium text-[30px] tracking-[-0.04em] leading-[1.25] text-left m-0 ${
-                            isActive
-                              ? 'text-[#25D366]'
-                              : 'text-[var(--sea-ink)]'
-                          }`}
-                        >
-                          {label}
-                        </h3>
-                      </Link>
-                    )
-                  })}
-                </div>
-
-                <div className="border-t border-[var(--line)]/40 pt-3 pb-1" />
-              </div>
+              {activePanel === 'nav' && <NavPanel onNavigate={closePanel} />}
+              {activePanel === 'recharge' && <RechargePanel />}
+              {activePanel === 'topup' && <RechargePanel topUpAmount={panelProps.amount as number} />}
             </div>
           </div>
         </div>

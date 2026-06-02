@@ -22,10 +22,12 @@ export function StepMethod({ selected, onSelect }: StepMethodProps) {
   return (
     <div className='space-y-5'>
       <div className='text-center space-y-1'>
-        <h3 className='text-lg font-extrabold tracking-tight font-[family-name:var(--font-bricolage-grotesque)]'>
+        <h3 className='font-figtree text-[var(--sea-ink)] text-[30px] font-medium tracking-[-0.04em] leading-[1.25]'>
           Comment voulez-vous payer ?
         </h3>
-        <p className='text-xs text-muted-foreground'>Choisissez votre moyen de paiement préféré</p>
+        <p className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>
+          Choisissez votre moyen de paiement préféré
+        </p>
       </div>
 
       <div className='mx-auto max-w-md space-y-2.5'>

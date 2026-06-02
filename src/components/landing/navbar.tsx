@@ -51,7 +51,7 @@ export default function Navbar({ isAuthenticated }: NavbarProps) {
             </div>
 
             <Link
-              to="/app"
+              to="/my-space"
               className="hidden items-center justify-center gap-[6px] px-4 py-[8px] no-underline bg-[#25D366] rounded-[120px] md:flex cursor-pointer border-none font-bold text-neutral-900 text-[14px]"
             >
               {isAuthenticated ? 'Tableau de Bord' : NAV.ctaDesktop}

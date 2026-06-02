@@ -84,7 +84,7 @@ export default function Hero({ isAuthenticated }: HeroProps) {
             <Reveal direction="up" stagger={4}>
               <div className="flex flex-row flex-wrap items-center gap-2 w-full mt-2">
                 <Link
-                  to="/app"
+                  to="/my-space"
                   onClick={() => trackers.trackClick('click_buy')}
                   className={cn(
                     buttonVariants({ variant: 'default' }),

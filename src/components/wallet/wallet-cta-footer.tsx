@@ -12,13 +12,13 @@ export const WalletCtaFooter = memo(function WalletCtaFooter({ onRecharge }: Wal
       <button
         type='button'
         onClick={onRecharge}
-        className='rounded-lg px-4 py-2.5 text-sm font-medium transition-colors'
+        className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] px-4 py-2.5 cursor-pointer'
       >
         Recharger des crédits
       </button>
       <a
         href='/my-space'
-        className='rounded-lg px-4 py-2.5 text-sm font-medium text-foreground transition-colors text-center'
+        className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider px-4 py-2.5 text-center inline-block'
       >
         Parcourir les services
       </a>

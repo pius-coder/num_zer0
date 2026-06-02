@@ -1,8 +1,9 @@
 export {
-  usePackages,
+  useBalance,
   usePurchases,
-  useCreatePurchase,
+  useValidatePromoCode,
   useVerifyPurchase,
   useCancelPurchase,
+  useInitiateDirectPay,
   purchaseKeys,
 } from './use-purchases'

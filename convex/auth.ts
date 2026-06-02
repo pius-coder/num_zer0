@@ -48,6 +48,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
           name: user.name || undefined,
           isAnonymous,
           accessExpiresAt,
+          balanceUsd: 0,
           isAdmin,
           createdAt: now,
           updatedAt: now,

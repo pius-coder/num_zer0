@@ -2,7 +2,7 @@
 
 import { Coins } from 'lucide-react'
 import { cn } from '@/common/css'
-import { useRechargeDrawer } from './use-recharge-drawer'
+import { useBottomNav } from '@/components/layout/bottom-nav-store'
 
 interface RechargeTriggerButtonProps {
   className?: string
@@ -17,24 +17,24 @@ export function RechargeTriggerButton({
   packageId,
   notShowOnWalletPage = false,
 }: RechargeTriggerButtonProps) {
-  const { openRecharge } = useRechargeDrawer()
+  const { openPanel } = useBottomNav()
 
   if (notShowOnWalletPage) return null
 
   return (
     <button
       type='button'
-      onClick={() => openRecharge(packageId)}
+      onClick={() => openPanel('recharge', { packageId })}
       className={cn(
-        'flex items-center justify-center rounded-4xl border border-primary gap-2 p-2 transition-colors hover:bg-primary/5',
+        'flex items-center justify-center gap-2 p-2 cursor-pointer',
         className
       )}
     >
-      <span className='ml-2 text-primary/80 text-[14px] font-bold tabular-nums tracking-tight'>
-        {balance.toLocaleString('fr-FR')}
+      <span className='font-figtree text-[var(--sea-ink)] text-[18px] font-thin tabular-nums tracking-tight'>
+        ${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </span>
       <div>
-        <Coins className='h-4 w-4' />
+        <Coins className='h-4 w-4 text-[var(--sea-ink-soft)]' />
       </div>
     </button>
   )

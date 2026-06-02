@@ -45,7 +45,7 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
       }
       toast.success('Accès temporaire de 48 heures activé !')
       if (onClose) onClose()
-      navigate({ to: '/app' })
+      navigate({ to: '/my-space' })
     } catch (err: any) {
       console.error('Quick access failed:', err)
       setError('Une erreur inattendue est survenue')
@@ -85,7 +85,7 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
       }
       
       if (onClose) onClose()
-      navigate({ to: '/app' })
+      navigate({ to: '/my-space' })
     } catch (err: any) {
       console.error('Auth operation failed:', err)
       setError('Une erreur est survenue lors de l’authentification')

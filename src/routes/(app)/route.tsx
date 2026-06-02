@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { MobileBottomNav } from '#/components/layout/mobile-bottom-nav'
-import { RechargeDrawerProvider } from '#/components/recharge/recharge-drawer-provider'
+import { MobileBottomNav, BottomNavProvider, DesktopDrawerProxy } from '#/components/layout'
 
 export const Route = createFileRoute('/(app)')({
   component: AppLayout,
@@ -8,12 +7,13 @@ export const Route = createFileRoute('/(app)')({
 
 function AppLayout() {
   return (
-    <RechargeDrawerProvider>
+    <BottomNavProvider>
       <main>
         <Outlet />
       </main>
 
+      <DesktopDrawerProxy />
       <MobileBottomNav />
-    </RechargeDrawerProvider>
+    </BottomNavProvider>
   )
 }

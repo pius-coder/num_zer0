@@ -42,7 +42,7 @@ export function ConvertPage() {
       }
 
       await convertToPermanent({ email, name })
-      navigate({ to: '/app' })
+      navigate({ to: '/my-space' })
     } catch (err) {
       setError('Une erreur est survenue')
     } finally {

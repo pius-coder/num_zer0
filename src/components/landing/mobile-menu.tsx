@@ -41,7 +41,7 @@ export default function MobileMenu({
 
       <div className="flex-none h-11 w-full relative">
         <Link
-          to="/app"
+          to="/my-space"
           onClick={() => setIsOpen(false)}
           className="flex items-center justify-center w-full h-full px-4 py-3 no-underline rounded-[14px] bg-[#F97316] border-none cursor-pointer text-white font-figtree font-semibold text-xl tracking-[-0.04em] leading-[1.4]"
         >

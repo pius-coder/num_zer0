@@ -10,15 +10,11 @@ export const PaymentMethodCheck = memo(function PaymentMethodCheck({
 }: PaymentMethodCheckProps) {
   return (
     <div
-      className={`
-        flex h-6 w-6 shrink-0 items-center justify-center rounded-full
-        border-2 transition-all duration-200
-        ${
-          active
-            ? 'border-primary bg-primary text-primary-foreground scale-100'
-            : 'border-muted-foreground/20 bg-transparent scale-90'
-        }
-      `}
+      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-all duration-200 ${
+        active
+          ? 'text-[#25D366] scale-100'
+          : 'text-[var(--sea-ink-soft)]/20 scale-90'
+      }`}
     >
       {active && <Check className='h-3.5 w-3.5' strokeWidth={3} />}
     </div>

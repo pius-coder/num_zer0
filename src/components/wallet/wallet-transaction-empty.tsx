@@ -12,8 +12,8 @@ export const WalletTransactionEmpty = memo(function WalletTransactionEmpty({
 }: WalletTransactionEmptyProps) {
   return (
     <div className='flex flex-col items-center justify-center py-8 text-center'>
-      <PackageX className='h-8 w-8 text-muted-foreground/50 mb-3' />
-      <p className='text-sm text-muted-foreground'>{message}</p>
+      <PackageX className='h-8 w-8 text-[var(--sea-ink-soft)]/30 mb-3' />
+      <p className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>{message}</p>
     </div>
   )
 })

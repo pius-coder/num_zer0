@@ -56,7 +56,7 @@ export function AdminDashboard() {
           Vous n'avez pas les autorisations nécessaires pour accéder à cet espace.
         </p>
         <Link
-          to="/app"
+          to="/my-space"
           className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all font-bold text-white no-underline"
         >
           Retour au Tableau de Bord
@@ -76,7 +76,7 @@ export function AdminDashboard() {
           <h1 className="font-kubo text-xl font-bold tracking-tight">num_zer0 Control</h1>
         </div>
         <Link
-          to="/app"
+          to="/my-space"
           className="text-sm font-semibold text-white/70 hover:text-white transition-colors bg-white/5 border border-white/10 px-4 py-2 rounded-xl no-underline"
         >
           Retour Application

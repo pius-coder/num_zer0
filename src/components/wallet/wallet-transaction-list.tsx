@@ -11,13 +11,15 @@ export interface TransactionItem {
   date: string
   amountXaf: number
   kind: 'purchase' | 'number_purchase'
+  raw?: any
 }
 
 interface WalletTransactionListProps {
   transactions?: TransactionItem[]
+  onSelectTx?: (tx: TransactionItem) => void
 }
 
-export function WalletTransactionList({ transactions = [] }: WalletTransactionListProps) {
+export function WalletTransactionList({ transactions = [], onSelectTx }: WalletTransactionListProps) {
   const [tab, setTab] = useState<'all' | 'purchase' | 'numbers'>('all')
 
   const items = useMemo(() => {
@@ -33,7 +35,7 @@ export function WalletTransactionList({ transactions = [] }: WalletTransactionLi
   return (
     <div className='space-y-3'>
       <div className='space-y-3'>
-        <h2 className='text-base font-semibold'>Historique transactions</h2>
+        <h2 className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Historique transactions</h2>
         <WalletTransactionTabs value={tab} onChange={setTab} />
       </div>
       <div className='space-y-2'>
@@ -47,6 +49,7 @@ export function WalletTransactionList({ transactions = [] }: WalletTransactionLi
               date={tx.date}
               amountXaf={tx.amountXaf}
               kind={tx.kind}
+              onClick={() => onSelectTx?.(tx)}
             />
           ))
         )}

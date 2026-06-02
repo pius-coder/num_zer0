@@ -1,7 +1,6 @@
 'use client'
 
 import { LogOut, LoaderCircle } from 'lucide-react'
-import { Button } from '@/common/ui/button'
 import { authClient } from '#/lib/auth-client'
 import { useState } from 'react'
 
@@ -26,25 +25,22 @@ export function LogoutButton() {
 
   return (
     <section className='space-y-3'>
-      <h2 className='px-4 text-[13px] font-semibold uppercase tracking-wider text-muted-foreground'>
+      <h2 className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>
         Session
       </h2>
 
-      <div className='overflow-hidden rounded-3xl p-1'>
-        <Button
-          onClick={handleLogout}
-          disabled={isPending}
-          variant='ghost'
-          className='h-12 w-full justify-start gap-3 rounded-2xl px-4 font-bold text-destructive transition-all active:scale-[0.98]'
-        >
-          {isPending ? (
-            <LoaderCircle className='h-5 w-5 animate-spin text-destructive' />
-          ) : (
-            <LogOut className='h-5 w-5' />
-          )}
-          <span>Log Out</span>
-        </Button>
-      </div>
+      <button
+        onClick={handleLogout}
+        disabled={isPending}
+        className='w-full flex items-center gap-3 py-3 font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer disabled:opacity-40'
+      >
+        {isPending ? (
+          <LoaderCircle className='h-5 w-5 animate-spin' />
+        ) : (
+          <LogOut className='h-5 w-5' />
+        )}
+        <span>Log Out</span>
+      </button>
     </section>
   )
 }

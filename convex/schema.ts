@@ -12,6 +12,7 @@ export default defineSchema({
     convertedAt: v.optional(v.number()),
     country: v.optional(v.string()),
     isAdmin: v.optional(v.boolean()),
+    balanceUsd: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -38,6 +39,8 @@ export default defineSchema({
     userId: v.string(),
     packageId: v.string(),
     priceXaf: v.number(),
+    promoCode: v.optional(v.string()),
+    promoDiscount: v.optional(v.number()),
     paymentMethod: v.string(),
     status: v.string(),
     paymentGatewayId: v.optional(v.string()),
@@ -50,4 +53,15 @@ export default defineSchema({
     .index('by_userId', ['userId'])
     .index('by_idempotencyKey', ['idempotencyKey'])
     .index('by_paymentGatewayId', ['paymentGatewayId']),
+  promoCodes: defineTable({
+    code: v.string(),
+    discountPercent: v.optional(v.number()),
+    discountFlat: v.optional(v.number()),
+    isActive: v.boolean(),
+    maxUses: v.optional(v.number()),
+    usedCount: v.number(),
+    expiresAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index('by_code', ['code']),
 })
