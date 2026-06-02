@@ -80,6 +80,7 @@ export const handlePaymentSuccess = mutation({
       .unique()
     if (!purchase) return
 
+    if (purchase.status === 'confirmed') return
     await ctx.db.patch(purchase._id, { status: 'confirmed' })
 
     const creditUsd = Math.round((purchase.priceXaf / 600) * 100) / 100
@@ -89,8 +90,8 @@ export const handlePaymentSuccess = mutation({
       .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', purchase.userId))
       .unique()
 
+    const now = Date.now()
     if (!user) {
-      const now = Date.now()
       await ctx.db.insert('users', {
         betterAuthUserId: purchase.userId,
         isAnonymous: true,
@@ -101,14 +102,31 @@ export const handlePaymentSuccess = mutation({
         updatedAt: now,
       })
     } else {
-      const now = Date.now()
       await ctx.db.patch(user._id, {
-        balanceUsd: Math.round(((user.balanceUsd ?? 0) + creditUsd) * 100) / 100,
         hasMadeDeposit: true,
         accessExpiresAt: now + 48 * 60 * 60 * 1000,
         updatedAt: now,
       })
     }
+
+    await ctx.runMutation(internal.comptabilite.ensureCompte, {
+      code: `411-${purchase.userId}`,
+      libelle: `Client ${purchase.userId.slice(0, 8)}`,
+    })
+    await ctx.runMutation(internal.comptabilite.ensureCompte, {
+      code: '701-recharge',
+      libelle: 'Produit recharges',
+    })
+
+    await ctx.runMutation(internal.comptabilite.createPiece, {
+      libelle: `Recharge ${purchase.priceXaf.toLocaleString('fr-FR')} FCFA`,
+      statut: 'validee',
+      reference: purchase._id,
+      lignes: [
+        { compteCode: `411-${purchase.userId}`, sens: 'debit', montant: creditUsd },
+        { compteCode: '701-recharge', sens: 'credit', montant: creditUsd },
+      ],
+    })
   },
 })
 
@@ -253,10 +271,9 @@ export const internalUpdateUserDeposit = internalMutation({
     const now = Date.now()
     const user = await ctx.db.get(args.userId)
     if (!user) return
-    await ctx.db.patch(args.userId, {
+    await ctx.db.patch(user._id, {
       hasMadeDeposit: true,
       accessExpiresAt: now + 48 * 60 * 60 * 1000,
-      balanceUsd: Math.round(((user.balanceUsd ?? 0) + args.creditUsd) * 100) / 100,
       updatedAt: now,
     })
   },
@@ -371,13 +388,32 @@ export const verifyPurchase = action({
       return { success: false, status: fapshiStatus }
     }
 
-    await ctx.runMutation(internal.purchases.internalPatchPurchase, {
-      purchaseId: purchase._id,
-      patch: { status: 'confirmed' },
-    })
+    if (purchase.status !== 'confirmed') {
+      await ctx.runMutation(internal.purchases.internalPatchPurchase, {
+        purchaseId: purchase._id,
+        patch: { status: 'confirmed' },
+      })
+
+      await ctx.runMutation(internal.comptabilite.ensureCompte, {
+        code: `411-${userId}`,
+        libelle: `Client ${userId.slice(0, 8)}`,
+      })
+      await ctx.runMutation(internal.comptabilite.ensureCompte, {
+        code: '701-recharge',
+        libelle: 'Produit recharges',
+      })
+      await ctx.runMutation(internal.comptabilite.createPiece, {
+        libelle: `Recharge ${purchase.priceXaf.toLocaleString('fr-FR')} FCFA`,
+        statut: 'validee',
+        reference: purchase._id,
+        lignes: [
+          { compteCode: `411-${userId}`, sens: 'debit', montant: Math.round((purchase.priceXaf / 600) * 100) / 100 },
+          { compteCode: '701-recharge', sens: 'credit', montant: Math.round((purchase.priceXaf / 600) * 100) / 100 },
+        ],
+      })
+    }
 
     const creditUsd = Math.round((purchase.priceXaf / 600) * 100) / 100
-
     const user = await ctx.runQuery(internal.purchases.internalGetUserByBetterAuthId, {
       betterAuthUserId: userId,
     })
@@ -392,24 +428,43 @@ export const verifyPurchase = action({
   },
 })
 
-export const backfillBalances = internalMutation({
+export const backfillComptes = internalMutation({
   args: {},
   handler: async (ctx) => {
-    const users = await ctx.db.query('users').collect()
-    let updated = 0
-    for (const user of users) {
-      const purchases = await ctx.db
-        .query('purchases')
-        .withIndex('by_userId', (q) => q.eq('userId', user.betterAuthUserId))
-        .collect()
-      const confirmed = purchases.filter((p) => p.status === 'confirmed')
-      const totalXaf = confirmed.reduce((sum, p) => sum + p.priceXaf, 0)
-      const balanceUsd = Math.round((totalXaf / 600) * 100) / 100
-      if (balanceUsd !== (user.balanceUsd ?? 0)) {
-        await ctx.db.patch(user._id, { balanceUsd, updatedAt: Date.now() })
-        updated++
-      }
+    const purchases = await ctx.db.query('purchases').collect()
+    const confirmed = purchases.filter((p) => p.status === 'confirmed')
+    let piecesCreated = 0
+
+    for (const purchase of confirmed) {
+      const existingPiece = await ctx.db
+        .query('pieces')
+        .filter((q) => q.eq(q.field('reference'), purchase._id))
+        .first()
+      if (existingPiece) continue
+
+      const creditUsd = Math.round((purchase.priceXaf / 600) * 100) / 100
+
+      await ctx.runMutation(internal.comptabilite.ensureCompte, {
+        code: `411-${purchase.userId}`,
+        libelle: `Client ${purchase.userId.slice(0, 8)}`,
+      })
+      await ctx.runMutation(internal.comptabilite.ensureCompte, {
+        code: '701-recharge',
+        libelle: 'Produit recharges',
+      })
+
+      await ctx.runMutation(internal.comptabilite.createPiece, {
+        libelle: `Recharge ${purchase.priceXaf.toLocaleString('fr-FR')} FCFA`,
+        statut: 'validee',
+        reference: purchase._id,
+        lignes: [
+          { compteCode: `411-${purchase.userId}`, sens: 'debit', montant: creditUsd },
+          { compteCode: '701-recharge', sens: 'credit', montant: creditUsd },
+        ],
+      })
+      piecesCreated++
     }
-    return { users: users.length, updated }
+
+    return { confirmed: confirmed.length, piecesCreated }
   },
 })

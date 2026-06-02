@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 
-export type PanelId = 'nav' | 'recharge' | 'topup' | null
+export type PanelId = 'nav' | 'recharge' | 'topup' | 'details' | null
 
 interface BottomNavContextValue {
   isOpen: boolean

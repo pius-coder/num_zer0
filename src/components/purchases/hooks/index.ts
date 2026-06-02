@@ -1,5 +1,6 @@
 export {
   useBalance,
+  useMouvements,
   usePurchases,
   useValidatePromoCode,
   useVerifyPurchase,

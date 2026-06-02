@@ -20,9 +20,12 @@ export const getUserBalance = query({
       )
       .unique()
 
-    if (!user) return { balanceUsd: 0, userId: null }
+    const compte = await ctx.db
+      .query('comptes')
+      .withIndex('by_code', (q) => q.eq('code', `411-${identity.subject}`))
+      .unique()
 
-    return { balanceUsd: user.balanceUsd, userId: user._id }
+    return { balanceUsd: compte?.solde ?? 0, userId: user?._id ?? null }
   },
 })
 

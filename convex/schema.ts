@@ -64,4 +64,27 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index('by_code', ['code']),
+
+  comptes: defineTable({
+    code: v.string(),
+    libelle: v.string(),
+    solde: v.number(),
+  }).index('by_code', ['code']),
+
+  pieces: defineTable({
+    date: v.number(),
+    libelle: v.string(),
+    statut: v.string(),
+    reference: v.optional(v.string()),
+  }),
+
+  lignes: defineTable({
+    pieceId: v.id('pieces'),
+    compteCode: v.string(),
+    sens: v.string(),
+    montant: v.number(),
+    soldeApres: v.number(),
+  })
+    .index('by_piece', ['pieceId'])
+    .index('by_compte', ['compteCode']),
 })

@@ -6,10 +6,15 @@ export const purchaseKeys = {
   all: ['purchases'] as const,
   purchases: () => [...purchaseKeys.all, 'purchases'] as const,
   balance: () => ['balance'] as const,
+  mouvements: () => ['mouvements'] as const,
 }
 
 export function useBalance() {
   return useQuery(convexQuery(api.users.getUserBalance, {}))
+}
+
+export function useMouvements() {
+  return useQuery(convexQuery(api.comptabilite.getMyMouvements, {}))
 }
 
 export function usePurchases() {
@@ -31,6 +36,7 @@ export function useInitiateDirectPay() {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: purchaseKeys.all })
       qc.invalidateQueries({ queryKey: purchaseKeys.balance() })
+      qc.invalidateQueries({ queryKey: purchaseKeys.mouvements() })
     },
   })
 }
@@ -43,6 +49,7 @@ export function useVerifyPurchase() {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: purchaseKeys.all })
       qc.invalidateQueries({ queryKey: purchaseKeys.balance() })
+      qc.invalidateQueries({ queryKey: purchaseKeys.mouvements() })
     },
   })
 }
@@ -55,6 +62,7 @@ export function useCancelPurchase() {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: purchaseKeys.all })
       qc.invalidateQueries({ queryKey: purchaseKeys.balance() })
+      qc.invalidateQueries({ queryKey: purchaseKeys.mouvements() })
     },
   })
 }
