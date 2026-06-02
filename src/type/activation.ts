@@ -18,9 +18,3 @@ export interface RequestActivationInput {
   holdTimeMinutes: number
   idempotencyKey: string
 }
-
-export interface PaginatedActivations {
-  items: ActivationInfo[]
-  nextCursor: string | null
-  total: number
-}

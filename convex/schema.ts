@@ -2,11 +2,6 @@ import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
 
 export default defineSchema({
-  products: defineTable({
-    title: v.string(),
-    imageId: v.string(),
-    price: v.number(),
-  }),
   users: defineTable({
     betterAuthUserId: v.string(),
     email: v.optional(v.string()),
@@ -15,7 +10,6 @@ export default defineSchema({
     hasMadeDeposit: v.optional(v.boolean()),
     accessExpiresAt: v.optional(v.number()),
     convertedAt: v.optional(v.number()),
-    linkedPermanentUserId: v.optional(v.string()),
     country: v.optional(v.string()),
     isAdmin: v.optional(v.boolean()),
     createdAt: v.number(),
@@ -33,4 +27,27 @@ export default defineSchema({
   })
     .index('by_eventType', ['eventType'])
     .index('by_sessionId', ['sessionId']),
+  packages: defineTable({
+    slug: v.string(),
+    name: v.string(),
+    priceXaf: v.number(),
+    description: v.optional(v.string()),
+    isActive: v.boolean(),
+  }).index('by_slug', ['slug']),
+  purchases: defineTable({
+    userId: v.string(),
+    packageId: v.string(),
+    priceXaf: v.number(),
+    paymentMethod: v.string(),
+    status: v.string(),
+    paymentGatewayId: v.optional(v.string()),
+    checkoutUrl: v.optional(v.string()),
+    idempotencyKey: v.string(),
+    failureReason: v.optional(v.string()),
+    failedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index('by_userId', ['userId'])
+    .index('by_idempotencyKey', ['idempotencyKey'])
+    .index('by_paymentGatewayId', ['paymentGatewayId']),
 })

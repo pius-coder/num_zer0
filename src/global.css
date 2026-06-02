@@ -1,11 +1,18 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
+
+@font-face {
+  font-family: "KUBO";
+  src: url("/fonts/KUBO.otf") format("opentype");
+  font-display: swap;
+}
 @plugin "@tailwindcss/typography";
 
 @theme {
   --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-figtree: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-kubo: "KUBO", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --color-dark-900: #121111;
   --color-dark-800: #171717;
@@ -27,6 +34,24 @@
 html {
   scroll-behavior: smooth;
 }
+
+@keyframes loader {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(150%); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.1); }
+}
+
+
+
 
 :root {
   --sea-ink: #173a40;

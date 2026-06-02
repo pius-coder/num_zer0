@@ -32,7 +32,7 @@ export default function FooterSection() {
           <div className="flex justify-center">
             <svg viewBox="0 0 260 51" className="w-auto h-[38px] md:h-[51px]" style={{ overflow: "visible" }}>
               <foreignObject width="100%" height="100%" style={{ overflow: "visible" }}>
-                <p className="font-figtree font-bold text-[clamp(36px,8vw,64px)] tracking-[-0.05em] leading-[0.8em] text-dark-900 uppercase m-0 text-center" style={{ whiteSpace: "nowrap" }}>
+                <p className="font-kubo font-bold text-[clamp(36px,8vw,64px)] tracking-[-0.05em] leading-[0.8em] text-dark-900 uppercase m-0 text-center" style={{ whiteSpace: "nowrap" }}>
                   {SITE.name}
                 </p>
               </foreignObject>

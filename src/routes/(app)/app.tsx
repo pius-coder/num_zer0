@@ -20,7 +20,7 @@ function AppPage() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#0f0f0f]">
+      <div className="h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#25D366] border-t-transparent" />
           <div className="text-white/50 font-figtree">Chargement de votre session...</div>
@@ -110,19 +110,19 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
     : null
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white flex flex-col font-figtree relative">
+    <div className="min-h-screen text-white flex flex-col font-figtree relative">
       <AccessBanner />
 
       {/* Header */}
-      <header className="border-b border-white/5 bg-[#141414]/50 backdrop-blur-md px-6 py-4 flex items-center justify-between z-10">
+      <header className="px-6 py-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-6">
-          <Link to="/" className="font-figtree font-bold text-2xl tracking-tight text-[#25D366] no-underline">
+          <Link to="/" className="font-kubo font-bold text-2xl tracking-tight text-[#25D366] no-underline">
             {SITE.shortName}
           </Link>
           {user && user.isAdmin && (
             <Link
               to="/admin"
-              className="text-xs font-bold text-red-400 hover:text-red-300 transition-colors uppercase tracking-wider bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full no-underline"
+              className="text-xs font-bold text-red-400 hover:text-red-300 transition-colors uppercase tracking-wider px-3 py-1 rounded-full no-underline"
             >
               Admin Panel
             </Link>
@@ -132,7 +132,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
           <button
             onClick={handleLogout}
             disabled={loggingOut}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white transition-all text-sm font-semibold cursor-pointer disabled:opacity-50 bg-transparent"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-white/80 hover:text-white transition-all text-sm font-semibold cursor-pointer disabled:opacity-50"
           >
             {loggingOut ? (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -146,7 +146,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
         ) : (
           <button
             onClick={() => setAuthOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F97316] text-white hover:brightness-110 transition-all text-sm font-bold cursor-pointer border-none"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-white hover:brightness-110 transition-all text-sm font-bold cursor-pointer"
           >
             Connexion / Inscription
           </button>
@@ -176,7 +176,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
         {/* Info Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1: Account Type */}
-          <div className="bg-[#141414] border border-white/5 rounded-3xl p-6 flex flex-col justify-between shadow-lg">
+          <div className="rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">Type de Compte</div>
               <div className="text-xl font-bold flex items-center gap-2">
@@ -204,7 +204,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
           </div>
 
           {/* Card 2: Expiration / Status */}
-          <div className="bg-[#141414] border border-white/5 rounded-3xl p-6 flex flex-col justify-between shadow-lg">
+          <div className="rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">
                 {!user ? 'Statut de session' : user.isAnonymous ? 'Temps Restant' : 'Statut de Compte'}
@@ -231,7 +231,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
           </div>
 
           {/* Card 3: User Details */}
-          <div className="bg-[#141414] border border-white/5 rounded-3xl p-6 flex flex-col justify-between shadow-lg">
+          <div className="rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">Identité</div>
               <div className="text-lg font-bold truncate">
@@ -249,9 +249,9 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
 
         {/* Visitor CTA Block */}
         {!user && (
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="relative overflow-hidden rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex flex-col items-start gap-3 max-w-lg text-center md:text-left">
-              <span className="px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-bold uppercase tracking-wider">
+              <span className="px-3 py-1 rounded-full text-white/80 text-xs font-bold uppercase tracking-wider">
                 Démarrer immédiatement
               </span>
               <h2 className="text-2xl font-bold tracking-tight text-white">
@@ -263,7 +263,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
             </div>
             <button
               onClick={() => setAuthOpen(true)}
-              className="shrink-0 flex items-center gap-2 px-6 py-3.5 rounded-[14px] font-bold text-neutral-900 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer !bg-[#25D366] border-none shadow-lg shadow-[#25D366]/20"
+              className="shrink-0 flex items-center gap-2 px-6 py-3.5 rounded-[14px] font-bold text-neutral-900 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               Créer mon accès rapide
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -275,9 +275,9 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
 
         {/* Main CTA Block for Anons */}
         {user && user.isAnonymous && (
-          <div className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 to-transparent p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="relative overflow-hidden rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex flex-col items-start gap-3 max-w-lg text-center md:text-left">
-              <span className="px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-wider">
+              <span className="px-3 py-1 rounded-full text-orange-400 text-xs font-bold uppercase tracking-wider">
                 Sauvegardez vos données
               </span>
               <h2 className="text-2xl font-bold tracking-tight text-white">
@@ -299,7 +299,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
             </div>
             <button
               onClick={() => navigate({ to: '/convert' })}
-              className="shrink-0 flex items-center gap-2 px-6 py-3.5 rounded-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer border-[#F97316] !bg-[#F97316] anim-glow-pulse border-none shadow-lg shadow-orange-500/20"
+              className="shrink-0 flex items-center gap-2 px-6 py-3.5 rounded-[14px] font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               Passer au compte permanent
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -311,7 +311,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
 
         {/* Simuler un Dépôt pour Tester */}
         {(!user || (user.isAnonymous && !user.hasMadeDeposit)) && (
-          <div className="bg-[#141414] border border-dashed border-[#25D366]/30 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="space-y-1">
               <h4 className="font-bold text-white">Simuler un Dépôt</h4>
               <p className="text-white/50 text-xs leading-relaxed max-w-lg">
@@ -321,7 +321,7 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
             <button
               onClick={handleSimulateDeposit}
               disabled={simulating}
-              className="shrink-0 inline-flex items-center justify-center px-5 py-2.5 rounded-[14px] text-xs font-bold transition-all border border-[#25D366] !bg-[#25D366] text-neutral-900 cursor-pointer hover:scale-105 active:scale-95 shadow-lg shadow-[#25D366]/20 border-none"
+              className="shrink-0 inline-flex items-center justify-center px-5 py-2.5 rounded-[14px] text-xs font-bold transition-all text-neutral-900 cursor-pointer hover:scale-105 active:scale-95"
             >
               {simulating ? 'Activation...' : !user ? 'Se connecter' : 'Simuler une Recharge'}
             </button>
@@ -329,17 +329,17 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
         )}
 
         {/* Feature Demonstration Area */}
-        <div className="bg-[#141414] border border-white/5 rounded-3xl p-8 shadow-lg flex flex-col gap-6">
+        <div className="rounded-3xl p-8 flex flex-col gap-6">
           <div>
             <h3 className="text-xl font-bold text-white mb-2">Vos Services & Fonctionnalités</h3>
             <p className="text-white/60 text-sm">
-              Vous avez accès à l’ensemble des fonctionnalités de num_zer0. Obtenez et gérez vos numéros virtuels instantanément.
+              Vous avez accès à l'ensemble des fonctionnalités de num_zer0. Obtenez et gérez vos numéros virtuels instantanément.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-white/5 bg-white/5 rounded-2xl p-5 flex items-start gap-4">
-              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 shrink-0">
+            <div className="rounded-2xl p-5 flex items-start gap-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl shrink-0">
                 <svg className="h-5 w-5 text-[#25D366]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
@@ -347,13 +347,13 @@ function DashboardContent({ user, accessStatus }: { user: any; accessStatus: any
               <div>
                 <h4 className="font-bold text-white mb-1">Numéros WhatsApp</h4>
                 <p className="text-white/50 text-xs leading-relaxed">
-                  Obtenez des numéros virtuels dédiés à la vérification et l’activation instantanée de WhatsApp.
+                  Obtenez des numéros virtuels dédiés à la vérification et l'activation instantanée de WhatsApp.
                 </p>
               </div>
             </div>
 
-            <div className="border border-white/5 bg-white/5 rounded-2xl p-5 flex items-start gap-4">
-              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 shrink-0">
+            <div className="rounded-2xl p-5 flex items-start gap-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl shrink-0">
                 <svg className="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>

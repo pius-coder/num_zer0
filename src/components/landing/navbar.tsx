@@ -32,7 +32,7 @@ export default function Navbar({ isAuthenticated }: NavbarProps) {
                 href="./"
                 className="flex flex-col items-center justify-center self-stretch no-underline z-2"
               >
-                <span className="font-figtree font-bold text-[22px] text-[#25D366] md:text-xl">
+                <span className="font-kubo font-bold text-[22px] text-[#25D366] md:text-xl">
                   {SITE.shortName}
                 </span>
               </a>

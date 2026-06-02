@@ -73,7 +73,7 @@ export function AdminDashboard() {
           <span className="text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
             Admin Mode
           </span>
-          <h1 className="text-xl font-bold tracking-tight">num_zer0 Control</h1>
+          <h1 className="font-kubo text-xl font-bold tracking-tight">num_zer0 Control</h1>
         </div>
         <Link
           to="/app"

@@ -7,11 +7,6 @@ export interface ServiceItem {
   countryCount: number
 }
 
-export interface ServiceDetail extends ServiceItem {
-  description?: string
-  externalId?: string
-}
-
 export interface SubProviderDetail {
   providerCode: string
   count: number
@@ -29,25 +24,4 @@ export interface CountryItem {
   source: PriceSource
   providerCount: number
   subProviders: SubProviderDetail[]
-}
-
-export interface LivePrice {
-  countryIso: string
-  priceCredits: number
-  availability: number
-  providerCount: number
-  subProviders: SubProvider[]
-}
-
-export interface SubProvider {
-  providerCode: string
-  count: number
-  minPrice: number
-  maxPrice: number
-}
-
-export interface ActivationQuote {
-  serviceCode: string
-  countryCode: string
-  priceCredits: number
 }

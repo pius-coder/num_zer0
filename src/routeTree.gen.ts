@@ -14,7 +14,12 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as landingRouteRouteImport } from './routes/(landing)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as landingIndexRouteImport } from './routes/(landing)/index'
+import { Route as appWalletRouteImport } from './routes/(app)/wallet'
+import { Route as appSupportRouteImport } from './routes/(app)/support'
+import { Route as appRechargeRouteImport } from './routes/(app)/recharge'
+import { Route as appMySpaceRouteImport } from './routes/(app)/my-space'
 import { Route as appAppRouteImport } from './routes/(app)/app'
+import { Route as appAccountRouteImport } from './routes/(app)/account'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const ConvertRoute = ConvertRouteImport.update({
@@ -40,9 +45,34 @@ const landingIndexRoute = landingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => landingRouteRoute,
 } as any)
+const appWalletRoute = appWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appSupportRoute = appSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appRechargeRoute = appRechargeRouteImport.update({
+  id: '/recharge',
+  path: '/recharge',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appMySpaceRoute = appMySpaceRouteImport.update({
+  id: '/my-space',
+  path: '/my-space',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appAppRoute = appAppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appAccountRoute = appAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => appRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -54,14 +84,24 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/convert': typeof ConvertRoute
+  '/account': typeof appAccountRoute
   '/app': typeof appAppRoute
+  '/my-space': typeof appMySpaceRoute
+  '/recharge': typeof appRechargeRoute
+  '/support': typeof appSupportRoute
+  '/wallet': typeof appWalletRoute
   '/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/convert': typeof ConvertRoute
+  '/account': typeof appAccountRoute
   '/app': typeof appAppRoute
+  '/my-space': typeof appMySpaceRoute
+  '/recharge': typeof appRechargeRoute
+  '/support': typeof appSupportRoute
+  '/wallet': typeof appWalletRoute
   '/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -71,22 +111,52 @@ export interface FileRoutesById {
   '/(landing)': typeof landingRouteRouteWithChildren
   '/admin': typeof AdminRoute
   '/convert': typeof ConvertRoute
+  '/(app)/account': typeof appAccountRoute
   '/(app)/app': typeof appAppRoute
+  '/(app)/my-space': typeof appMySpaceRoute
+  '/(app)/recharge': typeof appRechargeRoute
+  '/(app)/support': typeof appSupportRoute
+  '/(app)/wallet': typeof appWalletRoute
   '/(landing)/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/admin' | '/convert' | '/app' | '/' | '/api/auth/$'
+  fullPaths:
+    | '/admin'
+    | '/convert'
+    | '/account'
+    | '/app'
+    | '/my-space'
+    | '/recharge'
+    | '/support'
+    | '/wallet'
+    | '/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/admin' | '/convert' | '/app' | '/' | '/api/auth/$'
+  to:
+    | '/admin'
+    | '/convert'
+    | '/account'
+    | '/app'
+    | '/my-space'
+    | '/recharge'
+    | '/support'
+    | '/wallet'
+    | '/'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/(app)'
     | '/(landing)'
     | '/admin'
     | '/convert'
+    | '/(app)/account'
     | '/(app)/app'
+    | '/(app)/my-space'
+    | '/(app)/recharge'
+    | '/(app)/support'
+    | '/(app)/wallet'
     | '/(landing)/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -136,11 +206,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof landingIndexRouteImport
       parentRoute: typeof landingRouteRoute
     }
+    '/(app)/wallet': {
+      id: '/(app)/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof appWalletRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/support': {
+      id: '/(app)/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof appSupportRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/recharge': {
+      id: '/(app)/recharge'
+      path: '/recharge'
+      fullPath: '/recharge'
+      preLoaderRoute: typeof appRechargeRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/my-space': {
+      id: '/(app)/my-space'
+      path: '/my-space'
+      fullPath: '/my-space'
+      preLoaderRoute: typeof appMySpaceRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/app': {
       id: '/(app)/app'
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof appAppRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/account': {
+      id: '/(app)/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof appAccountRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/api/auth/$': {
@@ -154,11 +259,21 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
+  appAccountRoute: typeof appAccountRoute
   appAppRoute: typeof appAppRoute
+  appMySpaceRoute: typeof appMySpaceRoute
+  appRechargeRoute: typeof appRechargeRoute
+  appSupportRoute: typeof appSupportRoute
+  appWalletRoute: typeof appWalletRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appAccountRoute: appAccountRoute,
   appAppRoute: appAppRoute,
+  appMySpaceRoute: appMySpaceRoute,
+  appRechargeRoute: appRechargeRoute,
+  appSupportRoute: appSupportRoute,
+  appWalletRoute: appWalletRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
