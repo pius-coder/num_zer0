@@ -9,7 +9,7 @@ import { isoToNumeric } from './sms_countries'
 const API_BASE = 'https://sms-online.pro/stubs/handler_api.php'
 const MAX_CONCURRENT_ACTIVATIONS = 3
 const POLL_INTERVAL_MS = 3000
-const ACTIVATION_TIMEOUT_MS = 15 * 60 * 1000 // 15 minutes
+const ACTIVATION_TIMEOUT_MS = 25 * 60 * 1000 // 25 minutes (provider expire à 20 min)
 
 // ─── Private HTTP Wrappers ────────────────────────────────────────────────────
 
@@ -225,6 +225,16 @@ export const pollActivation = internalAction({
       } else if (activation.status === 'awaiting_sms') {
         if (!activation.providerId) return
 
+        // Vérifier expiration du numéro (20 min côté provider)
+        if (activation.rentEndTime && Date.now() > activation.rentEndTime) {
+          await ctx.runMutation(internal.sms_provider.internalUpdateActivation, {
+            activationId: args.activationId,
+            patch: { status: 'expired', errorMessage: 'Le numéro a expiré', updatedAt: Date.now() },
+          })
+          await ctx.runMutation(internal.sms_provider.refundEscrow, { activationId: args.activationId })
+          return
+        }
+
         const response = await smsProGet({
           action: 'getStatus',
           id: String(activation.providerId),
@@ -336,9 +346,10 @@ export const refundEscrow = internalMutation({
       ],
     })
 
-    await ctx.runMutation(internal.comptabilite.annulerPiece, {
-      pieceId: escrowPiece._id,
-    })
+    // NOTE: Pas de annulerPiece sur l'original — la pièce inverse ci-dessus
+    // suffit à reverser la transaction. annulerPiece inverserait les lignes
+    // de l'original (411-user: credit → creditCompte), créditant l'utilisateur
+    // une deuxième fois (double refund).
   },
 })
 
@@ -388,10 +399,9 @@ export const completeActivation = mutation({
           { compteCode: '471-fournisseur', sens: 'debit', montant: activation.providerCost ?? 0 },
         ],
       })
-
-      await ctx.runMutation(internal.comptabilite.annulerPiece, {
-        pieceId: escrowPiece._id,
-      })
+      // NOTE: Pas de annulerPiece sur l'original — la pièce ci-dessus
+      // distribue l'escrow. annulerPiece rembourserait l'utilisateur en +
+      // du service livré (activation gratuite).
     }
 
     return { success: true }
