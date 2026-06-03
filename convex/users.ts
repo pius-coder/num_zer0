@@ -1,4 +1,4 @@
-import { query, mutation } from './_generated/server'
+import { query, mutation, internalMutation } from './_generated/server'
 import { v } from 'convex/values'
 
 const XAF_TO_USD = 600
@@ -15,9 +15,7 @@ export const getUserBalance = query({
 
     const user = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     const compte = await ctx.db
@@ -39,9 +37,7 @@ export const getAccessStatus = query({
 
     const user = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     if (!user) {
@@ -63,7 +59,7 @@ export const getAccessStatus = query({
   },
 })
 
-export const syncUser = mutation({
+export const syncUser = internalMutation({
   args: {
     betterAuthUserId: v.string(),
     email: v.optional(v.string()),
@@ -77,13 +73,15 @@ export const syncUser = mutation({
     const now = Date.now()
     const existing = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', args.betterAuthUserId)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', args.betterAuthUserId))
       .unique()
 
     const usersCount = (await ctx.db.query('users').collect()).length
-    const isAdmin = args.email?.endsWith('@numzero.com') || args.email === 'admin@gmail.com' || usersCount === 0 || false
+    const isAdmin =
+      args.email?.endsWith('@numzero.com') ||
+      args.email === 'admin@gmail.com' ||
+      usersCount === 0 ||
+      false
 
     if (existing) {
       await ctx.db.patch(existing._id, {
@@ -123,9 +121,7 @@ export const completeDeposit = mutation({
 
     const user = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     if (!user) throw new Error('User not found')
@@ -154,9 +150,7 @@ export const convertToPermanent = mutation({
 
     const user = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     if (!user) throw new Error('User not found')
@@ -185,9 +179,7 @@ export const hasAccess = query({
 
     const user = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     if (!user) return false
@@ -207,16 +199,16 @@ export const checkUserExists = query({
       .query('users')
       .withIndex('by_email', (q) => q.eq('email', args.identifier))
       .unique()
-    
+
     if (emailMatch) {
       return { exists: true }
     }
 
     const allUsers = await ctx.db.query('users').collect()
     const match = allUsers.find(
-      (u) => 
+      (u) =>
         u.email?.toLowerCase() === args.identifier.toLowerCase() ||
-        u.name?.toLowerCase() === args.identifier.toLowerCase()
+        u.name?.toLowerCase() === args.identifier.toLowerCase(),
     )
 
     return { exists: !!match }
@@ -233,9 +225,7 @@ export const getAllUsers = query({
 
     const currentUser = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     if (!currentUser || !currentUser.isAdmin) {
@@ -254,9 +244,7 @@ export const updateUserCountry = mutation({
 
     const user = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     if (!user) throw new Error('User not found')
@@ -278,9 +266,7 @@ export const deleteUser = mutation({
 
     const admin = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     if (!admin || !admin.isAdmin) {
