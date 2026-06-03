@@ -7,8 +7,8 @@ export const SITE = {
 }
 
 export const CONTACT = {
-  whatsapp: 'https://wa.me/237XXXXXXXXX',
-  whatsappHandle: '237XXXXXXXXX',
+  whatsapp: 'https://wa.me/237622558849',
+  whatsappHandle: '237622558849',
   telegram: 'https://t.me/num_zer0',
   facebook: 'https://facebook.com/num_zer0',
   email: 'mailto:contact@numzero.com',

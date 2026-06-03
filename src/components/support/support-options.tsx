@@ -6,7 +6,7 @@ export function SupportOptions() {
   return (
     <div className="space-y-3">
       <a
-        href="https://wa.me/237XXXXXXXXX"
+        href="https://wa.me/237622558849"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-3 rounded-xl px-4 py-3 transition-colors"
