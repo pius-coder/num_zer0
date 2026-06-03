@@ -152,29 +152,9 @@ export default function Hero({ isAuthenticated }: HeroProps) {
         </div>
       </div>
 
-      <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
-        <img
-          decoding="async"
-          width="4500"
-          height="3000"
-          src="https://framerusercontent.com/images/rioDBjHp4Ker1doqwtmPpPW9o.jpg?scale-down-to=2048"
-          alt=""
-          className="block w-full h-full object-cover"
-        />
-      </div>
-      <div className="absolute inset-0 z-1 mix-blend-screen">
-        <div className="absolute inset-0 bg-[url(https://framerusercontent.com/images/6mcf62RlDfRfU61Yg5vb2pefpi4.png)] bg-repeat bg-[length:128px_auto] bg-[left_top]" />
-      </div>
-      <div className="absolute z-0 overflow-hidden blur-[48px] rounded-[888px] mix-blend-hard-light h-[300px] left-[-20px] right-[-8px] top-[calc(45.19%-150px)] md:h-[437px] md:left-[-30px] md:right-[-12px] md:top-[calc(45.189%-218.5px)] xl:h-[597px] xl:left-[calc(50%-235px)] xl:right-[unset] xl:top-[211px]">
-        <img
-          decoding="async"
-          width="4500"
-          height="3000"
-          src="https://framerusercontent.com/images/VkmUcVisuWxL6xmS3bXenYoZ7hQ.jpg?scale-down-to=512"
-          alt=""
-          className="w-full h-full object-cover opacity-30"
-        />
-      </div>
+      <div className="absolute inset-0 w-full h-full overflow-hidden z-0"></div>
+
+      <div></div>
     </section>
   )
 }
