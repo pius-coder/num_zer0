@@ -2,13 +2,7 @@
 
 import { useCallback } from 'react'
 import { useInitiateDirectPay } from '@/components/purchases/hooks'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetPanel,
-} from '#/common/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetPanel } from '#/common/ui/sheet'
 import { StepTopUp } from './step-topup'
 import type { PaymentMethod } from './step-method'
 import { authClient } from '#/lib/auth-client'
@@ -37,19 +31,19 @@ export function RechargeDrawer({ open, onOpenChange, topUpAmount }: RechargeDraw
       })
       if (data.link) window.location.href = data.link
     },
-    [directPayMutation]
+    [directPayMutation],
   )
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side='bottom' className='h-[90vh] max-w-none rounded-t-2xl'>
+      <SheetContent side="bottom" className="h-[90vh] max-w-none rounded-t-2xl bg-[#121212]">
         <SheetHeader>
           <SheetTitle>Recharger</SheetTitle>
-          <p className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>
+          <p className="font-figtree text-white/65 text-[15px] font-semibold uppercase tracking-wider">
             Saisissez le montant à recharger
           </p>
         </SheetHeader>
-        <SheetPanel className='py-4'>
+        <SheetPanel className="py-4">
           <StepTopUp
             initialAmount={Math.max(1500, topUpAmount ?? 1500)}
             onPay={handlePay}
