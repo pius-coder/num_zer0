@@ -9,7 +9,8 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
 import '../global.css'
-import { TopLoader } from '#/common/top-loader'
+import { RouteLoader } from '#/common/route-loader'
+import { GlobalLoader } from '#/common/global-loader'
 import { authClient } from '#/lib/auth-client'
 import { Toaster } from '#/common/ui/sonner'
 import { createServerFn } from '@tanstack/react-start'
@@ -70,7 +71,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <TopLoader />
+        <RouteLoader caller="__root.tsx" />
+        <GlobalLoader />
         {children}
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
