@@ -168,41 +168,56 @@ verification:
 
 ## Solution Appliquée
 
+### Phase 1 — Top bar avec RouteLoader
 **Commit:** `3cba500`
 **Branche:** `v5`
 **Date:** 2026-06-03 04:58
 
-### Changements
+RouteLoader réécrit en top bar mince avec timer simplifié + traçage caller :
+1. **Position :** `fixed top-0 left-0 right-0 z-[200] h-1`
+2. **Animation :** `@keyframes loader` existant dans `global.css`
+3. **Timer :** `useEffect` + `setTimeout` + cleanup (plus de `useRef`)
+4. **Props :** `caller?`, `delay?` (default 1500ms)
+5. **Dev logging :** `console.warn` avec path + caller
+6. **Accessibilité :** `role="progressbar"`
 
-**RouteLoader réécrit — top bar mince avec timer simplifié + traçage caller**
+### Phase 2 — Refactor vers Spinner unifié
+**Commit:** `cae71c4` (amend: `07e9268`)
+**Branche:** `v5`
+**Date:** 2026-06-03 05:56
 
-1. **Position :** `fixed top-0 left-0 right-0 z-[200] h-1` — barre horizontale fine en haut de page, plus d'overlay centré
-2. **Animation :** Utilise `@keyframes loader` existant dans `global.css` (translateX -100% → 150%)
-3. **Timer :** Plus de `useRef` — `useEffect` + `setTimeout` + `return () => clearTimeout(timer)` (pattern idiomatique React)
-4. **Props :**
-   - `caller?: string` — identifie qui a déclenché le loader (loggé en dev)
-   - `delay?: number` — délai configurable (défaut 1500ms)
-5. **Dev logging :** `console.warn` en mode développement avec le path + caller
-6. **Accessibilité :** `role="progressbar"` + `aria-label="Chargement de la page"`
-7. **SSR safe :** `globalThis.location?.pathname ?? '?'` pour les environnements sans `window`
+**Motif :** Harmoniser tous les loaders (RouteLoader, GlobalLoader, defaultPendingComponent) vers le même composant `Spinner` central avec une prop `position`.
 
-**Intégration __root.tsx :**
-- `<RouteLoader />` → `<RouteLoader caller="__root.tsx" />`
+1. **`Spinner`** — ajout de `type SpinnerPosition = 'center' | 'top'` et prop `position` (défaut `'center'`). `'top'` → `items-start justify-center pt-5`
+2. **`router.tsx`** — `defaultPendingComponent` passe à `position="top"`
+3. **`route-loader.tsx`** — remplace la top bar par `<Spinner position="top" />` (conserve les props `caller` et `delay`)
+4. **`global-loader.tsx`** — passe `position="top"` explicitement
+5. **`src/common/ui/spinner.tsx`** — supprimé (inutilisé)
+
+**Fix post-refactor :** (même commit, amendé) — ajout de `justify-center` manquant dans le cas `position="top"` (`items-start` sans `justify-center` mettait le spinner en haut à gauche au lieu de haut centré).
 
 ### Fichiers modifiés
 
-- [x] `src/common/route-loader.tsx` — RÉÉCRITURE COMPLÈTE
+**Phase 1 :**
+- [x] `src/common/route-loader.tsx` — réécriture top bar
 - [x] `src/routes/__root.tsx` — caller prop ajoutée
+
+**Phase 2 :**
+- [x] `src/common/spinner.tsx` — ajout prop `position`
+- [x] `src/common/route-loader.tsx` — passe à Spinner
+- [x] `src/common/global-loader.tsx` — passe `position="top"`
+- [x] `src/router.tsx` — `defaultPendingComponent` en Spinner `position="top"`
+- [x] `src/common/ui/spinner.tsx` — supprimé
 
 ### Vérification
 
 | Critère | Statut |
 |---------|--------|
-| Barre fine en haut (pas overlay centré) | ✅ `fixed top-0 left-0 right-0 h-1` |
-| Timer sans useRef | ✅ useEffect cleanup uniquement |
+| Timer simplifié sans useRef | ✅ useEffect cleanup uniquement |
 | caller prop loggée en dev | ✅ console.warn avec path + caller |
-| delay prop configurable | ✅ default 1500ms |
-| Spinner & GlobalLoader intacts | ✅ inchangés |
+| delay prop configurable | ✅ default 1500ms (via RouteLoader) |
+| Spinner position="center" centré des deux axes | ✅ `items-center justify-center` |
+| Spinner position="top" centré horizontalement | ✅ `items-start justify-center pt-5` |
+| Tous les loaders utilisent le même composant | ✅ Spinner partout |
 | Aucune nouvelle erreur TS | ✅ (3 préexistantes non liées) |
 | Build passe | ✅ |
-| Review agent | ✅ APPROVED |

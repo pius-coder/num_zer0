@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-03
 **Priorité:** Critique
-**Statut:** Ouvert
+**Statut:** Résolu
 **Composant(s):** `convex/sms_provider.ts`
 **Signalé par:** Bug report UI
 
@@ -88,9 +88,9 @@ verification:
 
 ## Solution Appliquée
 
-**Commit:** `non commité`
-**Branche:** `courante`
-**Date:** 2026-06-03
+**Commit:** `8fd8701`
+**Branche:** `v5`
+**Date:** 2026-06-03 13:45
 
 ### Documentation préalable lue
 
