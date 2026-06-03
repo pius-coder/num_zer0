@@ -185,7 +185,7 @@ export function PixelHeading({
       }
       onMouseEnter?.(e)
     },
-    [disableHover, disableCycling, isSwapMode, swapToHover, startCycling, onMouseEnter]
+    [disableHover, disableCycling, isSwapMode, swapToHover, startCycling, onMouseEnter],
   )
 
   const handleMouseLeave = useCallback(
@@ -195,7 +195,7 @@ export function PixelHeading({
       }
       onMouseLeave?.(e)
     },
-    [disableHover, isSwapMode, swapToInitial, stopCycling, onMouseLeave]
+    [disableHover, isSwapMode, swapToInitial, stopCycling, onMouseLeave],
   )
 
   const handleFocus = useCallback(
@@ -205,7 +205,7 @@ export function PixelHeading({
       }
       onFocus?.(e)
     },
-    [disableHover, isSwapMode, swapToHover, onFocus]
+    [disableHover, isSwapMode, swapToHover, onFocus],
   )
 
   const handleBlur = useCallback(
@@ -215,7 +215,7 @@ export function PixelHeading({
       }
       onBlur?.(e)
     },
-    [disableHover, isSwapMode, swapToInitial, onBlur]
+    [disableHover, isSwapMode, swapToInitial, onBlur],
   )
 
   const handleKeyDown = useCallback(
@@ -228,13 +228,13 @@ export function PixelHeading({
       }
       onKeyDown?.(e)
     },
-    [disableHover, disableCycling, isSwapMode, advanceFont, onKeyDown]
+    [disableHover, disableCycling, isSwapMode, advanceFont, onKeyDown],
   )
 
   const currentFontLabel = PIXEL_FONT_KEYS[fontIndex]
 
   return (
-    <div data-slot='pixel-heading' className='inline-flex flex-col items-start gap-2'>
+    <div data-slot="pixel-heading" className="inline-flex flex-col items-start gap-2">
       <Tag
         data-state={isActive ? 'active' : 'idle'}
         data-font={currentFontLabel}
@@ -243,7 +243,7 @@ export function PixelHeading({
           'cursor-default select-none transition-all duration-150',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           PIXEL_FONTS[fontIndex],
-          className
+          className,
         )}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -256,11 +256,11 @@ export function PixelHeading({
       </Tag>
       {showLabel && (
         <output
-          data-slot='pixel-heading-label'
-          aria-live='polite'
+          data-slot="pixel-heading-label"
+          aria-live="polite"
           className={cn(
             'text-xs uppercase tracking-widest text-muted-foreground transition-opacity duration-200',
-            isActive ? 'opacity-100' : 'opacity-0'
+            isActive ? 'opacity-100' : 'opacity-0',
           )}
         >
           {currentFontLabel}

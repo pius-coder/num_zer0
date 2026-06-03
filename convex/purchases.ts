@@ -3,9 +3,8 @@ import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Id, Doc } from './_generated/dataModel'
 
-const FAPSHI_API_BASE = process.env.FAPSHI_ENV === 'live'
-  ? 'https://live.fapshi.com'
-  : 'https://sandbox.fapshi.com'
+const FAPSHI_API_BASE =
+  process.env.FAPSHI_ENV === 'live' ? 'https://live.fapshi.com' : 'https://sandbox.fapshi.com'
 
 async function fapshiPost(path: string, body: Record<string, unknown>) {
   const apiUser = process.env.FAPSHI_API_USER!
@@ -67,7 +66,11 @@ export const validatePromoCode = query({
     if (!promo || !promo.isActive) return null
     if (promo.maxUses && promo.usedCount >= promo.maxUses) return null
     if (promo.expiresAt && promo.expiresAt < Date.now()) return null
-    return { code: promo.code, discountPercent: promo.discountPercent, discountFlat: promo.discountFlat }
+    return {
+      code: promo.code,
+      discountPercent: promo.discountPercent,
+      discountFlat: promo.discountFlat,
+    }
   },
 })
 
@@ -286,7 +289,10 @@ export const initiateDirectPay = action({
     medium: v.optional(v.string()),
     promoCode: v.optional(v.string()),
   },
-  handler: async (ctx, args): Promise<{ success: boolean; transId: string; link: string; purchaseId: Id<"purchases"> }> => {
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{ success: boolean; transId: string; link: string; purchaseId: Id<'purchases'> }> => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new Error('Not authenticated')
     const userId = identity.subject
@@ -307,7 +313,7 @@ export const initiateDirectPay = action({
               promoDiscount = Math.min(promo.discountFlat, args.amount)
               finalAmount = args.amount - promoDiscount
             } else if (promo.discountPercent) {
-              promoDiscount = Math.floor(args.amount * promo.discountPercent / 100)
+              promoDiscount = Math.floor((args.amount * promo.discountPercent) / 100)
               finalAmount = args.amount - promoDiscount
             }
             await ctx.runMutation(internal.purchases.internalIncrementPromo, {
@@ -319,14 +325,17 @@ export const initiateDirectPay = action({
     }
 
     const idempotencyKey = `direct_${userId}_${Date.now()}`
-    const purchaseId: Id<"purchases"> = await ctx.runMutation(internal.purchases.internalCreatePurchase, {
-      userId,
-      priceXaf: finalAmount,
-      promoCode: args.promoCode,
-      promoDiscount,
-      paymentMethod: args.medium || 'mobile money',
-      idempotencyKey,
-    })
+    const purchaseId: Id<'purchases'> = await ctx.runMutation(
+      internal.purchases.internalCreatePurchase,
+      {
+        userId,
+        priceXaf: finalAmount,
+        promoCode: args.promoCode,
+        promoDiscount,
+        paymentMethod: args.medium || 'mobile money',
+        idempotencyKey,
+      },
+    )
 
     try {
       const result = await fapshiPost('/initiate-pay', {
@@ -335,7 +344,7 @@ export const initiateDirectPay = action({
         userId,
         externalId: idempotencyKey,
         message: 'Recharge num_zer0',
-        redirectUrl: process.env.VITE_SITE_URL || 'http://localhost:3000',
+        redirectUrl: `${process.env.VITE_SITE_URL || 'http://localhost:3000'}/payment/result`,
       })
 
       await ctx.runMutation(internal.purchases.internalPatchPurchase, {
@@ -360,19 +369,25 @@ export const initiateDirectPay = action({
 
 export const verifyPurchase = action({
   args: { transId: v.string() },
-  handler: async (ctx, args): Promise<{ success: boolean; purchaseId?: Id<"purchases">; status?: string }> => {
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{ success: boolean; purchaseId?: Id<'purchases'>; status?: string }> => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new Error('Not authenticated')
     const userId = identity.subject
 
-    const purchase: Doc<"purchases"> | null = await ctx.runQuery(internal.purchases.internalGetPurchaseByGatewayId, {
-      transId: args.transId,
-    })
+    const purchase: Doc<'purchases'> | null = await ctx.runQuery(
+      internal.purchases.internalGetPurchaseByGatewayId,
+      {
+        transId: args.transId,
+      },
+    )
     if (!purchase) throw new Error('Purchase not found')
     if (purchase.userId !== userId) throw new Error('Forbidden')
 
     const fapshiTx = await fapshiGet(`/payment-status/${args.transId}`)
-    const fapshiStatus: string = (fapshiTx as any).status
+    const fapshiStatus: string = fapshiTx.status
 
     if (fapshiStatus !== 'SUCCESSFUL') {
       if (fapshiStatus === 'FAILED') {
@@ -407,8 +422,16 @@ export const verifyPurchase = action({
         statut: 'validee',
         reference: purchase._id,
         lignes: [
-          { compteCode: `411-${userId}`, sens: 'debit', montant: Math.round((purchase.priceXaf / 600) * 100) / 100 },
-          { compteCode: '701-recharge', sens: 'credit', montant: Math.round((purchase.priceXaf / 600) * 100) / 100 },
+          {
+            compteCode: `411-${userId}`,
+            sens: 'debit',
+            montant: Math.round((purchase.priceXaf / 600) * 100) / 100,
+          },
+          {
+            compteCode: '701-recharge',
+            sens: 'credit',
+            montant: Math.round((purchase.priceXaf / 600) * 100) / 100,
+          },
         ],
       })
     }

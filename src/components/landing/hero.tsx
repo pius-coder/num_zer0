@@ -6,6 +6,8 @@ import { HERO } from './data'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/common/ui/button'
 
+import { trackers } from '#/lib/trackers'
+
 const StarIcon = () => (
   <svg
     width="14"
@@ -21,8 +23,6 @@ const StarIcon = () => (
     />
   </svg>
 )
-
-import { trackers } from '#/lib/trackers'
 
 interface HeroProps {
   isAuthenticated?: boolean
@@ -88,7 +88,7 @@ export default function Hero({ isAuthenticated }: HeroProps) {
                   onClick={() => trackers.trackClick('click_buy')}
                   className={cn(
                     buttonVariants({ variant: 'default' }),
-                    'gap-2 px-5 py-[10px] rounded-[14px] no-underline text-base font-bold tracking-[-0.16px] h-auto md:px-6 md:py-3 anim-glow-pulse !bg-[#F97316] border-[#F97316] cursor-pointer text-white'
+                    'gap-2 px-5 py-[10px] rounded-[14px] no-underline text-base font-bold tracking-[-0.16px] h-auto md:px-6 md:py-3 anim-glow-pulse !bg-[#F97316] border-[#F97316] cursor-pointer text-white',
                   )}
                 >
                   {isAuthenticated ? 'Accéder au Tableau de Bord' : HERO.cta}
@@ -98,7 +98,7 @@ export default function Hero({ isAuthenticated }: HeroProps) {
                   onClick={() => trackers.trackClick('click_services')}
                   className={cn(
                     buttonVariants({ variant: 'outline' }),
-                    'gap-2 px-5 py-[10px] rounded-[14px] no-underline text-base font-medium tracking-[-0.16px] h-auto md:px-6 md:py-3 !text-dark-900 font-semibold'
+                    'gap-2 px-5 py-[10px] rounded-[14px] no-underline text-base font-medium tracking-[-0.16px] h-auto md:px-6 md:py-3 !text-dark-900 font-semibold',
                   )}
                 >
                   {HERO.ctaSecondary}

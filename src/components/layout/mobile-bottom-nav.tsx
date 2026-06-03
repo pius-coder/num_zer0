@@ -3,12 +3,13 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import { MenuIcon, CloseIcon } from '@/components/landing/menu-icons'
 import { useBottomNav } from './bottom-nav-store'
-import { useInitiateDirectPay } from '@/components/purchases/hooks'
+import { useInitiateDirectPay, useBalance } from '@/components/purchases/hooks'
 import { StepTopUp } from '@/components/recharge/step-topup'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
+import { LogOut, LoaderCircle } from 'lucide-react'
 import type { PaymentMethod } from '@/components/recharge/step-method'
 import { authClient } from '#/lib/auth-client'
-import { useBalance } from '@/components/purchases/hooks'
+import { CiWallet } from 'react-icons/ci'
 
 const NAV_ITEMS = [
   { path: '/my-space', label: 'Mon Espace' },
@@ -18,12 +19,33 @@ const NAV_ITEMS = [
   { path: '/support', label: 'Support' },
 ] as const
 
-function NavPanel({ onNavigate }: { onNavigate: () => void }) {
+function NavPanel({ onNavigate, isAuthenticated }: { onNavigate: () => void; isAuthenticated: boolean }) {
   const { pathname } = useLocation()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            window.location.href = '/'
+          },
+        },
+      })
+    } catch (error) {
+      console.error('Logout failed', error)
+      setIsLoggingOut(false)
+    }
+  }
+
+  const handleLogin = async () => {
+    window.location.href = '/my-space'
+  }
 
   return (
-    <div className='flex flex-col gap-[18px] px-5 pt-4 pb-3'>
-      <div className='flex flex-col w-full gap-2'>
+    <div className="flex flex-col gap-[18px] px-5 pt-4 pb-3">
+      <div className="flex flex-col w-full gap-2">
         {NAV_ITEMS.map(({ path, label }) => {
           const isActive = pathname === path || pathname.startsWith(path + '/')
           return (
@@ -44,7 +66,38 @@ function NavPanel({ onNavigate }: { onNavigate: () => void }) {
           )
         })}
       </div>
-      <div className='border-t border-[var(--line)]/40 pt-3 pb-1' />
+      <div className="border-t border-[var(--line)]/40 pt-3 pb-1" />
+
+      {isAuthenticated ? (
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center gap-3 bg-transparent w-full no-underline cursor-pointer disabled:opacity-40"
+        >
+          {isLoggingOut ? (
+            <LoaderCircle className="h-5 w-5 shrink-0 text-red-400 animate-spin" />
+          ) : (
+            <LogOut className="h-5 w-5 shrink-0 text-red-400" />
+          )}
+          <h3 className="font-figtree font-medium text-[30px] tracking-[-0.04em] leading-[1.25] text-left m-0 text-red-400">
+            Log Out
+          </h3>
+        </button>
+      ) : (
+        <button
+          onClick={handleLogin}
+          className="flex items-center gap-3 bg-transparent w-full no-underline cursor-pointer"
+        >
+          <svg className="h-5 w-5 shrink-0 text-[var(--sea-ink)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
+          </svg>
+          <h3 className="font-figtree font-medium text-[30px] tracking-[-0.04em] leading-[1.25] text-left m-0 text-[var(--sea-ink)]">
+            Connexion
+          </h3>
+        </button>
+      )}
     </div>
   )
 }
@@ -53,7 +106,12 @@ function RechargePanel({ topUpAmount }: { topUpAmount?: number | null }) {
   const directPayMutation = useInitiateDirectPay()
 
   const handlePay = useCallback(
-    async (amount: number, phone: string, method: PaymentMethod, promoCode?: string) => {
+    async (
+      amount: number,
+      phone: string,
+      method: PaymentMethod,
+      promoCode?: string,
+    ) => {
       const session = await authClient.getSession()
       if (!session?.data) {
         await authClient.signIn.anonymous()
@@ -67,11 +125,11 @@ function RechargePanel({ topUpAmount }: { topUpAmount?: number | null }) {
       })
       if (data.link) window.location.href = data.link
     },
-    [directPayMutation]
+    [directPayMutation],
   )
 
   return (
-    <div className='px-5 pt-4 pb-3'>
+    <div className="px-5 pt-4 pb-3">
       <StepTopUp
         initialAmount={Math.max(1500, topUpAmount ?? 1500)}
         onPay={handlePay}
@@ -93,44 +151,71 @@ interface DetailsMvt {
 
 function DetailsPanel({ mvt }: { mvt: DetailsMvt }) {
   return (
-    <div className='px-5 pt-4 pb-3 space-y-3'>
-      <h3 className='font-figtree text-[var(--sea-ink)] text-[30px] font-medium tracking-[-0.04em] leading-[1.25]'>
+    <div className="px-5 pt-4 pb-3 space-y-3">
+      <h3 className="font-figtree text-[var(--sea-ink)] text-[30px] font-medium tracking-[-0.04em] leading-[1.25]">
         Détails transaction
       </h3>
-      <div className='flex justify-between'>
-        <span className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Libellé</span>
-        <span className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] text-right'>
+      <div className="flex justify-between">
+        <span className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
+          Libellé
+        </span>
+        <span className="font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] text-right">
           {mvt.label}
         </span>
       </div>
-      <div className='flex justify-between'>
-        <span className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Montant</span>
-        <span className={`font-figtree text-[18px] font-medium tracking-[-0.04em] ${mvt.credit > 0 ? 'text-[#25D366]' : 'text-[var(--sea-ink)]'}`}>
-          {mvt.credit > 0 ? '+' : '-'}${(mvt.credit || mvt.debit).toFixed(2)} USD
+      <div className="flex justify-between">
+        <span className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
+          Montant
+        </span>
+        <span
+          className={`font-figtree text-[18px] font-medium tracking-[-0.04em] ${mvt.credit > 0 ? 'text-[#25D366]' : 'text-[var(--sea-ink)]'}`}
+        >
+          {mvt.credit > 0 ? '+' : '-'}${(mvt.credit || mvt.debit).toFixed(2)}{' '}
+          USD
         </span>
       </div>
-      <div className='flex justify-between'>
-        <span className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>FCFA</span>
-        <span className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em]'>
+      <div className="flex justify-between">
+        <span className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
+          FCFA
+        </span>
+        <span className="font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em]">
           {mvt.amountXaf.toLocaleString('fr-FR')} FCFA
         </span>
       </div>
-      <div className='flex justify-between'>
-        <span className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Solde après</span>
-        <span className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em]'>
+      <div className="flex justify-between">
+        <span className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
+          Solde après
+        </span>
+        <span className="font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em]">
           ${mvt.soldeApres.toFixed(2)} USD
         </span>
       </div>
-      <div className='flex justify-between'>
-        <span className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Date</span>
-        <span className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em]'>
-          {new Date(mvt.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+      <div className="flex justify-between">
+        <span className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
+          Date
+        </span>
+        <span className="font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em]">
+          {new Date(mvt.date).toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </span>
       </div>
-      <div className='flex justify-between'>
-        <span className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Statut</span>
-        <span className={`font-figtree text-[18px] font-medium tracking-[-0.04em] ${mvt.statut === 'validee' ? 'text-[#25D366]' : mvt.statut === 'annulee' ? 'text-red-500' : 'text-yellow-500'}`}>
-          {mvt.statut === 'validee' ? 'Validée' : mvt.statut === 'annulee' ? 'Annulée' : 'En attente'}
+      <div className="flex justify-between">
+        <span className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
+          Statut
+        </span>
+        <span
+          className={`font-figtree text-[18px] font-medium tracking-[-0.04em] ${mvt.statut === 'validee' ? 'text-[#25D366]' : mvt.statut === 'annulee' ? 'text-red-500' : 'text-yellow-500'}`}
+        >
+          {mvt.statut === 'validee'
+            ? 'Validée'
+            : mvt.statut === 'annulee'
+              ? 'Annulée'
+              : 'En attente'}
         </span>
       </div>
     </div>
@@ -138,13 +223,16 @@ function DetailsPanel({ mvt }: { mvt: DetailsMvt }) {
 }
 
 export function MobileBottomNav() {
-  const { isOpen, activePanel, panelProps, closePanel, openPanel, toggleNav } = useBottomNav()
+  const { data: session } = authClient.useSession()
+  const isAuthenticated = !!session
+  const { isOpen, activePanel, panelProps, closePanel, openPanel, toggleNav } =
+    useBottomNav()
   const { pathname } = useLocation()
   const { data: balanceData } = useBalance()
   const balanceUsd = balanceData?.balanceUsd ?? 0
 
   const activeLabel = NAV_ITEMS.find(
-    ({ path }) => pathname === path || pathname.startsWith(path + '/')
+    ({ path }) => pathname === path || pathname.startsWith(path + '/'),
   )?.label
 
   return (
@@ -155,7 +243,7 @@ export function MobileBottomNav() {
         }`}
       >
         {activeLabel && (
-          <h3 className='font-figtree font-medium text-[30px] tracking-[-0.04em] leading-[1.25] text-left m-0 text-[#25D366]'>
+          <h3 className="font-figtree font-medium text-[30px] tracking-[-0.04em] leading-[1.25] text-left m-0 text-[#25D366]">
             {activeLabel}
           </h3>
         )}
@@ -177,18 +265,26 @@ export function MobileBottomNav() {
           />
           <div className="relative flex flex-col-reverse">
             <div className="flex items-center justify-between px-3 py-[10px]">
-              <Link
-                to="/wallet"
-                onClick={closePanel}
-                className="flex items-center justify-between flex-1 mr-3 min-w-0 no-underline"
-              >
-                <span className="text-[var(--sea-ink)] text-[18px] font-thin tabular-nums tracking-tight">
-                  ${balanceUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </span>
-                <span className="text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider ml-3 shrink-0">
-                  USD
-                </span>
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  to="/wallet"
+                  onClick={closePanel}
+                  className="flex items-center justify-between flex-1 mr-3 min-w-0 no-underline"
+                >
+                  <span className="text-[var(--sea-ink)] text-[18px] font-thin tabular-nums tracking-tight">
+                    $
+                    {balanceUsd.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                  <span className="text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider ml-3 shrink-0">
+                    USD
+                  </span>
+                </Link>
+              ) : (
+                <div className="flex-1 mr-3" />
+              )}
 
               <div className="flex items-center gap-2 shrink-0">
                 <span className="h-4 w-px bg-[var(--line)]/40" />
@@ -196,7 +292,7 @@ export function MobileBottomNav() {
                   onClick={() => openPanel('recharge')}
                   className="text-xl leading-none font-bold flex items-center justify-center w-[28px] h-[28px] text-[var(--sea-ink)] bg-transparent border-none cursor-pointer"
                 >
-                  +
+                  <CiWallet className="text-green-600 stroke-1 text-sm" />
                 </button>
 
                 <button
@@ -217,10 +313,14 @@ export function MobileBottomNav() {
                 overflow: 'hidden',
               }}
             >
-              {activePanel === 'nav' && <NavPanel onNavigate={closePanel} />}
+              {activePanel === 'nav' && <NavPanel onNavigate={closePanel} isAuthenticated={isAuthenticated} />}
               {activePanel === 'recharge' && <RechargePanel />}
-              {activePanel === 'topup' && <RechargePanel topUpAmount={panelProps.amount as number} />}
-              {activePanel === 'details' && <DetailsPanel mvt={panelProps.transaction as DetailsMvt} />}
+              {activePanel === 'topup' && (
+                <RechargePanel topUpAmount={panelProps.amount as number} />
+              )}
+              {activePanel === 'details' && (
+                <DetailsPanel mvt={panelProps.transaction as DetailsMvt} />
+              )}
             </div>
           </div>
         </div>

@@ -17,7 +17,7 @@ function RechargePage() {
       </p>
       <button
         onClick={() => openPanel('recharge')}
-        className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer'
+        className="font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer"
       >
         Ouvrir le panneau de recharge
       </button>

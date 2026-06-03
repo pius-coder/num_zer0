@@ -23,18 +23,15 @@ export function RechargeTriggerButton({
 
   return (
     <button
-      type='button'
+      type="button"
       onClick={() => openPanel('recharge', { packageId })}
-      className={cn(
-        'flex items-center justify-center gap-2 p-2 cursor-pointer',
-        className
-      )}
+      className={cn('flex items-center justify-center gap-2 p-2 cursor-pointer', className)}
     >
-      <span className='font-figtree text-[var(--sea-ink)] text-[18px] font-thin tabular-nums tracking-tight'>
+      <span className="font-figtree text-[var(--sea-ink)] text-[18px] font-thin tabular-nums tracking-tight">
         ${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </span>
       <div>
-        <Coins className='h-4 w-4 text-[var(--sea-ink-soft)]' />
+        <Coins className="h-4 w-4 text-[var(--sea-ink-soft)]" />
       </div>
     </button>
   )

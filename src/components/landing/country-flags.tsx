@@ -1,4 +1,4 @@
-import { COUNTRIES } from "./data"
+import { COUNTRIES } from './data'
 
 export default function CountryFlags() {
   const items = COUNTRIES.map((c, i) => (
@@ -12,7 +12,7 @@ export default function CountryFlags() {
 
   return (
     <div className="w-full overflow-hidden bg-warm-100 py-5 md:py-6 border-t border-black/6">
-      <div className="anim-ticker-reverse flex" style={{ width: "max-content" }}>
+      <div className="anim-ticker-reverse flex" style={{ width: 'max-content' }}>
         <div className="flex items-center shrink-0">{items}</div>
         <div className="flex items-center shrink-0">{items}</div>
       </div>

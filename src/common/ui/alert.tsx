@@ -1,4 +1,5 @@
-import { cva, type VariantProps } from 'class-variance-authority'
+import { cva } from 'class-variance-authority'
+import type { VariantProps } from 'class-variance-authority'
 import type * as React from 'react'
 
 import { cn } from '@/common/css'
@@ -18,7 +19,7 @@ const alertVariants = cva(
         warning: 'border-warning/32 bg-warning/4 [&>svg]:text-warning',
       },
     },
-  }
+  },
 )
 
 function Alert({
@@ -29,8 +30,8 @@ function Alert({
   return (
     <div
       className={cn(alertVariants({ variant }), className)}
-      data-slot='alert'
-      role='alert'
+      data-slot="alert"
+      role="alert"
       {...props}
     />
   )
@@ -40,7 +41,7 @@ function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn('font-medium [svg~&]:col-start-2', className)}
-      data-slot='alert-title'
+      data-slot="alert-title"
       {...props}
     />
   )
@@ -50,7 +51,7 @@ function AlertDescription({ className, ...props }: React.ComponentProps<'div'>) 
   return (
     <div
       className={cn('flex flex-col gap-2.5 text-muted-foreground [svg~&]:col-start-2', className)}
-      data-slot='alert-description'
+      data-slot="alert-description"
       {...props}
     />
   )
@@ -61,9 +62,9 @@ function AlertAction({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       className={cn(
         'flex gap-1 max-sm:col-start-2 max-sm:mt-2 sm:row-start-1 sm:row-end-3 sm:self-center sm:[[data-slot=alert-description]~&]:col-start-2 sm:[[data-slot=alert-title]~&]:col-start-2 sm:[svg~&]:col-start-2 sm:[svg~[data-slot=alert-description]~&]:col-start-3 sm:[svg~[data-slot=alert-title]~&]:col-start-3',
-        className
+        className,
       )}
-      data-slot='alert-action'
+      data-slot="alert-action"
       {...props}
     />
   )

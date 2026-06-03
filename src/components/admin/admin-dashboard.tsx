@@ -10,15 +10,15 @@ export function AdminDashboard() {
 
   // Get current user access status to confirm admin status
   const { data: accessStatus, isLoading: isUserLoading } = useQuery(
-    convexQuery(api.users.getAccessStatus, {})
+    convexQuery(api.users.getAccessStatus, {}),
   )
 
   const { data: summary, isLoading: isSummaryLoading } = useQuery(
-    convexQuery(api.analytics.getAnalyticsSummary, {})
+    convexQuery(api.analytics.getAnalyticsSummary, {}),
   )
 
   const { data: users, isLoading: isUsersLoading } = useQuery(
-    convexQuery(api.users.getAllUsers, {})
+    convexQuery(api.users.getAllUsers, {}),
   )
 
   const deleteUser = useConvexMutation(api.users.deleteUser)
@@ -117,9 +117,7 @@ export function AdminDashboard() {
                 <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">
                   Visiteurs Uniques
                 </div>
-                <div className="text-3xl font-extrabold text-white">
-                  {summary.totalSessions}
-                </div>
+                <div className="text-3xl font-extrabold text-white">{summary.totalSessions}</div>
                 <div className="mt-2 text-xs text-white/40">Sessions actives / totales</div>
               </div>
 
@@ -127,9 +125,7 @@ export function AdminDashboard() {
                 <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">
                   Clics "Acheter"
                 </div>
-                <div className="text-3xl font-extrabold text-orange-400">
-                  {summary.clickBuy}
-                </div>
+                <div className="text-3xl font-extrabold text-orange-400">{summary.clickBuy}</div>
                 <div className="mt-2 text-xs text-orange-400/40">Interest to buy CTA</div>
               </div>
 
@@ -137,9 +133,7 @@ export function AdminDashboard() {
                 <div className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-2">
                   Clics "Services"
                 </div>
-                <div className="text-3xl font-extrabold text-blue-400">
-                  {summary.clickServices}
-                </div>
+                <div className="text-3xl font-extrabold text-blue-400">{summary.clickServices}</div>
                 <div className="mt-2 text-xs text-blue-400/40">Browsing catalog CTA</div>
               </div>
 
@@ -236,7 +230,10 @@ export function AdminDashboard() {
                   </thead>
                   <tbody>
                     {summary.recentEvents.map((event: any) => (
-                      <tr key={event._id} className="border-b border-white/5 text-white/70 hover:bg-white/5 transition-colors">
+                      <tr
+                        key={event._id}
+                        className="border-b border-white/5 text-white/70 hover:bg-white/5 transition-colors"
+                      >
                         <td className="py-3 pr-4 font-mono">
                           {new Date(event.timestamp).toLocaleTimeString('fr-FR')}
                         </td>
@@ -294,10 +291,15 @@ export function AdminDashboard() {
                 </thead>
                 <tbody>
                   {users.map((u: any) => (
-                    <tr key={u._id} className="border-b border-white/5 text-white/70 hover:bg-white/5 transition-colors">
+                    <tr
+                      key={u._id}
+                      className="border-b border-white/5 text-white/70 hover:bg-white/5 transition-colors"
+                    >
                       <td className="py-4 pr-4">
                         <div className="font-bold text-white">{u.name || 'Invité anonyme'}</div>
-                        <div className="text-white/40 text-[10px] truncate max-w-[200px] mt-0.5">{u.email || 'Pas d\'email'}</div>
+                        <div className="text-white/40 text-[10px] truncate max-w-[200px] mt-0.5">
+                          {u.email || "Pas d'email"}
+                        </div>
                       </td>
                       <td className="py-4 pr-4">
                         <span

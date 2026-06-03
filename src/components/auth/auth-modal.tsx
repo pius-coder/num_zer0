@@ -45,7 +45,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
       toast.error(
         activeTab === 'phone'
           ? 'Veuillez entrer votre numéro de téléphone'
-          : 'Veuillez entrer votre adresse e-mail'
+          : 'Veuillez entrer votre adresse e-mail',
       )
       return
     }
@@ -174,7 +174,12 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
           className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors cursor-pointer bg-transparent border-none"
         >
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
 
@@ -293,15 +298,10 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
         {step === 2 && (
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
             <div className="text-center">
-              <h3 className="text-2xl font-bold tracking-tight text-white mb-2">
-                Bon retour !
-              </h3>
+              <h3 className="text-2xl font-bold tracking-tight text-white mb-2">Bon retour !</h3>
               <p className="text-white/60 text-sm">
                 Entrez votre mot de passe pour vous connecter à{' '}
-                <span className="text-white font-semibold">
-                  {getIdentifierLabel()}
-                </span>
-                .
+                <span className="text-white font-semibold">{getIdentifierLabel()}</span>.
               </p>
             </div>
 
@@ -341,15 +341,10 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
         {step === 3 && (
           <form onSubmit={handleRegister} className="flex flex-col gap-5">
             <div className="text-center">
-              <h3 className="text-2xl font-bold tracking-tight text-white mb-2">
-                Créer un compte
-              </h3>
+              <h3 className="text-2xl font-bold tracking-tight text-white mb-2">Créer un compte</h3>
               <p className="text-white/60 text-sm">
                 Enregistrez votre nouveau compte permanent pour{' '}
-                <span className="text-white font-semibold">
-                  {getIdentifierLabel()}
-                </span>
-                .
+                <span className="text-white font-semibold">{getIdentifierLabel()}</span>.
               </p>
             </div>
 

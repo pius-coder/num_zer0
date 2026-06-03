@@ -77,24 +77,22 @@ export function SwipeToDelete({ onConfirm, disabled }: SwipeToDeleteProps) {
       ref={containerRef}
       className={cn(
         'relative h-14 w-full rounded-2xl overflow-hidden select-none',
-        disabled && 'opacity-50 grayscale pointer-events-none'
+        disabled && 'opacity-50 grayscale pointer-events-none',
       )}
     >
-      <div className='absolute inset-0 flex items-center justify-center pointer-events-none'>
-        <span className='text-[13px] font-bold text-muted-foreground/40 uppercase tracking-widest animate-pulse'>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <span className="text-[13px] font-bold text-muted-foreground/40 uppercase tracking-widest animate-pulse">
           Swipe to confirm
         </span>
       </div>
 
       <div
-        role='button'
+        role="button"
         tabIndex={disabled ? -1 : 0}
         style={{ transform: `translateX(${position}px)` }}
         className={cn(
           'absolute left-1 top-1 z-10 flex h-12 w-12 items-center justify-center rounded-xl touch-none will-change-transform',
-          dragging
-            ? 'cursor-grabbing'
-            : 'cursor-grab transition-shadow'
+          dragging ? 'cursor-grabbing' : 'cursor-grab transition-shadow',
         )}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -102,12 +100,12 @@ export function SwipeToDelete({ onConfirm, disabled }: SwipeToDeleteProps) {
         onPointerCancel={handlePointerEnd}
         onLostPointerCapture={handlePointerEnd}
       >
-        <Trash2 className='h-5 w-5 text-destructive-foreground' />
+        <Trash2 className="h-5 w-5 text-destructive-foreground" />
       </div>
 
       <div
         style={{ width: `${position + 24}px` }}
-        className='absolute left-0 top-0 h-full transition-[width] duration-75'
+        className="absolute left-0 top-0 h-full transition-[width] duration-75"
       />
     </div>
   )

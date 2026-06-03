@@ -11,21 +11,17 @@ interface AccountTypeChooserProps {
 export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  
+
   // Tabs: 'temporary' | 'permanent'
   const [activeTab, setActiveTab] = useState<'temporary' | 'permanent'>('temporary')
-  
+
   // For permanent account: 'login' | 'signup'
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login')
-  
+
   const [error, setError] = useState('')
 
   // react-hook-form setup
-  const {
-    register,
-    handleSubmit,
-    reset,
-  } = useForm({
+  const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       name: '',
       email: '',
@@ -83,7 +79,7 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
         }
         toast.success('Connexion réussie !')
       }
-      
+
       if (onClose) onClose()
       navigate({ to: '/my-space' })
     } catch (err: any) {
@@ -110,7 +106,12 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
           aria-label="Fermer"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       )}
@@ -118,17 +119,27 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
       {/* Tabs */}
       <div className="flex border-b border-white/10 pb-4 mb-6">
         <button
-          onClick={() => { setActiveTab('temporary'); setError('') }}
+          onClick={() => {
+            setActiveTab('temporary')
+            setError('')
+          }}
           className={`flex-1 pb-2 text-center text-sm font-semibold border-b-2 bg-transparent transition-all cursor-pointer ${
-            activeTab === 'temporary' ? 'border-[#25D366] text-[#25D366]' : 'border-transparent text-white/60 hover:text-white'
+            activeTab === 'temporary'
+              ? 'border-[#25D366] text-[#25D366]'
+              : 'border-transparent text-white/60 hover:text-white'
           }`}
         >
           Accès Rapide (48h)
         </button>
         <button
-          onClick={() => { setActiveTab('permanent'); setError('') }}
+          onClick={() => {
+            setActiveTab('permanent')
+            setError('')
+          }}
           className={`flex-1 pb-2 text-center text-sm font-semibold border-b-2 bg-transparent transition-all cursor-pointer ${
-            activeTab === 'permanent' ? 'border-[#25D366] text-[#25D366]' : 'border-transparent text-white/60 hover:text-white'
+            activeTab === 'permanent'
+              ? 'border-[#25D366] text-[#25D366]'
+              : 'border-transparent text-white/60 hover:text-white'
           }`}
         >
           Compte Permanent
@@ -138,22 +149,38 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
       {activeTab === 'temporary' ? (
         <div className="flex flex-col items-center gap-6 py-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500/10 border border-orange-500/20">
-            <svg className="h-8 w-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="h-8 w-8 text-orange-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
-          
+
           <div className="text-center max-w-sm">
             <h3 className="text-lg font-bold">Profitez d'un accès rapide</h3>
             <p className="mt-2 text-sm text-white/75 leading-relaxed font-medium">
-              Payez et profitez immédiatement, sans créer de compte. Votre accès est valable pendant 48 heures.
+              Payez et profitez immédiatement, sans créer de compte. Votre accès est valable pendant
+              48 heures.
             </p>
             <p className="mt-3 text-xs text-orange-400 font-semibold">
-              💡 Sécurisez votre accès à tout moment durant ces 48h en le convertissant en compte permanent.
+              💡 Sécurisez votre accès à tout moment durant ces 48h en le convertissant en compte
+              permanent.
             </p>
           </div>
 
-          {error && <p className="text-xs text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 w-full text-center">{error}</p>}
+          {error && (
+            <p className="text-xs text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 w-full text-center">
+              {error}
+            </p>
+          )}
 
           <button
             onClick={handleQuickAccess}
@@ -171,7 +198,8 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
         <div className="py-2">
           {/* Permanent Info Card */}
           <div className="mb-5 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs text-white/70 leading-relaxed">
-            Accédez à toutes les fonctionnalités sans limite de temps. Votre historique, vos paiements et vos préférences sont sauvegardés pour toujours.
+            Accédez à toutes les fonctionnalités sans limite de temps. Votre historique, vos
+            paiements et vos préférences sont sauvegardés pour toujours.
           </div>
 
           {/* Auth sub-mode toggle */}
@@ -179,7 +207,9 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
             <button
               onClick={() => switchAuthMode('login')}
               className={`px-4 py-1.5 rounded-full text-xs font-semibold border-none transition-all cursor-pointer ${
-                authMode === 'login' ? 'bg-[#25D366] text-neutral-900 font-bold' : 'bg-white/5 text-white/60 hover:text-white'
+                authMode === 'login'
+                  ? 'bg-[#25D366] text-neutral-900 font-bold'
+                  : 'bg-white/5 text-white/60 hover:text-white'
               }`}
             >
               Se connecter
@@ -187,7 +217,9 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
             <button
               onClick={() => switchAuthMode('signup')}
               className={`px-4 py-1.5 rounded-full text-xs font-semibold border-none transition-all cursor-pointer ${
-                authMode === 'signup' ? 'bg-[#25D366] text-neutral-900 font-bold' : 'bg-white/5 text-white/60 hover:text-white'
+                authMode === 'signup'
+                  ? 'bg-[#25D366] text-neutral-900 font-bold'
+                  : 'bg-white/5 text-white/60 hover:text-white'
               }`}
             >
               Créer un compte
@@ -197,7 +229,9 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
           <form onSubmit={handleSubmit(handlePermanentSubmit)} className="space-y-4">
             {authMode === 'signup' && (
               <div>
-                <label className="block text-xs font-semibold text-white/60 mb-1">Nom complet</label>
+                <label className="block text-xs font-semibold text-white/60 mb-1">
+                  Nom complet
+                </label>
                 <input
                   type="text"
                   placeholder="Jean Dupont"
@@ -209,7 +243,9 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-white/60 mb-1">Adresse email</label>
+              <label className="block text-xs font-semibold text-white/60 mb-1">
+                Adresse email
+              </label>
               <input
                 type="email"
                 placeholder="nom@exemple.com"
@@ -231,7 +267,11 @@ export function AccountTypeChooser({ onClose }: AccountTypeChooserProps) {
               />
             </div>
 
-            {error && <p className="text-xs text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 text-center">{error}</p>}
+            {error && (
+              <p className="text-xs text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 text-center">
+                {error}
+              </p>
+            )}
 
             <button
               type="submit"

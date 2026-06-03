@@ -7,7 +7,8 @@ import * as React from 'react'
 
 import { cn } from '@/common/css'
 import { Separator } from '@/common/ui/separator'
-import { Toggle as ToggleComponent, type toggleVariants } from '#/common/ui/toggle'
+import { Toggle as ToggleComponent } from '#/common/ui/toggle'
+import type { toggleVariants } from '#/common/ui/toggle'
 
 const ToggleGroupContext = React.createContext<VariantProps<typeof toggleVariants>>({
   size: 'default',
@@ -34,10 +35,10 @@ function ToggleGroup({
           : orientation === 'horizontal'
             ? '*:not-first:before:-start-[0.5px] *:not-last:before:-end-[0.5px] *:not-first:rounded-s-none *:not-last:rounded-e-none *:not-first:border-s-0 *:not-last:border-e-0 *:not-first:before:rounded-s-none *:not-last:before:rounded-e-none'
             : '*:not-first:before:-top-[0.5px] *:not-last:before:-bottom-[0.5px] flex-col *:not-first:rounded-t-none *:not-last:rounded-b-none *:not-first:border-t-0 *:not-last:border-b-0 *:not-last:before:hidden *:not-first:before:rounded-t-none *:not-last:before:rounded-b-none dark:*:last:before:hidden dark:*:first:before:block',
-        className
+        className,
       )}
       data-size={size}
-      data-slot='toggle-group'
+      data-slot="toggle-group"
       data-variant={variant}
       orientation={orientation}
       {...props}

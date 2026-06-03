@@ -56,19 +56,18 @@ export function ConvertPage() {
         <div className="text-center space-y-3">
           <h1 className="text-3xl font-bold tracking-tight text-white">Finalisez votre compte</h1>
           <p className="mt-2 text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
-            En quelques secondes, sécurisez votre accès et retrouvez tout votre historique sur un compte permanent, sans limite de durée.
+            En quelques secondes, sécurisez votre accès et retrouvez tout votre historique sur un
+            compte permanent, sans limite de durée.
           </p>
           <p className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-2.5">
-            ✨ Vos paiements effectués avec votre accès temporaire seront automatiquement transférés sur votre nouveau compte.
+            ✨ Vos paiements effectués avec votre accès temporaire seront automatiquement transférés
+            sur votre nouveau compte.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-foreground"
-            >
+            <label htmlFor="name" className="block text-sm font-medium text-foreground">
               Nom
             </label>
             <input
@@ -82,10 +81,7 @@ export function ConvertPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-foreground"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-foreground">
               Email
             </label>
             <input
@@ -99,10 +95,7 @@ export function ConvertPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-foreground"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-foreground">
               Mot de passe
             </label>
             <input
@@ -117,10 +110,7 @@ export function ConvertPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-foreground"
-            >
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground">
               Confirmer le mot de passe
             </label>
             <input

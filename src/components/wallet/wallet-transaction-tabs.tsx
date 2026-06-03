@@ -16,10 +16,10 @@ export const WalletTransactionTabs = memo(function WalletTransactionTabs({
 }: WalletTransactionTabsProps) {
   return (
     <Tabs value={value} onValueChange={(v) => onChange(v as TransactionTab)}>
-      <TabsList className='grid w-full grid-cols-3'>
-        <TabsTrigger value='all'>Tout</TabsTrigger>
-        <TabsTrigger value='purchase'>Recharges</TabsTrigger>
-        <TabsTrigger value='numbers'>Achats numéros</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="all">Tout</TabsTrigger>
+        <TabsTrigger value="purchase">Recharges</TabsTrigger>
+        <TabsTrigger value="numbers">Achats numéros</TabsTrigger>
       </TabsList>
     </Tabs>
   )

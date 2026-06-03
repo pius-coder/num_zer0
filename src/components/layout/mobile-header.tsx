@@ -23,7 +23,7 @@ export function MobileHeader() {
   }
 
   return (
-    <header className='flex flex-col bg-transparent md:hidden sticky top-0 z-50'>
+    <header className="flex flex-col bg-transparent md:hidden sticky top-0 z-50">
       <MobileHeaderLogo />
       <MobileHeaderTitleBar
         title={currentTitle}

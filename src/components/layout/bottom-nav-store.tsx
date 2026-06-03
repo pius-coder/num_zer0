@@ -1,6 +1,7 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback } from 'react'
+import type { ReactNode } from 'react'
 
 export type PanelId = 'nav' | 'recharge' | 'topup' | 'details' | null
 
@@ -37,7 +38,9 @@ export function BottomNavProvider({ children }: { children: ReactNode }) {
   }, [openPanel])
 
   return (
-    <BottomNavContext.Provider value={{ isOpen, activePanel, panelProps, openPanel, closePanel, toggleNav }}>
+    <BottomNavContext.Provider
+      value={{ isOpen, activePanel, panelProps, openPanel, closePanel, toggleNav }}
+    >
       {children}
     </BottomNavContext.Provider>
   )

@@ -12,7 +12,7 @@ export function DesktopHeaderNav() {
   const { pathname } = useLocation()
 
   return (
-    <nav className='flex items-center gap-1'>
+    <nav className="flex items-center gap-1">
       {NAV_ITEMS.map(({ path, label, icon: Icon }) => {
         const isActive = pathname === path || pathname.startsWith(path + '/')
         return (
@@ -25,7 +25,7 @@ export function DesktopHeaderNav() {
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
-            <Icon className='h-4 w-4' />
+            <Icon className="h-4 w-4" />
             {label}
           </Link>
         )

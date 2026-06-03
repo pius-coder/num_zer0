@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 export function QueryProvider({ children }: { children: ReactNode }) {
@@ -13,7 +14,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
             retry: 1,
           },
         },
-      })
+      }),
   )
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

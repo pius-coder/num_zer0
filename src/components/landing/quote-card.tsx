@@ -1,4 +1,4 @@
-import { QUOTE } from "./data"
+import { QUOTE } from './data'
 
 export default function QuoteCard() {
   return (

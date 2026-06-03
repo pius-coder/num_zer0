@@ -10,10 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ConvertRouteImport } from './routes/convert'
+import { Route as AuthSplashRouteImport } from './routes/auth-splash'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as landingRouteRouteImport } from './routes/(landing)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as landingIndexRouteImport } from './routes/(landing)/index'
+import { Route as PaymentResultRouteImport } from './routes/payment/result'
 import { Route as appWalletRouteImport } from './routes/(app)/wallet'
 import { Route as appSupportRouteImport } from './routes/(app)/support'
 import { Route as appRechargeRouteImport } from './routes/(app)/recharge'
@@ -24,6 +26,11 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 const ConvertRoute = ConvertRouteImport.update({
   id: '/convert',
   path: '/convert',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSplashRoute = AuthSplashRouteImport.update({
+  id: '/auth-splash',
+  path: '/auth-splash',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -43,6 +50,11 @@ const landingIndexRoute = landingIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => landingRouteRoute,
+} as any)
+const PaymentResultRoute = PaymentResultRouteImport.update({
+  id: '/payment/result',
+  path: '/payment/result',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const appWalletRoute = appWalletRouteImport.update({
   id: '/wallet',
@@ -77,23 +89,27 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
+  '/auth-splash': typeof AuthSplashRoute
   '/convert': typeof ConvertRoute
   '/account': typeof appAccountRoute
   '/my-space': typeof appMySpaceRoute
   '/recharge': typeof appRechargeRoute
   '/support': typeof appSupportRoute
   '/wallet': typeof appWalletRoute
+  '/payment/result': typeof PaymentResultRoute
   '/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
+  '/auth-splash': typeof AuthSplashRoute
   '/convert': typeof ConvertRoute
   '/account': typeof appAccountRoute
   '/my-space': typeof appMySpaceRoute
   '/recharge': typeof appRechargeRoute
   '/support': typeof appSupportRoute
   '/wallet': typeof appWalletRoute
+  '/payment/result': typeof PaymentResultRoute
   '/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -102,12 +118,14 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(landing)': typeof landingRouteRouteWithChildren
   '/admin': typeof AdminRoute
+  '/auth-splash': typeof AuthSplashRoute
   '/convert': typeof ConvertRoute
   '/(app)/account': typeof appAccountRoute
   '/(app)/my-space': typeof appMySpaceRoute
   '/(app)/recharge': typeof appRechargeRoute
   '/(app)/support': typeof appSupportRoute
   '/(app)/wallet': typeof appWalletRoute
+  '/payment/result': typeof PaymentResultRoute
   '/(landing)/': typeof landingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -115,23 +133,27 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/admin'
+    | '/auth-splash'
     | '/convert'
     | '/account'
     | '/my-space'
     | '/recharge'
     | '/support'
     | '/wallet'
+    | '/payment/result'
     | '/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin'
+    | '/auth-splash'
     | '/convert'
     | '/account'
     | '/my-space'
     | '/recharge'
     | '/support'
     | '/wallet'
+    | '/payment/result'
     | '/'
     | '/api/auth/$'
   id:
@@ -139,12 +161,14 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(landing)'
     | '/admin'
+    | '/auth-splash'
     | '/convert'
     | '/(app)/account'
     | '/(app)/my-space'
     | '/(app)/recharge'
     | '/(app)/support'
     | '/(app)/wallet'
+    | '/payment/result'
     | '/(landing)/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -153,7 +177,9 @@ export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
   landingRouteRoute: typeof landingRouteRouteWithChildren
   AdminRoute: typeof AdminRoute
+  AuthSplashRoute: typeof AuthSplashRoute
   ConvertRoute: typeof ConvertRoute
+  PaymentResultRoute: typeof PaymentResultRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -164,6 +190,13 @@ declare module '@tanstack/react-router' {
       path: '/convert'
       fullPath: '/convert'
       preLoaderRoute: typeof ConvertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth-splash': {
+      id: '/auth-splash'
+      path: '/auth-splash'
+      fullPath: '/auth-splash'
+      preLoaderRoute: typeof AuthSplashRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -193,6 +226,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof landingIndexRouteImport
       parentRoute: typeof landingRouteRoute
+    }
+    '/payment/result': {
+      id: '/payment/result'
+      path: '/payment/result'
+      fullPath: '/payment/result'
+      preLoaderRoute: typeof PaymentResultRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(app)/wallet': {
       id: '/(app)/wallet'
@@ -275,7 +315,9 @@ const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
   landingRouteRoute: landingRouteRouteWithChildren,
   AdminRoute: AdminRoute,
+  AuthSplashRoute: AuthSplashRoute,
   ConvertRoute: ConvertRoute,
+  PaymentResultRoute: PaymentResultRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

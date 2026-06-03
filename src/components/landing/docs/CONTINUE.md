@@ -3,6 +3,7 @@
 ## Current State
 
 The landing feature provides:
+
 - `Header` — sticky nav with logo, links, dropdown demos, social icons, and theme toggle
 - `Footer` — copyright, social links, "Built with Numzero" badge
 - `ThemeToggle` — cycles light → dark → auto with localStorage persistence

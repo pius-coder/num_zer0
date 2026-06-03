@@ -117,7 +117,7 @@ async function main() {
   if (transId) {
     // Wait a bit for the payment to process
     console.log('\nWaiting 5s for payment to process...')
-    await new Promise(r => setTimeout(r, 5000))
+    await new Promise((r) => setTimeout(r, 5000))
     await testPaymentStatus(transId)
   }
 

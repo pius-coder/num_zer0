@@ -5,9 +5,7 @@ import { api } from '../../../convex/_generated/api'
 import { useAccessTimer } from './hooks/use-access-timer'
 
 export function AccessBanner() {
-  const { data: accessStatus } = useQuery(
-    convexQuery(api.users.getAccessStatus, {})
-  )
+  const { data: accessStatus } = useQuery(convexQuery(api.users.getAccessStatus, {}))
 
   const { remainingMs, urgencyLevel } = useAccessTimer(accessStatus)
 
@@ -58,10 +56,10 @@ export function AccessBanner() {
   }[urgencyLevel]
 
   return (
-    <div className={`w-full border-b backdrop-blur-md px-6 py-3 flex flex-col md:flex-row items-center justify-center gap-3 text-sm transition-all duration-300 ${bannerConfig.style.split(' hover:')[0]}`}>
-      <span className="font-semibold text-center leading-relaxed">
-        {bannerConfig.text}
-      </span>
+    <div
+      className={`w-full border-b backdrop-blur-md px-6 py-3 flex flex-col md:flex-row items-center justify-center gap-3 text-sm transition-all duration-300 ${bannerConfig.style.split(' hover:')[0]}`}
+    >
+      <span className="font-semibold text-center leading-relaxed">{bannerConfig.text}</span>
       <Link
         to="/convert"
         className={`shrink-0 inline-flex items-center justify-center px-4 py-1.5 rounded-full text-xs font-bold transition-all border border-current no-underline hover:scale-105 active:scale-95 ${bannerConfig.style}`}

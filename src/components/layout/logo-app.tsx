@@ -9,9 +9,9 @@ interface LogoAppProps {
 export function LogoApp({ className = '' }: LogoAppProps) {
   return (
     <PixelHeading
-      as='h1'
-      initialFont='line'
-      hoverFont='circle'
+      as="h1"
+      initialFont="line"
+      hoverFont="circle"
       className={`tracking-tight ${className}`}
       style={{ fontFamily: 'KUBO, sans-serif' }}
     >

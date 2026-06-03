@@ -21,7 +21,11 @@ export function ProfileForm() {
 
   const handleUpdate = async () => {
     if (!name.trim()) {
-      toastManager.add({ title: 'Erreur', description: 'Le nom ne peut pas être vide', type: 'error' })
+      toastManager.add({
+        title: 'Erreur',
+        description: 'Le nom ne peut pas être vide',
+        type: 'error',
+      })
       return
     }
 
@@ -40,52 +44,61 @@ export function ProfileForm() {
   }
 
   return (
-    <section className='space-y-3'>
-      <h2 className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>
+    <section className="space-y-3">
+      <h2 className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
         Informations personnelles
       </h2>
 
       {isSessionLoading && !session ? (
-        <p className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Chargement...</p>
+        <p className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
+          Chargement...
+        </p>
       ) : (
         <>
-          <div className='flex items-center gap-4 py-3'>
-            <div className='flex h-10 w-10 shrink-0 items-center justify-center text-[var(--sea-ink)]'>
-              <UserCircle className='h-6 w-6' />
+          <div className="flex items-center gap-4 py-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center text-[var(--sea-ink)]">
+              <UserCircle className="h-6 w-6" />
             </div>
-            <div className='flex-1 space-y-0.5'>
-              <label htmlFor='name' className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>
+            <div className="flex-1 space-y-0.5">
+              <label
+                htmlFor="name"
+                className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider"
+              >
                 Nom complet
               </label>
               <input
-                id='name'
-                type='text'
+                id="name"
+                type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder='Votre nom'
-                className='w-full bg-transparent font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] outline-none'
+                placeholder="Votre nom"
+                className="w-full bg-transparent font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] outline-none"
               />
             </div>
           </div>
 
-          <div className='flex items-center gap-4 py-3 opacity-60'>
-            <div className='flex h-10 w-10 shrink-0 items-center justify-center text-[var(--sea-ink-soft)]'>
-              <ShieldCheck className='h-6 w-6' />
+          <div className="flex items-center gap-4 py-3 opacity-60">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center text-[var(--sea-ink-soft)]">
+              <ShieldCheck className="h-6 w-6" />
             </div>
-            <div className='flex-1 space-y-0.5'>
-              <span className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>Identifiant</span>
-              <p className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25]'>{displayIdentifier}</p>
+            <div className="flex-1 space-y-0.5">
+              <span className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
+                Identifiant
+              </span>
+              <p className="font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25]">
+                {displayIdentifier}
+              </p>
             </div>
           </div>
 
           <button
             onClick={handleUpdate}
             disabled={isPending || name === session?.user?.name}
-            className='w-full py-3 font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer disabled:opacity-40'
+            className="w-full py-3 font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer disabled:opacity-40"
           >
             {isPending ? (
               <>
-                <LoaderCircle className='h-5 w-5 animate-spin inline mr-2' />
+                <LoaderCircle className="h-5 w-5 animate-spin inline mr-2" />
                 Sauvegarde...
               </>
             ) : (

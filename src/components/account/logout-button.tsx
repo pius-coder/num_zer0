@@ -24,20 +24,20 @@ export function LogoutButton() {
   }
 
   return (
-    <section className='space-y-3'>
-      <h2 className='font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider'>
+    <section className="space-y-3">
+      <h2 className="font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider">
         Session
       </h2>
 
       <button
         onClick={handleLogout}
         disabled={isPending}
-        className='w-full flex items-center gap-3 py-3 font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer disabled:opacity-40'
+        className="w-full flex items-center gap-3 py-3 font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer disabled:opacity-40"
       >
         {isPending ? (
-          <LoaderCircle className='h-5 w-5 animate-spin' />
+          <LoaderCircle className="h-5 w-5 animate-spin" />
         ) : (
-          <LogOut className='h-5 w-5' />
+          <LogOut className="h-5 w-5" />
         )}
         <span>Log Out</span>
       </button>

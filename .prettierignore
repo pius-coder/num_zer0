@@ -1,3 +1,26 @@
+# Generated / build output
+dist/
+.output/
+.tanstack/
+node_modules/
+convex/_generated/
+src/routeTree.gen.ts
+public/
+
+# Tooling / configs
+.agents/
+.claude/
+.opencode/
+.vscode/
+.cursorrules
+tmp/
+
+# Lock files
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Docs we explicitly manage formatting for
+ARCHITECTURE.md
+CODE_STYLE.md
+CLAUDE.md

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 
 type Direction = 'up' | 'up-big' | 'scale'
 type Stagger = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
@@ -42,7 +43,7 @@ export function Reveal({
         ([entry]) => {
           setVisible(entry.isIntersecting)
         },
-        { threshold, rootMargin }
+        { threshold, rootMargin },
       )
       observer.observe(el)
       return () => observer.disconnect()
@@ -55,14 +56,19 @@ export function Reveal({
           observer.unobserve(el)
         }
       },
-      { threshold, rootMargin }
+      { threshold, rootMargin },
     )
     observer.observe(el)
     return () => observer.disconnect()
   }, [threshold, rootMargin, replay])
 
   const Tag = as
-  const cls = `${!visible ? 'anim-ready' : ''} ${visible ? animClass[direction] : ''} stagger-${stagger} ${className}`.trim()
+  const cls =
+    `${!visible ? 'anim-ready' : ''} ${visible ? animClass[direction] : ''} stagger-${stagger} ${className}`.trim()
 
-  return <Tag ref={ref} className={cls}>{children}</Tag>
+  return (
+    <Tag ref={ref} className={cls}>
+      {children}
+    </Tag>
+  )
 }

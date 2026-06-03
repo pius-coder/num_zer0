@@ -14,10 +14,5 @@
   "addOns": true,
   "intent": true,
   "framework": "react",
-  "chosenAddOns": [
-    "eslint",
-    "nitro",
-    "compiler",
-    "convex"
-  ]
+  "chosenAddOns": ["eslint", "nitro", "compiler", "convex"]
 }

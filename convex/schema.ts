@@ -62,8 +62,7 @@ export default defineSchema({
     usedCount: v.number(),
     expiresAt: v.optional(v.number()),
     createdAt: v.number(),
-  })
-    .index('by_code', ['code']),
+  }).index('by_code', ['code']),
 
   comptes: defineTable({
     code: v.string(),
@@ -76,7 +75,7 @@ export default defineSchema({
     libelle: v.string(),
     statut: v.string(),
     reference: v.optional(v.string()),
-  }),
+  }).index('by_reference', ['reference']),
 
   lignes: defineTable({
     pieceId: v.id('pieces'),
@@ -87,4 +86,36 @@ export default defineSchema({
   })
     .index('by_piece', ['pieceId'])
     .index('by_compte', ['compteCode']),
+
+  activations: defineTable({
+    userId: v.string(),
+    service: v.string(),
+    country: v.string(),
+    providerId: v.optional(v.number()),
+    phoneNumber: v.optional(v.string()),
+    status: v.union(
+      v.literal('awaiting_number'),
+      v.literal('awaiting_sms'),
+      v.literal('sms_received'),
+      v.literal('completed'),
+      v.literal('cancelled'),
+      v.literal('expired'),
+      v.literal('no_numbers'),
+      v.literal('max_price_too_low'),
+    ),
+    maxPrice: v.number(),
+    operator: v.optional(v.string()),
+    smsCode: v.optional(v.string()),
+    canGetAnotherSms: v.boolean(),
+    rentEndTime: v.optional(v.number()),
+    providerCost: v.optional(v.number()),
+    priceCharged: v.number(),
+    errorMessage: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_userId', ['userId'])
+    .index('by_providerId', ['providerId'])
+    .index('by_status', ['status'])
+    .index('by_userId_status', ['userId', 'status']),
 })

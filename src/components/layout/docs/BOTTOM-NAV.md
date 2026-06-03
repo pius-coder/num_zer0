@@ -21,35 +21,41 @@ const { isOpen, activePanel, panelProps, openPanel, closePanel, toggleNav } = us
 ```
 
 ### PanelId
+
 ```ts
 type PanelId = 'nav' | 'recharge' | 'topup' | null
 ```
 
 ### openPanel(panel, props?)
+
 - `panel: PanelId` — which panel to show
 - `props?: Record<string, unknown>` — arbitrary data passed to the panel (e.g. `{ amount: 5000 }`)
 
 ### closePanel()
+
 Closes the drawer (sets `activePanel = null`, `isOpen = false`).
 
 ### toggleNav()
+
 Shorthand for `openPanel('nav')`.
 
 ## Mobile (`mobile-bottom-nav.tsx`)
 
 Responsive pill fixed at `right-3 bottom-3`:
+
 - **Closed**: shows `$USD` balance + `+` (recharge) + hamburger icon
 - **Open**: panel slides up inside the same pill container (max height 560px)
 
 ### Panels rendered inside the pill
 
-| `activePanel` | Component | Description |
-|---------------|-----------|-------------|
-| `'nav'`       | `NavPanel` | 5 links: Mon Espace, Portefeuille, Compte, Recharger, Support |
-| `'recharge'`  | `RechargePanel` | Full `StepTopUp` form inside the pill |
+| `activePanel` | Component       | Description                                                      |
+| ------------- | --------------- | ---------------------------------------------------------------- |
+| `'nav'`       | `NavPanel`      | 5 links: Mon Espace, Portefeuille, Compte, Recharger, Support    |
+| `'recharge'`  | `RechargePanel` | Full `StepTopUp` form inside the pill                            |
 | `'topup'`     | `RechargePanel` | Same form but with `topUpAmount` preset from `panelProps.amount` |
 
 ### Panel switching
+
 The `toggleNav()` / hamburger button opens `'nav'`. Other code opens `'recharge'` or `'topup'` directly.
 
 ## Desktop (`desktop-drawer-proxy.tsx`)
@@ -60,6 +66,7 @@ Only handles `'recharge'` and `'topup'` — `'nav'` is mobile-only.
 ## How other components call it
 
 ### Open the recharge panel
+
 ```tsx
 const { openPanel } = useBottomNav()
 openPanel('recharge')
@@ -70,12 +77,12 @@ openPanel('topup', { amount: country.priceXaf })
 
 ### Existing callers
 
-| File | Action | Panel |
-|------|--------|-------|
-| `wallet-page-shell.tsx` | "Recharger" button | `'recharge'` |
-| `recharge-trigger-button.tsx` | Buy button on a package card | `'recharge'` |
-| `routes/(app)/recharge.tsx` | Recharge route page | `'recharge'` |
-| `my-space-page.tsx` | "Buy this number" on a country row | `'topup'` with `{ amount }` |
+| File                          | Action                             | Panel                       |
+| ----------------------------- | ---------------------------------- | --------------------------- |
+| `wallet-page-shell.tsx`       | "Recharger" button                 | `'recharge'`                |
+| `recharge-trigger-button.tsx` | Buy button on a package card       | `'recharge'`                |
+| `routes/(app)/recharge.tsx`   | Recharge route page                | `'recharge'`                |
+| `my-space-page.tsx`           | "Buy this number" on a country row | `'topup'` with `{ amount }` |
 
 ## Key CSS details
 

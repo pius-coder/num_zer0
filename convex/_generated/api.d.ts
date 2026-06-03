@@ -12,7 +12,10 @@ import type * as analytics from "../analytics.js";
 import type * as auth from "../auth.js";
 import type * as comptabilite from "../comptabilite.js";
 import type * as http from "../http.js";
+import type * as lib_auth_helpers from "../lib/auth_helpers.js";
 import type * as purchases from "../purchases.js";
+import type * as sms_countries from "../sms_countries.js";
+import type * as sms_provider from "../sms_provider.js";
 import type * as users from "../users.js";
 
 import type {
@@ -26,7 +29,10 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   comptabilite: typeof comptabilite;
   http: typeof http;
+  "lib/auth_helpers": typeof lib_auth_helpers;
   purchases: typeof purchases;
+  sms_countries: typeof sms_countries;
+  sms_provider: typeof sms_provider;
   users: typeof users;
 }>;
 

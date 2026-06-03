@@ -1,6 +1,7 @@
 'use client'
 
-import { type FC, type ReactNode, useState } from 'react'
+import { useState } from 'react'
+import type { FC, ReactNode } from 'react'
 import { PlusIcon, XIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 
@@ -40,7 +41,7 @@ const FamilyButton: FC<FamilyButtonProps> = ({
         'rounded-[24px] border border-white/10 shadow-xl',
         isExpanded
           ? 'bg-gradient-to-b from-neutral-900 to-black dark:from-stone-900 dark:to-neutral-900/80'
-          : 'bg-gradient-to-b from-neutral-800 to-stone-900 dark:from-neutral-900 dark:to-stone-950'
+          : 'bg-gradient-to-b from-neutral-800 to-stone-900 dark:from-neutral-900 dark:to-stone-950',
       )}
       layoutRoot
       layout
@@ -58,7 +59,7 @@ const FamilyButton: FC<FamilyButtonProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 0.1, duration: 0.3 } }}
             exit={{ opacity: 0, transition: { duration: 0.1 } }}
-            className='w-full flex-1'
+            className="w-full flex-1"
           >
             {children}
           </motion.div>
@@ -66,32 +67,32 @@ const FamilyButton: FC<FamilyButtonProps> = ({
       </AnimatePresence>
 
       <motion.div
-        className='absolute bottom-1.5 left-1/2 -translate-x-1/2'
-        layoutId='expand-toggle'
+        className="absolute bottom-1.5 left-1/2 -translate-x-1/2"
+        layoutId="expand-toggle"
         onClick={toggleExpand}
       >
-        <AnimatePresence mode='wait'>
+        <AnimatePresence mode="wait">
           {isExpanded ? (
             <motion.div
-              key='close'
+              key="close"
               initial={{ rotate: -90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className='p-[8px] bg-neutral-800/50 dark:bg-black/50 border border-cyan-100/30 hover:border-neutral-200 text-orange-50 rounded-full shadow-2xl transition-colors duration-300'
+              className="p-[8px] bg-neutral-800/50 dark:bg-black/50 border border-cyan-100/30 hover:border-neutral-200 text-orange-50 rounded-full shadow-2xl transition-colors duration-300"
             >
-              <XIcon className='h-6 w-6 text-cyan-100/30 dark:text-neutral-400/80 hover:text-neutral-500' />
+              <XIcon className="h-6 w-6 text-cyan-100/30 dark:text-neutral-400/80 hover:text-neutral-500" />
             </motion.div>
           ) : (
             <motion.div
-              key='open'
+              key="open"
               initial={{ rotate: 90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className='p-[8px] bg-neutral-200 dark:bg-cyan-500/90 text-cyan-50 border border-cyan-100/10 shadow-2xl transition-colors duration-200 rounded-full'
+              className="p-[8px] bg-neutral-200 dark:bg-cyan-500/90 text-cyan-50 border border-cyan-100/10 shadow-2xl transition-colors duration-200 rounded-full"
             >
-              <Icon className='h-6 w-6 text-black dark:text-neutral-900' />
+              <Icon className="h-6 w-6 text-black dark:text-neutral-900" />
             </motion.div>
           )}
         </AnimatePresence>

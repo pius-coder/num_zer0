@@ -5,7 +5,8 @@ export default function PhoneMockup() {
         <div className="flex-1 w-[1px] h-full overflow-visible relative z-4">
           <img
             decoding="async"
-            width="1072" height="2163"
+            width="1072"
+            height="2163"
             sizes="max(400px, 1px)"
             srcSet="https://framerusercontent.com/images/M5BYpFV5ukCc6wJlq4Wqvkzw.png?scale-down-to=2048 1015w, https://framerusercontent.com/images/M5BYpFV5ukCc6wJlq4Wqvkzw.png 1072w"
             src="https://framerusercontent.com/images/M5BYpFV5ukCc6wJlq4Wqvkzw.png"
@@ -16,10 +17,10 @@ export default function PhoneMockup() {
         <div className="flex-none w-[334px] h-[724px] absolute top-[calc(50%-362px)] left-[calc(50.25%-167px)] overflow-hidden z-1 rounded-[36px]">
           <img
             decoding="async"
-            width="1179" height="2556"
+            width="1179"
+            height="2556"
             sizes="334px"
-            srcSet="https://framerusercontent.com/images/wii2kgLZGjyANjDVVTkjNVF2cRs.png?scale-down-to=2048 944w, https://framerusercontent.com/images/wii2kgLZGjyANjDVVTkjNVF2cRs.png 1179w"
-            src="https://framerusercontent.com/images/wii2kgLZGjyANjDVVTkjNVF2cRs.png"
+            src="/landing/wii2kgLZGjyANjDVVTkjNVF2cRs.png"
             alt=""
             className="block w-full h-full object-cover rounded-[36px]"
           />

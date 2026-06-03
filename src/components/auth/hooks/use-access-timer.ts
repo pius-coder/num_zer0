@@ -12,14 +12,14 @@ const WARNING_THRESHOLD = 24 * 60 * 60 * 1000
 const CRITICAL_THRESHOLD = 2 * 60 * 60 * 1000
 
 export function useAccessTimer(
-  accessStatus: {
-    isExpired: boolean
-    remainingMs: number
-  } | undefined
+  accessStatus:
+    | {
+        isExpired: boolean
+        remainingMs: number
+      }
+    | undefined,
 ): AccessTimerResult {
-  const [remainingMs, setRemainingMs] = useState(
-    accessStatus?.remainingMs ?? 0
-  )
+  const [remainingMs, setRemainingMs] = useState(accessStatus?.remainingMs ?? 0)
 
   useEffect(() => {
     if (!accessStatus || accessStatus.isExpired) {

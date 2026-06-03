@@ -1,15 +1,25 @@
-import { TESTIMONIALS } from "./data"
+import { TESTIMONIALS } from './data'
 
 const StarIconYellow = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-    <path d="M7 0L8.993 4.007L13 6L8.993 7.993L7 12L5.007 7.993L1 6L5.007 4.007L7 0Z" fill="#FFD700" />
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="shrink-0"
+  >
+    <path
+      d="M7 0L8.993 4.007L13 6L8.993 7.993L7 12L5.007 7.993L1 6L5.007 4.007L7 0Z"
+      fill="#FFD700"
+    />
   </svg>
 )
 
 export default function Testimonials() {
   const allItems = [...TESTIMONIALS.items, ...TESTIMONIALS.items]
   const items = allItems.map((t, i) => (
-    <li key={i} className="flex-shrink-0 w-full" style={{ height: "fit-content" }}>
+    <li key={i} className="flex-shrink-0 w-full" style={{ height: 'fit-content' }}>
       <div className="bg-dark-800 border border-white/10 rounded-[20px] p-6 md:p-7">
         <div className="flex items-center gap-1 mb-3">
           {Array.from({ length: t.rating }).map((_, j) => (
@@ -49,10 +59,7 @@ export default function Testimonials() {
         </div>
 
         <div className="relative h-[520px] md:h-[560px] overflow-hidden mask-edges">
-          <ul
-            className="flex flex-col gap-4 anim-ticker-up"
-            style={{ width: "100%" }}
-          >
+          <ul className="flex flex-col gap-4 anim-ticker-up" style={{ width: '100%' }}>
             {items}
           </ul>
         </div>

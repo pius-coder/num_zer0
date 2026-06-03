@@ -71,11 +71,13 @@ export const createPiece = internalMutation({
     libelle: v.string(),
     statut: v.string(),
     reference: v.optional(v.string()),
-    lignes: v.array(v.object({
-      compteCode: v.string(),
-      sens: v.string(),
-      montant: v.number(),
-    })),
+    lignes: v.array(
+      v.object({
+        compteCode: v.string(),
+        sens: v.string(),
+        montant: v.number(),
+      }),
+    ),
   },
   returns: v.id('pieces'),
   handler: async (ctx, args) => {

@@ -259,7 +259,7 @@ export const pollActivation = internalAction({
         } else if (response === 'STATUS_CANCEL') {
           await ctx.runMutation(internal.sms_provider.internalUpdateActivation, {
             activationId: args.activationId,
-            patch: { status: 'cancelled', updatedAt: Date.now() },
+            patch: { status: 'cancelled', errorMessage: 'Annulé par le fournisseur', updatedAt: Date.now() },
           })
           await ctx.runMutation(internal.sms_provider.refundEscrow, { activationId: args.activationId })
         }
@@ -443,6 +443,7 @@ export const cancelActivation = mutation({
 
     await ctx.db.patch(args.activationId, {
       status: 'cancelled',
+      errorMessage: 'Annulé par l\'utilisateur',
       updatedAt: Date.now(),
     })
 
@@ -612,3 +613,69 @@ export const syncPrices = action({
     return prices
   },
 })
+
+// ─── getOperators (query) ──────────────────────────────────────────────────────
+// Docs: https://sms-online.pro/docs/api/en/get_operators.html
+// Returns: { status: "success", countryOperators: { [countryCode]: string[] } }
+
+export const getOperators = query({
+  args: {
+    country: v.string(),
+  },
+  handler: async (_ctx, args) => {
+    const numericCountry = isoToNumeric(args.country)
+    if (!numericCountry) return []
+
+    const apiKey = process.env.SMSONLINEPRO_API_KEY
+    if (!apiKey) return []
+
+    try {
+      const url = new URL(API_BASE)
+      url.searchParams.set('api_key', apiKey)
+      url.searchParams.set('action', 'getOperators')
+      url.searchParams.set('country', String(numericCountry))
+      const res = await fetch(url.toString())
+      const text = await res.text()
+      const data = JSON.parse(text)
+      if (data?.status === 'success' && data?.countryOperators?.[String(numericCountry)]) {
+        return data.countryOperators[String(numericCountry)] as string[]
+      }
+      return []
+    } catch {
+      return []
+    }
+  },
+})
+
+// ─── getPrices (query) ──────────────────────────────────────────────────────────
+// Docs: https://sms-online.pro/docs/api/en/get_prices.html
+// Returns: { [countryCode]: { [service]: { cost: number, count: number } } }
+
+export const getPrices = query({
+  args: {
+    country: v.string(),
+    service: v.optional(v.string()),
+  },
+  handler: async (_ctx, args) => {
+    const numericCountry = isoToNumeric(args.country)
+    if (!numericCountry) return {}
+
+    const apiKey = process.env.SMSONLINEPRO_API_KEY
+    if (!apiKey) return {}
+
+    try {
+      const url = new URL(API_BASE)
+      url.searchParams.set('api_key', apiKey)
+      url.searchParams.set('action', 'getPrices')
+      url.searchParams.set('country', String(numericCountry))
+      if (args.service) url.searchParams.set('service', args.service)
+      const res = await fetch(url.toString())
+      const text = await res.text()
+      return JSON.parse(text) as Record<string, Record<string, { cost: number; count: number }>>
+    } catch {
+      return {}
+    }
+  },
+})
+
+

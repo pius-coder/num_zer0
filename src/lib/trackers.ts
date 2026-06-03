@@ -28,7 +28,7 @@ const getDeviceType = (): string => {
   }
   if (
     /Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(
-      ua
+      ua,
     )
   ) {
     return 'mobile'
@@ -36,7 +36,7 @@ const getDeviceType = (): string => {
   return 'desktop'
 }
 
-let sessionStartTime = typeof window !== 'undefined' ? Date.now() : 0
+const sessionStartTime = typeof window !== 'undefined' ? Date.now() : 0
 let isInitialized = false
 
 export const trackers = {

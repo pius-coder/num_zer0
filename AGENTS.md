@@ -45,6 +45,7 @@ src/components/<feature>/
 ```
 
 **Key rules:**
+
 - Max **200 lines** per file (enforced by ESLint `max-lines`). Ignore blank lines and comments.
 - `routeTree.gen.ts` is auto-generated and excluded from the limit.
 
@@ -52,13 +53,14 @@ src/components/<feature>/
 
 Each feature in `components/` has a **lifecycle** documented in `docs/`:
 
-| File | Purpose |
-|------|---------|
-| `CHANGELOG.md` | Every change to the feature, newest first. Who, what, when, why. |
-| `CONTINUE.md` | Current state, known issues, next steps, architectural decisions. Anyone can pick up where the last person left off. |
-| `TODOS.md` | Implementation checklist with completion status. Tasks to finish the feature. |
+| File           | Purpose                                                                                                              |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `CHANGELOG.md` | Every change to the feature, newest first. Who, what, when, why.                                                     |
+| `CONTINUE.md`  | Current state, known issues, next steps, architectural decisions. Anyone can pick up where the last person left off. |
+| `TODOS.md`     | Implementation checklist with completion status. Tasks to finish the feature.                                        |
 
 When starting work on a feature:
+
 1. Read `docs/CONTINUE.md` first to understand current state
 2. Check `docs/TODOS.md` for pending work
 3. Update `docs/CHANGELOG.md` after making changes
@@ -67,11 +69,13 @@ When starting work on a feature:
 ## Hooks vs Inline
 
 **Put in `hooks/`** — complex implementations only:
+
 - Convex mutations wrapped with `useConvexMutation` + `withOptimisticUpdate` + `useMutation`
 - Query key/descriptor factories (`todoQueries.list()`) consumed by `@tanstack/react-query`
 - Any logic with 3+ steps, optimistic cache manipulation, or rollback
 
 **Keep inline** in the feature sub-component — simple UI:
+
 - Input + button combos, item rows, list sections, title/header blocks
 - Components with local state only (form inputs, toggles)
 - Pure presentational components
@@ -118,6 +122,7 @@ export function useAddTodoMutation() {
 ```
 
 Reference key rules:
+
 - `.agents/skills/tanstack-query-best-practices/rules/mut-optimistic-updates.md`
 - `.agents/skills/tanstack-query-best-practices/rules/qk-factory-pattern.md`
 - `.agents/skills/tanstack-query-best-practices/rules/mut-invalidate-queries.md`
@@ -141,6 +146,7 @@ Convex is the primary backend. TanStack Query is only a thin layer for reactive 
 Load this first before any other Convex skill: `.agents/skills/convex/SKILL.md`
 
 Routes to the right skill:
+
 - **New project** — `convex-quickstart`
 - **Auth setup** — `convex-setup-auth`
 - **Reusable component** — `convex-create-component`

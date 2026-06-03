@@ -31,9 +31,7 @@ export const getAnalyticsSummary = query({
 
     const user = await ctx.db
       .query('users')
-      .withIndex('by_betterAuthUserId', (q) =>
-        q.eq('betterAuthUserId', identity.subject)
-      )
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
     if (!user || !user.isAdmin) {
@@ -49,22 +47,15 @@ export const getAnalyticsSummary = query({
 
     // Clicks
     const clickBuy = allEvents.filter((e) => e.eventType === 'click_buy').length
-    const clickServices = allEvents.filter(
-      (e) => e.eventType === 'click_services'
-    ).length
+    const clickServices = allEvents.filter((e) => e.eventType === 'click_services').length
 
     // Session durations (from page_leave)
     const leaveEvents = allEvents.filter(
-      (e) => e.eventType === 'page_leave' && e.durationMs !== undefined
+      (e) => e.eventType === 'page_leave' && e.durationMs !== undefined,
     )
-    const totalDuration = leaveEvents.reduce(
-      (acc, curr) => acc + (curr.durationMs || 0),
-      0
-    )
+    const totalDuration = leaveEvents.reduce((acc, curr) => acc + (curr.durationMs || 0), 0)
     const avgDurationSeconds =
-      leaveEvents.length > 0
-        ? Math.round(totalDuration / leaveEvents.length / 1000)
-        : 0
+      leaveEvents.length > 0 ? Math.round(totalDuration / leaveEvents.length / 1000) : 0
 
     // Grouped by country
     const countryCount: Record<string, number> = {}
@@ -83,9 +74,7 @@ export const getAnalyticsSummary = query({
     })
 
     // Sort events by timestamp desc for recent activity list
-    const sortedEvents = [...allEvents]
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, 50)
+    const sortedEvents = [...allEvents].sort((a, b) => b.timestamp - a.timestamp).slice(0, 50)
 
     return {
       totalSessions,

@@ -10,7 +10,7 @@ function Tabs({ className, ...props }: TabsPrimitive.Root.Props) {
   return (
     <TabsPrimitive.Root
       className={cn('flex flex-col gap-2 data-[orientation=vertical]:flex-row', className)}
-      data-slot='tabs'
+      data-slot="tabs"
       {...props}
     />
   )
@@ -29,9 +29,9 @@ function TabsList({
       className={cn(
         'relative z-0 flex w-fit items-center justify-center gap-x-0.5',
         'data-[orientation=vertical]:flex-col',
-        className
+        className,
       )}
-      data-slot='tabs-list'
+      data-slot="tabs-list"
       {...props}
     >
       {children}
@@ -41,9 +41,9 @@ function TabsList({
           variant === 'underline'
             ? '-z-1 data-[orientation=vertical]:-translate-x-px data-[orientation=horizontal]:h-0.5 data-[orientation=vertical]:w-0.5 data-[orientation=horizontal]:translate-y-px'
             : '-z-1',
-          className
+          className,
         )}
-        data-slot='tab-indicator'
+        data-slot="tab-indicator"
       />
     </TabsPrimitive.List>
   )
@@ -57,9 +57,9 @@ function TabsTab({ className, ...props }: TabsPrimitive.Tab.Props) {
         'font-figtree text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider data-active:text-[#25D366]',
         'h-9 gap-1.5 px-[calc(--spacing(2.5)-1px)] sm:h-8',
         'data-[orientation=vertical]:w-full data-[orientation=vertical]:justify-start',
-        className
+        className,
       )}
-      data-slot='tabs-trigger'
+      data-slot="tabs-trigger"
       {...props}
     />
   )
@@ -69,7 +69,7 @@ function TabsPanel({ className, ...props }: TabsPrimitive.Panel.Props) {
   return (
     <TabsPrimitive.Panel
       className={cn('flex-1 outline-none', className)}
-      data-slot='tabs-content'
+      data-slot="tabs-content"
       {...props}
     />
   )

@@ -8,11 +8,7 @@ interface MobileMenuProps {
   isAuthenticated?: boolean
 }
 
-export default function MobileMenu({
-  isOpen,
-  setIsOpen,
-  isAuthenticated,
-}: MobileMenuProps) {
+export default function MobileMenu({ isOpen, setIsOpen, isAuthenticated }: MobileMenuProps) {
   if (!isOpen) return null
 
   return (

@@ -14,13 +14,13 @@ export const WalletBalanceBreakdown = memo(function WalletBalanceBreakdown({
   if (loading) return null
 
   return (
-    <div className='space-y-3'>
-      <div className='flex items-start justify-between gap-3'>
+    <div className="space-y-3">
+      <div className="flex items-start justify-between gap-3">
         {onRecharge && (
           <button
-            type='button'
+            type="button"
             onClick={onRecharge}
-            className='font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer'
+            className="font-figtree text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] cursor-pointer"
           >
             + Recharger
           </button>

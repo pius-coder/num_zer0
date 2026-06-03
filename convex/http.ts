@@ -34,12 +34,7 @@ http.route({
       })
     }
 
-    if (
-      event === 'failed' ||
-      event === 'expired' ||
-      status === 'FAILED' ||
-      status === 'EXPIRED'
-    ) {
+    if (event === 'failed' || event === 'expired' || status === 'FAILED' || status === 'EXPIRED') {
       await ctx.runMutation(api.purchases.handlePaymentFailure, {
         transId,
         externalId,

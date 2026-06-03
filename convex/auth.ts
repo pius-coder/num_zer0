@@ -3,7 +3,7 @@ import { createClient } from '@convex-dev/better-auth'
 import { convex } from '@convex-dev/better-auth/plugins'
 import { anonymous } from 'better-auth/plugins/anonymous'
 import authConfig from './auth.config'
-import { components, api } from './_generated/api'
+import { components, api, internal } from './_generated/api'
 import { query } from './_generated/server'
 import type { GenericCtx } from '@convex-dev/better-auth'
 import type { DataModel } from './_generated/dataModel'
@@ -22,13 +22,10 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       const db = (ctx as any).db
       const existing = await db
         .query('users')
-        .withIndex('by_betterAuthUserId', (q: any) =>
-          q.eq('betterAuthUserId', user.id)
-        )
+        .withIndex('by_betterAuthUserId', (q: any) => q.eq('betterAuthUserId', user.id))
         .unique()
 
-      const usersCount = (await db.query('users').collect()).length
-      const isAdmin = user.email?.endsWith('@numzero.com') || user.email === 'admin@gmail.com' || usersCount === 0 || false
+      const isAdmin = user.email?.endsWith('@numzero.com') ?? false
 
       if (existing) {
         const isConverted = existing.isAnonymous && !isAnonymous
@@ -36,7 +33,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
           email: user.email || existing.email,
           name: user.name || existing.name,
           isAnonymous,
-          accessExpiresAt: isAnonymous ? (existing.accessExpiresAt || accessExpiresAt) : undefined,
+          accessExpiresAt: isAnonymous ? existing.accessExpiresAt || accessExpiresAt : undefined,
           convertedAt: isConverted ? now : existing.convertedAt,
           isAdmin: existing.isAdmin ?? isAdmin,
           updatedAt: now,
@@ -55,7 +52,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
         })
       }
     } else if ('runMutation' in ctx) {
-      await (ctx as any).runMutation(api.users.syncUser, {
+      await (ctx as any).runMutation(internal.users.syncUser, {
         betterAuthUserId: user.id,
         email: user.email || undefined,
         name: user.name || undefined,
@@ -74,12 +71,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     },
     advanced: {
       ipAddress: {
-        ipAddressHeaders: [
-          'x-forwarded-for',
-          'x-real-ip',
-          'cf-connecting-ip',
-          'x-client-ip',
-        ],
+        ipAddressHeaders: ['x-forwarded-for', 'x-real-ip', 'cf-connecting-ip', 'x-client-ip'],
       },
     },
     databaseHooks: {

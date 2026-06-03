@@ -1,22 +1,22 @@
-import { Reveal } from "./hooks/reveal"
-import { INTEGRATIONS } from "./data"
+import { Reveal } from './hooks/reveal'
+import { INTEGRATIONS } from './data'
 
 const dapps = [
-  { name: "WhatsApp", img: "/brand/whatsapp.svg", bg: "#25D366", size: 72 },
-  { name: "Telegram", img: "/brand/telegram.svg", bg: "#0088cc", size: 72 },
-  { name: "Facebook", img: "/brand/facebook.svg", bg: "#1877F2", size: 72 },
-  { name: "Instagram", img: "/brand/instagram.svg", bg: "#E4405F", size: 72 },
-  { name: "TikTok", img: "/brand/tiktok.svg", bg: "#000000", size: 72 },
-  { name: "ChatGPT", img: "/brand/chatgpt.svg", bg: "#10A37F", size: 72 },
+  { name: 'WhatsApp', img: '/brand/whatsapp.svg', bg: '#25D366', size: 72 },
+  { name: 'Telegram', img: '/brand/telegram.svg', bg: '#0088cc', size: 72 },
+  { name: 'Facebook', img: '/brand/facebook.svg', bg: '#1877F2', size: 72 },
+  { name: 'Instagram', img: '/brand/instagram.svg', bg: '#E4405F', size: 72 },
+  { name: 'TikTok', img: '/brand/tiktok.svg', bg: '#000000', size: 72 },
+  { name: 'ChatGPT', img: '/brand/chatgpt.svg', bg: '#10A37F', size: 72 },
 ]
 
 const rotations = [
-  "rotate(19deg) rotateX(10deg) rotateY(-50deg)",
-  "rotate(0deg) rotateX(50deg) rotateY(0deg)",
-  "rotate(-19deg) rotateX(10deg) rotateY(40deg)",
-  "rotate(0deg) rotateX(-47deg) rotateY(0deg)",
-  "rotate(19deg) rotateX(-20deg) rotateY(60deg)",
-  "rotate(-18deg) rotateX(-20deg) rotateY(-60deg)",
+  'rotate(19deg) rotateX(10deg) rotateY(-50deg)',
+  'rotate(0deg) rotateX(50deg) rotateY(0deg)',
+  'rotate(-19deg) rotateX(10deg) rotateY(40deg)',
+  'rotate(0deg) rotateX(-47deg) rotateY(0deg)',
+  'rotate(19deg) rotateX(-20deg) rotateY(60deg)',
+  'rotate(-18deg) rotateX(-20deg) rotateY(-60deg)',
 ]
 
 export default function Integrations() {
@@ -35,11 +35,31 @@ export default function Integrations() {
               {dapps.map((dapp, i) => {
                 const r = rotations[i]
                 return (
-                  <div key={i} className="[transform-style:preserve-3d] flex flex-col items-center" style={{ transform: r }}>
-                    <div className="flex items-center justify-center rounded-2xl shadow-lg hover:scale-110 transition-transform duration-300" style={{ width: dapp.size + "px", height: dapp.size + "px", backgroundColor: dapp.bg }}>
-                      <img decoding="async" width={dapp.size} height={dapp.size} src={dapp.img} alt={dapp.name} className="block w-3/5 h-3/5 object-contain brightness-0 invert" />
+                  <div
+                    key={i}
+                    className="[transform-style:preserve-3d] flex flex-col items-center"
+                    style={{ transform: r }}
+                  >
+                    <div
+                      className="flex items-center justify-center rounded-2xl shadow-lg hover:scale-110 transition-transform duration-300"
+                      style={{
+                        width: dapp.size + 'px',
+                        height: dapp.size + 'px',
+                        backgroundColor: dapp.bg,
+                      }}
+                    >
+                      <img
+                        decoding="async"
+                        width={dapp.size}
+                        height={dapp.size}
+                        src={dapp.img}
+                        alt={dapp.name}
+                        className="block w-3/5 h-3/5 object-contain brightness-0 invert"
+                      />
                     </div>
-                    <p className="font-figtree font-medium text-sm tracking-[-0.14px] leading-[1.4] text-dark-900 mt-2 text-center hidden md:block">{dapp.name}</p>
+                    <p className="font-figtree font-medium text-sm tracking-[-0.14px] leading-[1.4] text-dark-900 mt-2 text-center hidden md:block">
+                      {dapp.name}
+                    </p>
                   </div>
                 )
               })}

@@ -1,7 +1,7 @@
-import QuoteCard from "./quote-card"
-import { FeatureCard, CardContent } from "./feature-card"
-import { Reveal } from "./hooks/reveal"
-import { FEATURES, CONTACT } from "./data"
+import QuoteCard from './quote-card'
+import { FeatureCard, CardContent } from './feature-card'
+import { Reveal } from './hooks/reveal'
+import { FEATURES, CONTACT } from './data'
 
 export default function Features() {
   return (
@@ -22,8 +22,21 @@ export default function Features() {
                 className="inline-flex items-center gap-2 rounded-[14px] px-5 py-[10px] no-underline text-white font-figtree font-medium text-base tracking-[-0.16px] mt-[10px] md:px-6 md:py-3 md:mt-3 bg-[#F97316] anim-glow-pulse"
               >
                 {FEATURES.cta}
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                  <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-white"
+                >
+                  <path
+                    d="M7 17L17 7M17 7H7M17 7V17"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </a>
             </div>
@@ -100,7 +113,7 @@ export default function Features() {
         <Reveal direction="up" threshold={0.2}>
           <div className="text-center mt-16 md:mt-24">
             <h2 className="font-figtree text-[32px] font-[400] tracking-[-0.04em] leading-[1.1] text-white m-0 md:text-[44px]">
-              Gagnez de l'argent en revendant{" "}
+              Gagnez de l'argent en revendant{' '}
               <span className="text-white/65">parrainage et commissions.</span>
             </h2>
           </div>
@@ -108,10 +121,10 @@ export default function Features() {
 
         <div className="grid grid-cols-1 gap-[6px] mt-10 md:grid-cols-3 md:gap-[6px] md:mt-16">
           {FEATURES.bottomCards.map((item, i) => (
-            <Reveal key={i} direction="up" stagger={i as 0|1|2|3|4|5|6|7|8} replay>
+            <Reveal key={i} direction="up" stagger={i as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8} replay>
               <div
                 className="border border-[#292929] bg-[#171717] rounded-[26px] p-6 md:rounded-[44px] md:p-8"
-                style={{ transform: `rotate(${i === 0 ? "1deg" : i === 1 ? "-1deg" : "1deg"})` }}
+                style={{ transform: `rotate(${i === 0 ? '1deg' : i === 1 ? '-1deg' : '1deg'})` }}
               >
                 <p className="font-figtree text-[20px] font-[400] tracking-[-0.04em] leading-[1.4] text-white m-0 md:text-[24px]">
                   {item.title}

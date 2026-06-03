@@ -8,7 +8,7 @@ function Form({ className, ...props }: FormPrimitive.Props) {
   return (
     <FormPrimitive
       className={cn('flex w-full flex-col gap-4', className)}
-      data-slot='form'
+      data-slot="form"
       {...props}
     />
   )
