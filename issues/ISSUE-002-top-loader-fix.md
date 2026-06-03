@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-03
 **Priorité:** Haute
-**Statut:** Ouvert
+**Statut:** Résolu
 **Composant(s):** `src/common/route-loader.tsx`, `src/common/spinner.tsx`, `src/routes/__root.tsx`
 **Signalé par:** Utilisateur
 
@@ -168,22 +168,41 @@ verification:
 
 ## Solution Appliquée
 
-*[À remplir après correction]*
-
-**Commit:** `[hash]`
-**Branche:** `[branche]`
-**Date:** 2026-06-03
+**Commit:** `3cba500`
+**Branche:** `v5`
+**Date:** 2026-06-03 04:58
 
 ### Changements
 
+**RouteLoader réécrit — top bar mince avec timer simplifié + traçage caller**
+
+1. **Position :** `fixed top-0 left-0 right-0 z-[200] h-1` — barre horizontale fine en haut de page, plus d'overlay centré
+2. **Animation :** Utilise `@keyframes loader` existant dans `global.css` (translateX -100% → 150%)
+3. **Timer :** Plus de `useRef` — `useEffect` + `setTimeout` + `return () => clearTimeout(timer)` (pattern idiomatique React)
+4. **Props :**
+   - `caller?: string` — identifie qui a déclenché le loader (loggé en dev)
+   - `delay?: number` — délai configurable (défaut 1500ms)
+5. **Dev logging :** `console.warn` en mode développement avec le path + caller
+6. **Accessibilité :** `role="progressbar"` + `aria-label="Chargement de la page"`
+7. **SSR safe :** `globalThis.location?.pathname ?? '?'` pour les environnements sans `window`
+
+**Intégration __root.tsx :**
+- `<RouteLoader />` → `<RouteLoader caller="__root.tsx" />`
+
 ### Fichiers modifiés
 
-- [ ] `src/common/route-loader.tsx`
-- [ ] `src/routes/__root.tsx`
+- [x] `src/common/route-loader.tsx` — RÉÉCRITURE COMPLÈTE
+- [x] `src/routes/__root.tsx` — caller prop ajoutée
 
 ### Vérification
 
-- [ ] Test manuel OK
-- [ ] Lint OK
-- [ ] TypeScript OK
-- [ ] Build OK
+| Critère | Statut |
+|---------|--------|
+| Barre fine en haut (pas overlay centré) | ✅ `fixed top-0 left-0 right-0 h-1` |
+| Timer sans useRef | ✅ useEffect cleanup uniquement |
+| caller prop loggée en dev | ✅ console.warn avec path + caller |
+| delay prop configurable | ✅ default 1500ms |
+| Spinner & GlobalLoader intacts | ✅ inchangés |
+| Aucune nouvelle erreur TS | ✅ (3 préexistantes non liées) |
+| Build passe | ✅ |
+| Review agent | ✅ APPROVED |
