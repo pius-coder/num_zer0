@@ -8,3 +8,6 @@
 - **step-method.tsx**: Replaced `--sea-ink` / `--sea-ink-soft` with `text-white` / `text-white/65`, changed selection ring from green (`#25D366`) to orange (`#F97316`).
 - **recharge-drawer.tsx**: Added `bg-[#121212]` to `SheetContent` for dark drawer background, migrated `SheetHeader` subtitle from `--sea-ink-soft` to `text-white/65`.
 - Moved "Recharger mon solde" heading from `text-center` to `text-right`.
+- Reverted heading to `text-center`, moved "Payer" button from bottom to top-right bar alongside "← Retour".
+- Added handwritten SVG squiggly underline to promo code and phone number inputs for visual consistency.
+- Fixed button texture: replaced static `shadow` with `anim-glow-pulse` + `hover:brightness-110` + `transition-all duration-200` on both "Suivant" and "Payer" buttons to match landing page style.

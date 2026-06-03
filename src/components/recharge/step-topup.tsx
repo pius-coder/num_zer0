@@ -64,7 +64,7 @@ export function StepTopUp({ initialAmount, onPay, isPending }: StepTopUpProps) {
           <button
             onClick={() => setStep(1)}
             disabled={!method}
-            className="font-figtree text-white text-[18px] font-semibold tracking-[-0.04em] leading-[1.25] py-3 px-8 cursor-pointer disabled:opacity-40 rounded-[14px] bg-[#F97316]"
+            className="font-figtree text-white text-[18px] font-semibold tracking-[-0.04em] leading-[1.25] py-3 px-8 cursor-pointer disabled:opacity-40 rounded-[14px] bg-[#F97316] hover:brightness-110 transition-all duration-200 anim-glow-pulse"
           >
             Suivant
           </button>
@@ -75,15 +75,32 @@ export function StepTopUp({ initialAmount, onPay, isPending }: StepTopUpProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <button
-        type="button"
-        onClick={() => setStep(0)}
-        className="font-figtree text-white/65 text-[15px] font-semibold uppercase tracking-wider cursor-pointer"
-      >
-        &larr; Retour
-      </button>
+      {/* Top bar: Retour left, Payer right */}
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setStep(0)}
+          className="font-figtree text-white/65 text-[15px] font-semibold uppercase tracking-wider cursor-pointer"
+        >
+          &larr; Retour
+        </button>
+        <button
+          type="submit"
+          disabled={!formValid || isPending}
+          className="font-figtree text-white text-[18px] font-semibold tracking-[-0.04em] leading-[1.25] py-3 px-8 cursor-pointer disabled:opacity-40 rounded-[14px] bg-[#F97316] hover:brightness-110 transition-all duration-200 anim-glow-pulse"
+        >
+          {isPending ? (
+            <span className="inline-flex items-center gap-2">
+              <LoaderCircle className="h-4 w-4 animate-spin" />
+              Traitement...
+            </span>
+          ) : (
+            `Payer ${amount.toLocaleString('fr-FR')} FCFA`
+          )}
+        </button>
+      </div>
 
-      <div className="text-right space-y-1">
+      <div className="text-center space-y-1">
         <h3 className="font-figtree text-white text-[30px] font-medium tracking-[-0.04em] leading-[1.25]">
           Recharger mon solde
         </h3>
@@ -169,6 +186,20 @@ export function StepTopUp({ initialAmount, onPay, isPending }: StepTopUpProps) {
             {...register('promoCode')}
             className="w-full font-figtree text-white text-[18px] font-medium tracking-[-0.04em] outline-none placeholder:text-white/25 uppercase"
           />
+          <svg
+            className="w-full h-[6px] mt-1"
+            viewBox="0 0 200 6"
+            preserveAspectRatio="none"
+            fill="none"
+          >
+            <path
+              d="M0,3 Q10,0 20,3 T40,3 T60,3 T80,3 T100,3 T120,3 T140,3 T160,3 T180,3 T200,3"
+              stroke="white"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              opacity="0.25"
+            />
+          </svg>
         </div>
 
         <div>
@@ -181,22 +212,22 @@ export function StepTopUp({ initialAmount, onPay, isPending }: StepTopUpProps) {
             {...register('phone', { required: true })}
             className="w-full font-figtree text-white text-[18px] font-medium tracking-[-0.04em] outline-none placeholder:text-white/25"
           />
+          <svg
+            className="w-full h-[6px] mt-1"
+            viewBox="0 0 200 6"
+            preserveAspectRatio="none"
+            fill="none"
+          >
+            <path
+              d="M0,3 Q10,0 20,3 T40,3 T60,3 T80,3 T100,3 T120,3 T140,3 T160,3 T180,3 T200,3"
+              stroke="white"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              opacity="0.25"
+            />
+          </svg>
         </div>
 
-        <button
-          type="submit"
-          disabled={!formValid || isPending}
-          className="w-full font-figtree text-white text-[18px] font-semibold tracking-[-0.04em] leading-[1.25] py-3 cursor-pointer disabled:opacity-40 rounded-[14px] bg-[#F97316] shadow-[0_0_30px_-8px_#F97316]"
-        >
-          {isPending ? (
-            <span className="inline-flex items-center gap-2">
-              <LoaderCircle className="h-4 w-4 animate-spin" />
-              Traitement...
-            </span>
-          ) : (
-            `Payer ${amount.toLocaleString('fr-FR')} FCFA`
-          )}
-        </button>
       </div>
     </form>
   )
