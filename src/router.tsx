@@ -1,9 +1,5 @@
 import { createRouter } from '@tanstack/react-router'
-import {
-  MutationCache,
-  QueryClient,
-  notifyManager,
-} from '@tanstack/react-query'
+import { MutationCache, QueryClient, notifyManager } from '@tanstack/react-query'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 import { ConvexQueryClient } from '@convex-dev/react-query'
 import { ConvexProvider } from 'convex/react'
@@ -11,6 +7,7 @@ import { toast } from 'sonner'
 import { routeTree } from './routeTree.gen'
 import { DefaultCatchBoundary } from './common/default-catch-boundary'
 import { NotFound } from './common/not-found'
+import { Spinner } from './common/spinner'
 
 const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL
 if (!CONVEX_URL) {
@@ -44,14 +41,13 @@ export function getRouter() {
   const router = createRouter({
     routeTree,
     defaultPreload: 'intent',
+    defaultPendingComponent: () => <Spinner position="top" />,
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: () => <NotFound />,
     context: { queryClient, convexQueryClient },
     scrollRestoration: true,
     Wrap: ({ children }) => (
-      <ConvexProvider client={convexQueryClient.convexClient}>
-        {children}
-      </ConvexProvider>
+      <ConvexProvider client={convexQueryClient.convexClient}>{children}</ConvexProvider>
     ),
   })
   setupRouterSsrQueryIntegration({

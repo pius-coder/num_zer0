@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useRouterState } from '@tanstack/react-router'
+import { Spinner } from '#/common/spinner'
 
 interface RouteLoaderProps {
   /** Identifiant du caller pour debug (ex: "__root.tsx") */
@@ -30,13 +31,5 @@ export function RouteLoader({ caller, delay = 1500 }: RouteLoaderProps) {
 
   if (!showLoader) return null
 
-  return (
-    <div
-      className="fixed top-0 left-0 right-0 z-[200] h-1 overflow-hidden"
-      role="progressbar"
-      aria-label="Chargement de la page"
-    >
-      <div className="h-full w-full bg-[var(--lagoon)] animate-[loader_2s_ease-in-out_infinite]" />
-    </div>
-  )
+  return <Spinner position="top" />
 }
