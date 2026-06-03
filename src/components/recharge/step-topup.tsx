@@ -75,23 +75,21 @@ export function StepTopUp({ initialAmount, onPay, isPending }: StepTopUpProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="flex items-start justify-between">
-        <button
-          type="button"
-          onClick={() => setStep(0)}
-          className="font-figtree text-white/65 text-[15px] font-semibold uppercase tracking-wider cursor-pointer"
-        >
-          &larr; Retour
-        </button>
+      <button
+        type="button"
+        onClick={() => setStep(0)}
+        className="font-figtree text-white/65 text-[15px] font-semibold uppercase tracking-wider cursor-pointer"
+      >
+        &larr; Retour
+      </button>
 
-        <div className="text-right space-y-1">
-          <h3 className="font-figtree text-white text-[30px] font-medium tracking-[-0.04em] leading-[1.25]">
-            Recharger mon solde
-          </h3>
-          <p className="font-figtree text-white/65 text-[15px] font-semibold uppercase tracking-wider">
-            Minimum 1 500 FCFA
-          </p>
-        </div>
+      <div className="text-right space-y-1">
+        <h3 className="font-figtree text-white text-[30px] font-medium tracking-[-0.04em] leading-[1.25]">
+          Recharger mon solde
+        </h3>
+        <p className="font-figtree text-white/65 text-[15px] font-semibold uppercase tracking-wider">
+          Minimum 1 500 FCFA
+        </p>
       </div>
 
       {method && (() => {
