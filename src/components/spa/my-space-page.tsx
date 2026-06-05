@@ -22,6 +22,8 @@ import {
   useNumberQuantity,
 } from '@/components/purchases/hooks'
 
+const FLAG_BASE = 'https://flagcdn.com'
+
 type PageView =
   | { kind: 'services' }
   | { kind: 'history' }
@@ -218,7 +220,9 @@ function ServiceList({
                     <ServiceBadge service={act.service} />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xl shrink-0">{countryInfo?.flag ?? ''}</span>
+                        {countryInfo?.code ? (
+                          <img src={`${FLAG_BASE}/20x15/${countryInfo.code}.png`} width="20" height="15" alt="" className="shrink-0 block" loading="lazy" />
+                        ) : null}
                         <span className="truncate">{act.phoneNumber ?? '—'}</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -312,7 +316,9 @@ function HistoryView({
                     <ServiceBadge service={act.service} />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xl shrink-0">{countryInfo?.flag ?? ''}</span>
+                        {countryInfo?.code ? (
+                          <img src={`${FLAG_BASE}/20x15/${countryInfo.code}.png`} width="20" height="15" alt="" className="shrink-0 block" loading="lazy" />
+                        ) : null}
                         <span className="truncate">{act.phoneNumber ?? '—'}</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -460,7 +466,7 @@ function CountryList({
             className="flex items-center justify-between font-figtree text-left text-[var(--sea-ink)] text-[18px] font-medium tracking-[-0.04em] leading-[1.25] transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <span className="text-xl">{c.flag}</span>
+              <img src={`${FLAG_BASE}/20x15/${c.code}.png`} width="20" height="15" alt="" className="shrink-0 block" loading="lazy" />
               <div>
                 <span>{c.name}</span>
                 <span className="text-[var(--sea-ink-soft)] text-[15px] font-semibold uppercase tracking-wider ml-2">
@@ -559,7 +565,7 @@ function PurchaseOptionsInline({
       {/* Service + Country header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{country.flag}</span>
+          <img src={`${FLAG_BASE}/24x18/${country.code}.png`} width="24" height="18" alt="" className="shrink-0 block" loading="lazy" />
           <div>
             <span className="font-figtree text-white text-[30px] font-medium tracking-[-0.04em] leading-[1.25]">
               {service.name}
@@ -868,7 +874,11 @@ function ActivationDetail({
       <div className="space-y-6">
         {/* Service + Country header */}
         <div className="text-center">
-          <span className="text-4xl mb-2 block">{countryInfo?.flag ?? '🌍'}</span>
+          {countryInfo?.code ? (
+            <img src={`${FLAG_BASE}/36x27/${countryInfo.code}.png`} width="36" height="27" alt="" className="mx-auto block" loading="lazy" />
+          ) : (
+            <span className="text-4xl mb-2 block">{'🌍'}</span>
+          )}
           <h2 className="font-figtree text-[var(--sea-ink)] text-[30px] font-medium tracking-[-0.04em] leading-[1.25]">
             {serviceName}
           </h2>
