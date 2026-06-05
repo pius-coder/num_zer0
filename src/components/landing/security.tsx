@@ -1,6 +1,8 @@
 import { Reveal } from './hooks/reveal'
 import { PRICING } from './data'
 
+const FLAG_BASE = 'https://flagcdn.com/20x15'
+
 export default function Security() {
   return (
     <section
@@ -48,8 +50,20 @@ export default function Security() {
                       </svg>
                     </div>
                     <div className="flex-1 flex justify-between items-center">
-                      <p className="font-figtree font-medium text-base tracking-[-0.16px] leading-[1.4] text-dark-900 m-0">
-                        {s.flag} {s.label}
+                      <p className="font-figtree font-medium text-base tracking-[-0.16px] leading-[1.4] text-dark-900 m-0 inline-flex items-center gap-1.5">
+                        {s.code ? (
+                          <img
+                            src={`${FLAG_BASE}/${s.code}.png`}
+                            width="20"
+                            height="15"
+                            alt=""
+                            className="shrink-0 block"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <span className="text-base leading-none">{s.flag}</span>
+                        )}
+                        <span>{s.label}</span>
                       </p>
                       <span className="font-figtree font-semibold text-base text-[#25D366]">
                         {s.price}

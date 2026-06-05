@@ -1,5 +1,7 @@
 import { FLOATING_IMAGES } from './data'
 
+const FLAG_BASE = 'https://flagcdn.com/20x15'
+
 export default function FloatingImages() {
   const positions = [
     { bottom: 'bottom-[302px]', right: 'right-[-123px]' },
@@ -19,8 +21,20 @@ export default function FloatingImages() {
         >
           <div className="bg-dark-900 border border-white/15 rounded-[16px] px-4 py-3 w-[280px] backdrop-blur">
             <div className="flex justify-between items-center">
-              <span className="font-figtree font-semibold text-[15px] text-white">
-                {card.flag} {card.service}
+              <span className="font-figtree font-semibold text-[15px] text-white inline-flex items-center gap-1.5">
+                {card.code ? (
+                  <img
+                    src={`${FLAG_BASE}/${card.code}.png`}
+                    width="20"
+                    height="15"
+                    alt=""
+                    className="shrink-0 block"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="text-base leading-none">{card.flag}</span>
+                )}
+                {card.service}
               </span>
               <span className="font-figtree font-bold text-[15px] text-[#25D366]">
                 {card.price}
