@@ -186,6 +186,34 @@ export const soldeClient = query({
   },
 })
 
+export const getAllComptes = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error('Non authentifié')
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
+      .first()
+    if (!user?.isAdmin) throw new Error('Non autorisé — Administrateur uniquement')
+    return await ctx.db.query('comptes').order('desc').collect()
+  },
+})
+
+export const getAllPieces = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error('Non authentifié')
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
+      .first()
+    if (!user?.isAdmin) throw new Error('Non autorisé — Administrateur uniquement')
+    return await ctx.db.query('pieces').order('desc').take(100)
+  },
+})
+
 export const getMyMouvements = query({
   args: {},
   handler: async (ctx) => {

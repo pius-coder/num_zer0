@@ -3,14 +3,14 @@ import { SMS_COUNTRY_MAP, ISO_TO_SMS, numericToIso, isoToNumeric } from '../../.
 
 describe('SMS_COUNTRY_MAP', () => {
   it('covers major countries', () => {
-    expect(SMS_COUNTRY_MAP[1]).toBe('US')
-    expect(SMS_COUNTRY_MAP[33]).toBe('FR')
-    expect(SMS_COUNTRY_MAP[44]).toBe('GB')
-    expect(SMS_COUNTRY_MAP[49]).toBe('DE')
-    expect(SMS_COUNTRY_MAP[237]).toBe('CM')
-    expect(SMS_COUNTRY_MAP[86]).toBe('CN')
-    expect(SMS_COUNTRY_MAP[81]).toBe('JP')
-    expect(SMS_COUNTRY_MAP[91]).toBe('IN')
+    expect(SMS_COUNTRY_MAP[187]).toBe('US')
+    expect(SMS_COUNTRY_MAP[78]).toBe('FR')
+    expect(SMS_COUNTRY_MAP[16]).toBe('GB')
+    expect(SMS_COUNTRY_MAP[43]).toBe('DE')
+    expect(SMS_COUNTRY_MAP[41]).toBe('CM')
+    expect(SMS_COUNTRY_MAP[3]).toBe('CN')
+    expect(SMS_COUNTRY_MAP[22]).toBe('IN')
+    expect(SMS_COUNTRY_MAP[52]).toBe('TH')
   })
 
   it('has over 100 entries', () => {
@@ -23,20 +23,20 @@ describe('SMS_COUNTRY_MAP', () => {
     }
   })
 
-  it('all keys are positive integers', () => {
+  it('all keys are non-negative integers', () => {
     for (const code of Object.keys(SMS_COUNTRY_MAP)) {
-      expect(Number(code)).toBeGreaterThan(0)
+      expect(Number(code)).toBeGreaterThanOrEqual(0)
     }
   })
 })
 
 describe('ISO_TO_SMS', () => {
   it('provides reverse mapping', () => {
-    expect(ISO_TO_SMS['US']).toBe(1)
-    expect(ISO_TO_SMS['FR']).toBe(33)
-    expect(ISO_TO_SMS['GB']).toBe(44)
-    expect(ISO_TO_SMS['DE']).toBe(49)
-    expect(ISO_TO_SMS['CM']).toBe(237)
+    expect(ISO_TO_SMS['US']).toBe(187)
+    expect(ISO_TO_SMS['FR']).toBe(78)
+    expect(ISO_TO_SMS['GB']).toBe(16)
+    expect(ISO_TO_SMS['DE']).toBe(43)
+    expect(ISO_TO_SMS['CM']).toBe(41)
   })
 
   it('has same number of entries as SMS_COUNTRY_MAP', () => {
@@ -52,8 +52,8 @@ describe('ISO_TO_SMS', () => {
 
 describe('numericToIso', () => {
   it('converts numeric to ISO', () => {
-    expect(numericToIso(33)).toBe('FR')
-    expect(numericToIso(1)).toBe('US')
+    expect(numericToIso(78)).toBe('FR')
+    expect(numericToIso(187)).toBe('US')
   })
 
   it('returns null for unknown codes', () => {
@@ -63,8 +63,8 @@ describe('numericToIso', () => {
 
 describe('isoToNumeric', () => {
   it('converts ISO to numeric', () => {
-    expect(isoToNumeric('FR')).toBe(33)
-    expect(isoToNumeric('US')).toBe(1)
+    expect(isoToNumeric('FR')).toBe(78)
+    expect(isoToNumeric('US')).toBe(187)
   })
 
   it('returns null for unknown ISOs', () => {

@@ -21,7 +21,13 @@ import { Route as appSupportRouteImport } from './routes/(app)/support'
 import { Route as appRechargeRouteImport } from './routes/(app)/recharge'
 import { Route as appMySpaceRouteImport } from './routes/(app)/my-space'
 import { Route as appAccountRouteImport } from './routes/(app)/account'
+import { Route as appMySpaceIndexRouteImport } from './routes/(app)/my-space/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as appMySpaceHistoryRouteImport } from './routes/(app)/my-space/history'
+import { Route as appMySpaceServiceIdRouteImport } from './routes/(app)/my-space/$serviceId'
+import { Route as appMySpaceServiceIdIndexRouteImport } from './routes/(app)/my-space/$serviceId/index'
+import { Route as appMySpaceActivationsActivationIdRouteImport } from './routes/(app)/my-space/activations.$activationId'
+import { Route as appMySpaceServiceIdCountryIsoRouteImport } from './routes/(app)/my-space/$serviceId.$countryIso'
 
 const ConvertRoute = ConvertRouteImport.update({
   id: '/convert',
@@ -81,37 +87,80 @@ const appAccountRoute = appAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appMySpaceIndexRoute = appMySpaceIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => appMySpaceRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const appMySpaceHistoryRoute = appMySpaceHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => appMySpaceRoute,
+} as any)
+const appMySpaceServiceIdRoute = appMySpaceServiceIdRouteImport.update({
+  id: '/$serviceId',
+  path: '/$serviceId',
+  getParentRoute: () => appMySpaceRoute,
+} as any)
+const appMySpaceServiceIdIndexRoute =
+  appMySpaceServiceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => appMySpaceServiceIdRoute,
+  } as any)
+const appMySpaceActivationsActivationIdRoute =
+  appMySpaceActivationsActivationIdRouteImport.update({
+    id: '/activations/$activationId',
+    path: '/activations/$activationId',
+    getParentRoute: () => appMySpaceRoute,
+  } as any)
+const appMySpaceServiceIdCountryIsoRoute =
+  appMySpaceServiceIdCountryIsoRouteImport.update({
+    id: '/$countryIso',
+    path: '/$countryIso',
+    getParentRoute: () => appMySpaceServiceIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth-splash': typeof AuthSplashRoute
   '/convert': typeof ConvertRoute
   '/account': typeof appAccountRoute
-  '/my-space': typeof appMySpaceRoute
+  '/my-space': typeof appMySpaceRouteWithChildren
   '/recharge': typeof appRechargeRoute
   '/support': typeof appSupportRoute
   '/wallet': typeof appWalletRoute
   '/payment/result': typeof PaymentResultRoute
   '/': typeof landingIndexRoute
+  '/my-space/$serviceId': typeof appMySpaceServiceIdRouteWithChildren
+  '/my-space/history': typeof appMySpaceHistoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/my-space/': typeof appMySpaceIndexRoute
+  '/my-space/$serviceId/$countryIso': typeof appMySpaceServiceIdCountryIsoRoute
+  '/my-space/activations/$activationId': typeof appMySpaceActivationsActivationIdRoute
+  '/my-space/$serviceId/': typeof appMySpaceServiceIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth-splash': typeof AuthSplashRoute
   '/convert': typeof ConvertRoute
   '/account': typeof appAccountRoute
-  '/my-space': typeof appMySpaceRoute
   '/recharge': typeof appRechargeRoute
   '/support': typeof appSupportRoute
   '/wallet': typeof appWalletRoute
   '/payment/result': typeof PaymentResultRoute
   '/': typeof landingIndexRoute
+  '/my-space/history': typeof appMySpaceHistoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/my-space': typeof appMySpaceIndexRoute
+  '/my-space/$serviceId/$countryIso': typeof appMySpaceServiceIdCountryIsoRoute
+  '/my-space/activations/$activationId': typeof appMySpaceActivationsActivationIdRoute
+  '/my-space/$serviceId': typeof appMySpaceServiceIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -121,13 +170,19 @@ export interface FileRoutesById {
   '/auth-splash': typeof AuthSplashRoute
   '/convert': typeof ConvertRoute
   '/(app)/account': typeof appAccountRoute
-  '/(app)/my-space': typeof appMySpaceRoute
+  '/(app)/my-space': typeof appMySpaceRouteWithChildren
   '/(app)/recharge': typeof appRechargeRoute
   '/(app)/support': typeof appSupportRoute
   '/(app)/wallet': typeof appWalletRoute
   '/payment/result': typeof PaymentResultRoute
   '/(landing)/': typeof landingIndexRoute
+  '/(app)/my-space/$serviceId': typeof appMySpaceServiceIdRouteWithChildren
+  '/(app)/my-space/history': typeof appMySpaceHistoryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/(app)/my-space/': typeof appMySpaceIndexRoute
+  '/(app)/my-space/$serviceId/$countryIso': typeof appMySpaceServiceIdCountryIsoRoute
+  '/(app)/my-space/activations/$activationId': typeof appMySpaceActivationsActivationIdRoute
+  '/(app)/my-space/$serviceId/': typeof appMySpaceServiceIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -142,20 +197,30 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/payment/result'
     | '/'
+    | '/my-space/$serviceId'
+    | '/my-space/history'
     | '/api/auth/$'
+    | '/my-space/'
+    | '/my-space/$serviceId/$countryIso'
+    | '/my-space/activations/$activationId'
+    | '/my-space/$serviceId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin'
     | '/auth-splash'
     | '/convert'
     | '/account'
-    | '/my-space'
     | '/recharge'
     | '/support'
     | '/wallet'
     | '/payment/result'
     | '/'
+    | '/my-space/history'
     | '/api/auth/$'
+    | '/my-space'
+    | '/my-space/$serviceId/$countryIso'
+    | '/my-space/activations/$activationId'
+    | '/my-space/$serviceId'
   id:
     | '__root__'
     | '/(app)'
@@ -170,7 +235,13 @@ export interface FileRouteTypes {
     | '/(app)/wallet'
     | '/payment/result'
     | '/(landing)/'
+    | '/(app)/my-space/$serviceId'
+    | '/(app)/my-space/history'
     | '/api/auth/$'
+    | '/(app)/my-space/'
+    | '/(app)/my-space/$serviceId/$countryIso'
+    | '/(app)/my-space/activations/$activationId'
+    | '/(app)/my-space/$serviceId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -269,6 +340,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appAccountRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/my-space/': {
+      id: '/(app)/my-space/'
+      path: '/'
+      fullPath: '/my-space/'
+      preLoaderRoute: typeof appMySpaceIndexRouteImport
+      parentRoute: typeof appMySpaceRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -276,12 +354,79 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/my-space/history': {
+      id: '/(app)/my-space/history'
+      path: '/history'
+      fullPath: '/my-space/history'
+      preLoaderRoute: typeof appMySpaceHistoryRouteImport
+      parentRoute: typeof appMySpaceRoute
+    }
+    '/(app)/my-space/$serviceId': {
+      id: '/(app)/my-space/$serviceId'
+      path: '/$serviceId'
+      fullPath: '/my-space/$serviceId'
+      preLoaderRoute: typeof appMySpaceServiceIdRouteImport
+      parentRoute: typeof appMySpaceRoute
+    }
+    '/(app)/my-space/$serviceId/': {
+      id: '/(app)/my-space/$serviceId/'
+      path: '/'
+      fullPath: '/my-space/$serviceId/'
+      preLoaderRoute: typeof appMySpaceServiceIdIndexRouteImport
+      parentRoute: typeof appMySpaceServiceIdRoute
+    }
+    '/(app)/my-space/activations/$activationId': {
+      id: '/(app)/my-space/activations/$activationId'
+      path: '/activations/$activationId'
+      fullPath: '/my-space/activations/$activationId'
+      preLoaderRoute: typeof appMySpaceActivationsActivationIdRouteImport
+      parentRoute: typeof appMySpaceRoute
+    }
+    '/(app)/my-space/$serviceId/$countryIso': {
+      id: '/(app)/my-space/$serviceId/$countryIso'
+      path: '/$countryIso'
+      fullPath: '/my-space/$serviceId/$countryIso'
+      preLoaderRoute: typeof appMySpaceServiceIdCountryIsoRouteImport
+      parentRoute: typeof appMySpaceServiceIdRoute
+    }
   }
 }
 
+interface appMySpaceServiceIdRouteChildren {
+  appMySpaceServiceIdCountryIsoRoute: typeof appMySpaceServiceIdCountryIsoRoute
+  appMySpaceServiceIdIndexRoute: typeof appMySpaceServiceIdIndexRoute
+}
+
+const appMySpaceServiceIdRouteChildren: appMySpaceServiceIdRouteChildren = {
+  appMySpaceServiceIdCountryIsoRoute: appMySpaceServiceIdCountryIsoRoute,
+  appMySpaceServiceIdIndexRoute: appMySpaceServiceIdIndexRoute,
+}
+
+const appMySpaceServiceIdRouteWithChildren =
+  appMySpaceServiceIdRoute._addFileChildren(appMySpaceServiceIdRouteChildren)
+
+interface appMySpaceRouteChildren {
+  appMySpaceServiceIdRoute: typeof appMySpaceServiceIdRouteWithChildren
+  appMySpaceHistoryRoute: typeof appMySpaceHistoryRoute
+  appMySpaceIndexRoute: typeof appMySpaceIndexRoute
+  appMySpaceActivationsActivationIdRoute: typeof appMySpaceActivationsActivationIdRoute
+}
+
+const appMySpaceRouteChildren: appMySpaceRouteChildren = {
+  appMySpaceServiceIdRoute: appMySpaceServiceIdRouteWithChildren,
+  appMySpaceHistoryRoute: appMySpaceHistoryRoute,
+  appMySpaceIndexRoute: appMySpaceIndexRoute,
+  appMySpaceActivationsActivationIdRoute:
+    appMySpaceActivationsActivationIdRoute,
+}
+
+const appMySpaceRouteWithChildren = appMySpaceRoute._addFileChildren(
+  appMySpaceRouteChildren,
+)
+
 interface appRouteRouteChildren {
   appAccountRoute: typeof appAccountRoute
-  appMySpaceRoute: typeof appMySpaceRoute
+  appMySpaceRoute: typeof appMySpaceRouteWithChildren
   appRechargeRoute: typeof appRechargeRoute
   appSupportRoute: typeof appSupportRoute
   appWalletRoute: typeof appWalletRoute
@@ -289,7 +434,7 @@ interface appRouteRouteChildren {
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appAccountRoute: appAccountRoute,
-  appMySpaceRoute: appMySpaceRoute,
+  appMySpaceRoute: appMySpaceRouteWithChildren,
   appRechargeRoute: appRechargeRoute,
   appSupportRoute: appSupportRoute,
   appWalletRoute: appWalletRoute,

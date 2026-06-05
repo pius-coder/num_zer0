@@ -71,8 +71,8 @@ Only handles `'recharge'` and `'topup'` — `'nav'` is mobile-only.
 const { openPanel } = useBottomNav()
 openPanel('recharge')
 
-// Preset amount for a service
-openPanel('topup', { amount: country.priceXaf })
+// Open topup panel (no preset amount — pricing is API-driven)
+openPanel('topup')
 ```
 
 ### Existing callers

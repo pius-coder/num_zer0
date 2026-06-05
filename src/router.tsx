@@ -41,6 +41,7 @@ export function getRouter() {
   const router = createRouter({
     routeTree,
     defaultPreload: 'intent',
+    defaultPreloadStaleTime: 0,
     defaultPendingComponent: () => <Spinner position="top" />,
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: () => <NotFound />,
@@ -64,5 +65,6 @@ declare module '@tanstack/react-router' {
   }
   interface RouterContext {
     convexQueryClient: ConvexQueryClient
+    isAuthenticated: boolean | undefined
   }
 }

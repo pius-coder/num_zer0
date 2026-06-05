@@ -87,6 +87,17 @@ export default defineSchema({
     .index('by_piece', ['pieceId'])
     .index('by_compte', ['compteCode']),
 
+  marginOverrides: defineTable({
+    countryIso: v.string(),
+    serviceId: v.string(),
+    marginXaf: v.number(),
+    updatedBy: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_country_service', ['countryIso', 'serviceId'])
+    .index('by_service', ['serviceId']),
+
   activations: defineTable({
     userId: v.string(),
     service: v.string(),
@@ -110,6 +121,9 @@ export default defineSchema({
     rentEndTime: v.optional(v.number()),
     providerCost: v.optional(v.number()),
     priceCharged: v.number(),
+    rentTimeHours: v.optional(v.number()),
+    rentProviderId: v.optional(v.number()),
+    rentEndDate: v.optional(v.string()),
     errorMessage: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),

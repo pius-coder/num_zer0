@@ -451,6 +451,20 @@ export const verifyPurchase = action({
   },
 })
 
+export const getAllPurchases = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error('Non authentifié')
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
+      .first()
+    if (!user?.isAdmin) throw new Error('Non autorisé — Administrateur uniquement')
+    return await ctx.db.query('purchases').order('desc').take(100)
+  },
+})
+
 export const backfillComptes = internalMutation({
   args: {},
   handler: async (ctx) => {

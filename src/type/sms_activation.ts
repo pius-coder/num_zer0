@@ -61,6 +61,7 @@ export interface TopCountryResult {
   countryText: string   // country name
   count: number         // available numbers
   retailPrice: number   // retail price in USD
+  iso?: string          // ISO 3166-1 alpha-2, enriched server-side
 }
 
 export interface SmsProviderError {

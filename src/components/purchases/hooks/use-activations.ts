@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
+import { convexQuery, useConvexAction, useConvexMutation } from '@convex-dev/react-query'
 import { api } from '../../../../convex/_generated/api'
 import type { Id } from '../../../../convex/_generated/dataModel'
 
@@ -69,30 +69,73 @@ export function useRequestAnotherSms() {
 }
 
 export function useNumberQuantity(country: string) {
+  const actionFn = useConvexAction(api.sms_provider.getNumberQuantity)
   return useQuery({
-    ...convexQuery(api.sms_provider.getNumberQuantity, { country }),
+    queryKey: activationKeys.numberQuantity(country),
+    queryFn: () => actionFn({ country }),
     enabled: country.length > 0,
+    staleTime: 30_000,
   })
 }
 
 export function useTopCountries(service: string) {
+  const actionFn = useConvexAction(api.sms_provider.getTopCountries)
   return useQuery({
-    ...convexQuery(api.sms_provider.getTopCountries, { service }),
+    queryKey: activationKeys.topCountries(service),
+    queryFn: () => actionFn({ service }),
     enabled: service.length > 0,
+    staleTime: 60_000,
   })
 }
 
 export function useOperators(country: string) {
+  const actionFn = useConvexAction(api.sms_provider.getOperators)
   return useQuery({
-    ...convexQuery(api.sms_provider.getOperators, { country }),
+    queryKey: activationKeys.operators(country),
+    queryFn: () => actionFn({ country }),
     enabled: country.length > 0,
+    staleTime: 30_000,
   })
 }
 
 export function usePrices(country: string, service?: string) {
+  const actionFn = useConvexAction(api.sms_provider.getPrices)
   return useQuery({
-    ...convexQuery(api.sms_provider.getPrices, { country, service }),
+    queryKey: activationKeys.prices(country, service),
+    queryFn: () => actionFn({ country, service }),
     enabled: country.length > 0,
+    staleTime: 30_000,
+  })
+}
+
+export function useRentPriceList(country: string, service: string) {
+  const actionFn = useConvexAction(api.sms_provider.getRentPriceList)
+  return useQuery({
+    queryKey: [...activationKeys.all, 'rent', country, service],
+    queryFn: () => actionFn({ country, service }),
+    enabled: country.length > 0 && service.length > 0,
+    staleTime: 30_000,
+  })
+}
+
+export function useFreePrices(country: string, service: string) {
+  const actionFn = useConvexAction(api.sms_provider.getFreePrices)
+  return useQuery({
+    queryKey: [...activationKeys.all, 'freePrices', country, service],
+    queryFn: () => actionFn({ country, service }),
+    enabled: country.length > 0 && service.length > 0,
+    staleTime: 30_000,
+  })
+}
+
+export function useInitiateRentalActivation() {
+  const qc = useQueryClient()
+  const mutationFn = useConvexMutation(api.sms_provider.initiateRentalActivation)
+  return useMutation({
+    mutationFn,
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: activationKeys.myActivations() })
+    },
   })
 }
 

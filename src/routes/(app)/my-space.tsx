@@ -1,7 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { MySpacePage } from '#/components/spa/my-space-page'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/(app)/my-space')({
-  ssr: false,
-  component: MySpacePage,
+  component: MySpaceLayout,
 })
+
+function MySpaceLayout() {
+  return <Outlet />
+}

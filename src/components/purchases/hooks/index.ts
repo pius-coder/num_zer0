@@ -21,4 +21,7 @@ export {
   useTopCountries,
   useOperators,
   usePrices,
+  useRentPriceList,
+  useFreePrices,
+  useInitiateRentalActivation,
 } from './use-activations'
