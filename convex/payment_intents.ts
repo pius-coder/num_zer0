@@ -222,10 +222,11 @@ export const initiatePayment = action({
     try {
       const fapshiResult = await fapshiPost('/initiate-pay', {
         amount: args.xafAmount,
+        email: 'zer0num237@gmail.com',
         userId,
         externalId: args.idempotencyKey,
-        redirectUrl: `${process.env.SITE_URL}/payment/result?transId={transId}`,
-        message: 'Recharge wallet',
+        redirectUrl: `${process.env.SITE_URL}/payment/result`,
+        message: 'Recharge num_zer0',
       })
 
       await ctx.runMutation(internal.payment_intents.internalMarkPaymentProcessing, {

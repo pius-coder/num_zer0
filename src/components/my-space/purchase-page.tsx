@@ -2,6 +2,7 @@
 
 import { useNavigate } from '@tanstack/react-router'
 import { SERVICES, COUNTRIES } from '@/components/services/data'
+import { useBottomNav } from '#/components/layout/bottom-nav-store'
 import { PurchasePanel } from './purchase-panel'
 
 interface PurchasePageProps {
@@ -11,6 +12,7 @@ interface PurchasePageProps {
 
 export function PurchasePage({ serviceId, countryIso }: PurchasePageProps) {
   const navigate = useNavigate()
+  const { openPanel } = useBottomNav()
   const service = SERVICES.find((s) => s.id === serviceId)
   const country = COUNTRIES.find((c) => c.iso === countryIso)
   if (!service || !country) return null
@@ -27,7 +29,7 @@ export function PurchasePage({ serviceId, countryIso }: PurchasePageProps) {
         service={service}
         country={country}
         onActivate={(activationId) => navigate({ to: `/my-space/activations/${activationId}` })}
-        onRecharge={() => navigate({ to: '/recharge' })}
+        onRecharge={() => openPanel('recharge')}
       />
     </div>
   )

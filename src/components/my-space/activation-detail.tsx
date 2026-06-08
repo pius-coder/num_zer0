@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { SERVICES, COUNTRIES } from '@/components/services/data'
+import { useBottomNav } from '#/components/layout/bottom-nav-store'
 import type { SmsActivation } from '#/type/sms_activation'
 import { isActiveStatus } from './utils'
 import { STATUS_LABELS, STATUS_COLORS, FLAG_BASE } from './constants'
@@ -18,6 +19,7 @@ interface ActivationPageProps {
 
 export function ActivationPage({ activation }: ActivationPageProps) {
   const navigate = useNavigate()
+  const { openPanel } = useBottomNav()
   const { data: balanceData } = useWalletBalance()
   const balanceUsd = balanceData?.balanceUsd ?? 0
   const completeActivation = useCompleteActivation()
@@ -88,7 +90,7 @@ export function ActivationPage({ activation }: ActivationPageProps) {
             <p className="font-figtree text-white/65 text-[15px] font-semibold text-center">{errorContextMsg}</p>
             <PurchasePanel service={serviceObj} country={countryInfo}
               onActivate={(activationId) => navigate({ to: `/my-space/activations/${activationId}` })}
-              onRecharge={() => navigate({ to: '/recharge' })} />
+              onRecharge={() => openPanel('recharge')} />
           </div>
         ) : !isTerminalError && (
           <>

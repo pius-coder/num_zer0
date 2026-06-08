@@ -10,7 +10,7 @@ export function MobileHeaderMenu({ onSignOut }: MobileHeaderMenuProps) {
   return (
     <>
       <Link
-        to="/recharge"
+        to="/wallet"
         className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/[0.04] text-zinc-300 hover:text-white transition-colors"
       >
         <span className="text-[14px] font-semibold">Recharge</span>

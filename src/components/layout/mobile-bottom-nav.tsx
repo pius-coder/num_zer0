@@ -15,7 +15,7 @@ const NAV_ITEMS = [
   { path: '/my-space', label: 'Mon Espace' },
   { path: '/wallet', label: 'Portefeuille' },
   { path: '/account', label: 'Compte' },
-  { path: '/recharge', label: 'Recharger' },
+  { path: '/wallet', label: 'Recharger' },
   { path: '/support', label: 'Support' },
 ] as const
 
@@ -56,7 +56,7 @@ function NavPanel({
           const isActive = pathname === path || pathname.startsWith(path + '/')
           return (
             <Link
-              key={path}
+              key={label}
               to={path}
               onClick={onNavigate}
               className="block bg-transparent w-full no-underline"

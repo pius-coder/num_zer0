@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '#/common/ui/button'
 import { useVerifyPaymentIntent } from '#/components/wallet/hooks'
@@ -14,58 +14,80 @@ export const Route = createFileRoute('/payment/result')({
   component: PaymentResultPage,
   validateSearch: (search: Record<string, unknown>) => ({
     transId: (search.transId as string) ?? '',
+    status: (search.status as string) ?? '',
   }),
 })
 
 type VerificationStatus = 'verifying' | 'success' | 'failed' | 'error' | 'no_transaction'
 
 function PaymentResultPage() {
-  const { transId } = Route.useSearch()
+  const { transId, status } = Route.useSearch()
   const navigate = useNavigate()
   const verifyPayment = useVerifyPaymentIntent()
 
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>('verifying')
   const [verificationMessage, setVerificationMessage] = useState('Vérification du paiement en cours...')
 
-  const onSuccess = useCallback((result: any) => {
-    if (result.success) {
-      setVerificationStatus('success')
-      setVerificationMessage('Votre compte a été crédité avec succès !')
-      toast.success('Compte crédité avec succès !')
-    } else {
-      setVerificationStatus('failed')
-      const msg = `Statut: ${result.status ?? 'inconnu'}`
-      setVerificationMessage(msg)
-      toast.error(msg)
-    }
-  }, [])
-
-  const onError = useCallback((err: Error) => {
-    setVerificationStatus('error')
-    const msg = err.message ?? 'Erreur lors de la vérification'
-
-    if (msg.includes('Not authenticated')) {
-      setVerificationMessage('Session expirée, veuillez vous reconnecter')
-      toast.error('Session expirée, veuillez vous reconnecter')
-      return
-    }
-
-    setVerificationMessage(msg)
-    toast.error(msg)
-  }, [])
-
   useEffect(() => {
-    if (!transId) {
+    const resolvedTransId =
+      !transId || transId === '{transId}' ? sessionStorage.getItem('fapshi_transId') : transId
+
+    if (!resolvedTransId) {
       setVerificationStatus('no_transaction')
       setVerificationMessage('Aucune référence de paiement trouvée')
       return
     }
 
+    if (status !== 'SUCCESSFUL') {
+      setVerificationStatus('failed')
+      const msg =
+        status === 'FAILED'
+          ? 'Le paiement a échoué'
+          : status === 'EXPIRED'
+            ? 'Le paiement a expiré'
+            : 'Le paiement a été annulé ou a échoué'
+      setVerificationMessage(msg)
+      toast.error(msg)
+      return
+    }
+
+    setVerificationStatus('verifying')
+    setVerificationMessage('Vérification du paiement en cours...')
+
     verifyPayment.mutate(
-      { gatewayTransactionId: transId },
-      { onSuccess, onError },
+      { gatewayTransactionId: resolvedTransId },
+      {
+        onSuccess: (result: any) => {
+          if (result.success) {
+            sessionStorage.removeItem('fapshi_transId')
+            setVerificationStatus('success')
+            setVerificationMessage('Votre compte a été crédité avec succès !')
+            toast.success('Compte crédité avec succès !')
+          } else {
+            setVerificationStatus('failed')
+            const msg = `Statut: ${result.status ?? 'inconnu'}`
+            setVerificationMessage(msg)
+            toast.error(msg)
+          }
+        },
+        onError: (err: Error) => {
+          setVerificationStatus('error')
+          const msg =
+            err instanceof Error ? err.message : 'Erreur lors de la vérification'
+
+          if (msg.includes('Not authenticated')) {
+            setVerificationMessage('Session expirée, veuillez vous reconnecter')
+            toast.error('Session expirée, veuillez vous reconnecter')
+            return
+          }
+
+          setVerificationMessage(msg)
+          toast.error(msg)
+        },
+      },
     )
-  }, [transId, verifyPayment, onSuccess, onError])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const iconMap: Record<VerificationStatus, { icon: React.ReactNode; bg: string; color: string }> = {
     success: {

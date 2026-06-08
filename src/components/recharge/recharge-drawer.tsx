@@ -18,11 +18,12 @@ export function RechargeDrawer({ open, onOpenChange, topUpAmount }: RechargeDraw
 
   const handlePay = useCallback(
     async (amountXaf: number, phone: string, method: PaymentMethod, promoCode?: string) => {
-      const session = await authClient.getSession()
+      let session = await authClient.getSession()
       if (!session?.data) {
         await authClient.signIn.anonymous()
+        session = await authClient.getSession()
       }
-      const userId = session.data.user.id
+      const userId = session!.data!.user.id
 
       const data = await createPayment.mutateAsync({
         amountCents: Math.round(amountXaf / 600 * 100),
@@ -30,6 +31,7 @@ export function RechargeDrawer({ open, onOpenChange, topUpAmount }: RechargeDraw
         idempotencyKey: `${userId}_topup_${Date.now()}`,
         metadata: { phone, paymentMethod: method, promoCode },
       })
+      if (data.transId) sessionStorage.setItem('fapshi_transId', data.transId)
       if (data.checkoutUrl) window.location.href = data.checkoutUrl
     },
     [createPayment],
