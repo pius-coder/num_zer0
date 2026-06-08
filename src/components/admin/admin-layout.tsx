@@ -12,6 +12,10 @@ import { AdminAccounting } from './accounting/admin-accounting'
 import { AdminPromoCodes } from './promo-codes/admin-promo-codes'
 import { AdminMargins } from './margins/admin-margins'
 import { AdminPackages } from './packages/admin-packages'
+import { AdminWallets } from './wallets/admin-wallets'
+import { AdminPaymentIntents } from './payment-intents/admin-payment-intents'
+import { AdminOrders } from './orders/admin-orders'
+import { AdminLedger } from './ledger/admin-ledger'
 
 type TabId =
   | 'analytics'
@@ -22,6 +26,10 @@ type TabId =
   | 'promo-codes'
   | 'margins'
   | 'packages'
+  | 'wallets'
+  | 'payment-intents'
+  | 'orders'
+  | 'ledger'
 
 export function AdminLayout() {
   const [activeTab, setActiveTab] = useState<TabId>('analytics')
@@ -76,6 +84,14 @@ export function AdminLayout() {
         return <AdminMargins />
       case 'packages':
         return <AdminPackages />
+      case 'wallets':
+        return <AdminWallets />
+      case 'payment-intents':
+        return <AdminPaymentIntents />
+      case 'orders':
+        return <AdminOrders />
+      case 'ledger':
+        return <AdminLedger />
     }
   }
 
@@ -95,6 +111,10 @@ export function AdminLayout() {
               {activeTab === 'promo-codes' && 'Codes Promo'}
               {activeTab === 'margins' && 'Marges SMS'}
               {activeTab === 'packages' && 'Packages'}
+              {activeTab === 'wallets' && 'Portefeuilles'}
+              {activeTab === 'payment-intents' && 'Paiements'}
+              {activeTab === 'orders' && 'Commandes'}
+              {activeTab === 'ledger' && 'Grand Livre'}
             </h1>
             <p className="font-figtree text-[15px] font-semibold uppercase tracking-wider text-[var(--sea-ink-soft)] mt-1">
               Panneau d'administration

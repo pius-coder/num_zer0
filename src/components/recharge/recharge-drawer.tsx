@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { useInitiateDirectPay } from '@/components/purchases/hooks'
+import { useCreatePaymentIntent } from '@/components/wallet/hooks'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetPanel } from '#/common/ui/sheet'
 import { StepTopUp } from './step-topup'
 import type { PaymentMethod } from './step-method'
@@ -14,24 +14,25 @@ interface RechargeDrawerProps {
 }
 
 export function RechargeDrawer({ open, onOpenChange, topUpAmount }: RechargeDrawerProps) {
-  const directPayMutation = useInitiateDirectPay()
+  const createPayment = useCreatePaymentIntent()
 
   const handlePay = useCallback(
-    async (amount: number, phone: string, method: PaymentMethod, promoCode?: string) => {
+    async (amountXaf: number, phone: string, method: PaymentMethod, promoCode?: string) => {
       const session = await authClient.getSession()
       if (!session?.data) {
         await authClient.signIn.anonymous()
       }
+      const userId = session.data.user.id
 
-      const data = await directPayMutation.mutateAsync({
-        amount,
-        phone,
-        medium: method === 'mtn_momo' ? 'MTN Mobile Money' : 'Orange Money',
-        promoCode,
+      const data = await createPayment.mutateAsync({
+        amountCents: Math.round(amountXaf / 600 * 100),
+        xafAmount: amountXaf,
+        idempotencyKey: `${userId}_topup_${Date.now()}`,
+        metadata: { phone, paymentMethod: method, promoCode },
       })
-      if (data.link) window.location.href = data.link
+      if (data.checkoutUrl) window.location.href = data.checkoutUrl
     },
-    [directPayMutation],
+    [createPayment],
   )
 
   return (
@@ -47,7 +48,7 @@ export function RechargeDrawer({ open, onOpenChange, topUpAmount }: RechargeDraw
           <StepTopUp
             initialAmount={Math.max(1500, topUpAmount ?? 1500)}
             onPay={handlePay}
-            isPending={directPayMutation.isPending}
+            isPending={createPayment.isPending}
           />
         </SheetPanel>
       </SheetContent>

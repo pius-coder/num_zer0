@@ -3,7 +3,7 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import { MenuIcon, CloseIcon } from '@/components/landing/menu-icons'
 import { useBottomNav } from './bottom-nav-store'
-import { useInitiateDirectPay, useBalance } from '@/components/purchases/hooks'
+import { useCreatePaymentIntent, useWalletBalance } from '@/components/wallet/hooks'
 import { StepTopUp } from '@/components/recharge/step-topup'
 import { useCallback, useState } from 'react'
 import { LogOut, LoaderCircle } from 'lucide-react'
@@ -115,24 +115,25 @@ function NavPanel({
 }
 
 function RechargePanel({ topUpAmount }: { topUpAmount?: number | null }) {
-  const directPayMutation = useInitiateDirectPay()
+  const createPayment = useCreatePaymentIntent()
 
   const handlePay = useCallback(
-    async (amount: number, phone: string, method: PaymentMethod, promoCode?: string) => {
+    async (amountXaf: number, phone: string, method: PaymentMethod, promoCode?: string) => {
       const session = await authClient.getSession()
       if (!session?.data) {
         await authClient.signIn.anonymous()
       }
+      const userId = session.data.user.id
 
-      const data = await directPayMutation.mutateAsync({
-        amount,
-        phone,
-        medium: method === 'mtn_momo' ? 'MTN Mobile Money' : 'Orange Money',
-        promoCode,
+      const data = await createPayment.mutateAsync({
+        amountCents: Math.round(amountXaf / 600 * 100),
+        xafAmount: amountXaf,
+        idempotencyKey: `${userId}_topup_${Date.now()}`,
+        metadata: { phone, paymentMethod: method, promoCode },
       })
-      if (data.link) window.location.href = data.link
+      if (data.checkoutUrl) window.location.href = data.checkoutUrl
     },
-    [directPayMutation],
+    [createPayment],
   )
 
   return (
@@ -140,7 +141,7 @@ function RechargePanel({ topUpAmount }: { topUpAmount?: number | null }) {
       <StepTopUp
         initialAmount={Math.max(1500, topUpAmount ?? 1500)}
         onPay={handlePay}
-        isPending={directPayMutation.isPending}
+        isPending={createPayment.isPending}
       />
     </div>
   )
@@ -381,7 +382,7 @@ export function MobileBottomNav() {
   const isAuthenticated = !!session
   const { isOpen, activePanel, panelProps, closePanel, openPanel, toggleNav } = useBottomNav()
   const { pathname } = useLocation()
-  const { data: balanceData } = useBalance()
+  const { data: balanceData } = useWalletBalance()
   const balanceUsd = balanceData?.balanceUsd ?? 0
 
   const activeLabel = NAV_ITEMS.find(

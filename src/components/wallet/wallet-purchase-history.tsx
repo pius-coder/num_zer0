@@ -1,11 +1,11 @@
 'use client'
 
-import { usePurchases } from '@/components/purchases/hooks'
+import { useOrders } from '@/components/wallet/hooks'
 import { memo } from 'react'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  payment_pending: { label: 'En attente', color: 'text-amber-600' },
-  confirmed: { label: 'Confirmé', color: 'text-green-600' },
+  pending: { label: 'En attente', color: 'text-amber-600' },
+  succeeded: { label: 'Confirmé', color: 'text-green-600' },
   failed: { label: 'Échoué', color: 'text-red-600' },
 }
 
@@ -24,11 +24,11 @@ function formatXaf(amount: number): string {
 }
 
 export const WalletPurchaseHistory = memo(function WalletPurchaseHistory() {
-  const { data: purchases, isLoading } = usePurchases()
+  const { data: orders, isLoading } = useOrders()
 
   if (isLoading) return null
 
-  const items = (purchases ?? []).filter((p: any) => p.status !== 'payment_pending')
+  const items = (orders ?? []).filter((p: any) => p.status !== 'pending')
 
   if (items.length === 0) return null
 
@@ -49,7 +49,7 @@ export const WalletPurchaseHistory = memo(function WalletPurchaseHistory() {
               <div className="flex items-center gap-3 min-w-0">
                 <div className="min-w-0">
                   <p className="font-figtree text-[var(--sea-ink)] text-[15px] font-medium truncate">
-                    {formatXaf(p.priceXaf)}
+                    {formatXaf(p.xafAmount)}
                   </p>
                   <p className="font-figtree text-[var(--sea-ink-soft)] text-[13px]">
                     {formatDate(p.createdAt)}

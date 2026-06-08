@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useXafUsdRate } from '@/components/wallet/hooks'
 import { StepMethod } from './step-method'
 import type { PaymentMethod } from './step-method'
 import { METHODS } from './payment-methods'
@@ -23,10 +24,11 @@ interface StepTopUpProps {
   isPending: boolean
 }
 
-const XAF_RATE = 600
 const QUICK_AMOUNTS_USD = [5, 10, 20, 50]
 
 export function StepTopUp({ initialAmount, onPay, isPending }: StepTopUpProps) {
+  const { data: rateData } = useXafUsdRate()
+  const XAF_RATE = rateData?.rate ?? 600
   const [step, setStep] = useState(0)
   const [method, setMethod] = useState<PaymentMethod | null>(null)
 

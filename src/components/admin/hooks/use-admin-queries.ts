@@ -13,6 +13,10 @@ export const adminKeys = {
   promo_codes: () => [...adminKeys.all, 'promo_codes'] as const,
   margins: () => [...adminKeys.all, 'margins'] as const,
   packages: () => [...adminKeys.all, 'packages'] as const,
+  wallets: () => [...adminKeys.all, 'wallets'] as const,
+  payment_intents: () => [...adminKeys.all, 'payment_intents'] as const,
+  ledger: () => [...adminKeys.all, 'ledger'] as const,
+  orders: () => [...adminKeys.all, 'orders'] as const,
 }
 
 export function useAdminAnalytics() {
@@ -141,4 +145,12 @@ export function useDeletePackage() {
     mutationFn,
     onSettled: () => qc.invalidateQueries({ queryKey: adminKeys.packages() }),
   })
+}
+
+export function useAdminWallets() {
+  return useQuery(convexQuery(api.wallet.getAllWallets, {}))
+}
+
+export function useAdminPaymentIntents() {
+  return useQuery(convexQuery(api.payment_intents.listAllPaymentIntents, {}))
 }

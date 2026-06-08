@@ -19,4 +19,6 @@ export {
   useCreatePackage,
   useUpdatePackage,
   useDeletePackage,
+  useAdminWallets,
+  useAdminPaymentIntents,
 } from './use-admin-queries'

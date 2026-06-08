@@ -1,6 +1,7 @@
 'use client'
 
-import { useMouvements, useBalance } from '@/components/purchases/hooks'
+import { useWalletBalance, useWalletLedger } from '@/components/wallet/hooks'
+import { useXafUsdRate } from '@/components/wallet/hooks'
 import { useBottomNav } from '@/components/layout/bottom-nav-store'
 import { WalletTransactionList } from './wallet-transaction-list'
 import type { TransactionItem } from './wallet-transaction-list'
@@ -8,22 +9,25 @@ import { WalletBalanceCard } from './wallet-balance-card'
 import { WalletPurchaseHistory } from './wallet-purchase-history'
 
 export function WalletPageShell() {
-  const { data: mouvements } = useMouvements()
-  const { data: balanceData } = useBalance()
+  const { data: ledgerData } = useWalletLedger()
+  const { data: balanceData } = useWalletBalance()
+  const { data: rateData } = useXafUsdRate()
   const { openPanel } = useBottomNav()
 
+  const XAF_RATE = rateData?.rate ?? 600
   const balanceUsd = balanceData?.balanceUsd ?? 0
 
-  const transactions: TransactionItem[] = (mouvements ?? []).map((m: any) => ({
-    id: m.id,
-    label: m.libelle,
-    date: m.date,
-    amountXaf: Math.round(m.montant * 600),
-    credit: m.sens === 'debit' ? m.montant : 0,
-    debit: m.sens === 'credit' ? m.montant : 0,
-    soldeApres: m.soldeApres,
-    kind: 'purchase' as const,
-    statut: m.statut,
+  const mouvements = ledgerData ?? []
+  const transactions: TransactionItem[] = mouvements.map((m: any) => ({
+    id: m._id,
+    label: m.description,
+    date: m.createdAt,
+    amountXaf: Math.round(m.amountCents / 100 * XAF_RATE),
+    credit: m.type === 'credit' || m.type === 'refund' ? m.amountCents / 100 : 0,
+    debit: m.type === 'debit' || m.type === 'release' ? m.amountCents / 100 : 0,
+    soldeApres: m.balanceAfterCents / 100,
+    kind: (m.referenceType === 'escrow' ? 'number_purchase' : 'purchase') as 'purchase' | 'number_purchase',
+    statut: 'validee',
   }))
 
   return (

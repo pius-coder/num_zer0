@@ -1,6 +1,4 @@
 export {
-  useBalance,
-  useMouvements,
   usePurchases,
   useValidatePromoCode,
   useVerifyPurchase,
@@ -8,6 +6,11 @@ export {
   useInitiateDirectPay,
   purchaseKeys,
 } from './use-purchases'
+
+export {
+  useWalletBalance as useBalance,
+  useWalletLedger as useMouvements,
+} from '@/components/wallet/hooks'
 
 export {
   activationKeys,
