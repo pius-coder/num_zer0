@@ -22,7 +22,12 @@ const config = defineConfig({
     noExternal: ['@convex-dev/better-auth'],
   },
   server: {
-    allowedHosts: ['numzero.globalimex.online'],
+    allowedHosts: ['numzero.globalimex.online', 'localhost'],
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 4206,
+    },
   },
   plugins: [
     devtools(),
