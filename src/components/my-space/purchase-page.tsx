@@ -7,10 +7,9 @@ import { PurchasePanel } from './purchase-panel'
 interface PurchasePageProps {
   serviceId: string
   countryIso: string
-  balanceUsd: number
 }
 
-export function PurchasePage({ serviceId, countryIso, balanceUsd }: PurchasePageProps) {
+export function PurchasePage({ serviceId, countryIso }: PurchasePageProps) {
   const navigate = useNavigate()
   const service = SERVICES.find((s) => s.id === serviceId)
   const country = COUNTRIES.find((c) => c.iso === countryIso)
@@ -27,7 +26,6 @@ export function PurchasePage({ serviceId, countryIso, balanceUsd }: PurchasePage
       <PurchasePanel
         service={service}
         country={country}
-        balanceUsd={balanceUsd}
         onActivate={(activationId) => navigate({ to: `/my-space/activations/${activationId}` })}
         onRecharge={() => navigate({ to: '/recharge' })}
       />

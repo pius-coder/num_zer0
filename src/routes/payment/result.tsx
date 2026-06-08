@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { Button } from '#/common/ui/button'
-import { useVerifyPurchase } from '#/components/purchases/hooks'
+import { useVerifyPaymentIntent } from '#/components/wallet/hooks'
 
 export const Route = createFileRoute('/payment/result')({
   head: () => ({
@@ -14,19 +14,45 @@ export const Route = createFileRoute('/payment/result')({
   component: PaymentResultPage,
   validateSearch: (search: Record<string, unknown>) => ({
     transId: (search.transId as string) ?? '',
-    status: (search.status as string) ?? '',
   }),
 })
 
 type VerificationStatus = 'verifying' | 'success' | 'failed' | 'error' | 'no_transaction'
 
 function PaymentResultPage() {
-  const { transId, status } = Route.useSearch()
+  const { transId } = Route.useSearch()
   const navigate = useNavigate()
-  const verifyPurchase = useVerifyPurchase()
+  const verifyPayment = useVerifyPaymentIntent()
 
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>('verifying')
   const [verificationMessage, setVerificationMessage] = useState('Vérification du paiement en cours...')
+
+  const onSuccess = useCallback((result: any) => {
+    if (result.success) {
+      setVerificationStatus('success')
+      setVerificationMessage('Votre compte a été crédité avec succès !')
+      toast.success('Compte crédité avec succès !')
+    } else {
+      setVerificationStatus('failed')
+      const msg = `Statut: ${result.status ?? 'inconnu'}`
+      setVerificationMessage(msg)
+      toast.error(msg)
+    }
+  }, [])
+
+  const onError = useCallback((err: Error) => {
+    setVerificationStatus('error')
+    const msg = err.message ?? 'Erreur lors de la vérification'
+
+    if (msg.includes('Not authenticated')) {
+      setVerificationMessage('Session expirée, veuillez vous reconnecter')
+      toast.error('Session expirée, veuillez vous reconnecter')
+      return
+    }
+
+    setVerificationMessage(msg)
+    toast.error(msg)
+  }, [])
 
   useEffect(() => {
     if (!transId) {
@@ -35,55 +61,11 @@ function PaymentResultPage() {
       return
     }
 
-    if (status !== 'SUCCESSFUL') {
-      setVerificationStatus('failed')
-      const msg =
-        status === 'FAILED'
-          ? 'Le paiement a échoué'
-          : status === 'EXPIRED'
-            ? 'Le paiement a expiré'
-            : 'Le paiement a été annulé ou a échoué'
-      setVerificationMessage(msg)
-      toast.error(msg)
-      return
-    }
-
-    setVerificationStatus('verifying')
-    setVerificationMessage('Vérification du paiement en cours...')
-
-    verifyPurchase.mutate(
-      { transId },
-      {
-        onSuccess: (result) => {
-          if (result.success) {
-            setVerificationStatus('success')
-            setVerificationMessage('Votre compte a été crédité avec succès !')
-            toast.success('Compte crédité avec succès !')
-          } else {
-            setVerificationStatus('failed')
-            const msg = `Statut: ${result.status ?? 'inconnu'}`
-            setVerificationMessage(msg)
-            toast.error(msg)
-          }
-        },
-        onError: (err) => {
-          setVerificationStatus('error')
-          const msg =
-            err instanceof Error ? err.message : 'Erreur lors de la vérification'
-
-          if (msg.includes('Not authenticated')) {
-            setVerificationMessage('Session expirée, veuillez vous reconnecter')
-            toast.error('Session expirée, veuillez vous reconnecter')
-            return
-          }
-
-          setVerificationMessage(msg)
-          toast.error(msg)
-        },
-      },
+    verifyPayment.mutate(
+      { gatewayTransactionId: transId },
+      { onSuccess, onError },
     )
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [transId, verifyPayment, onSuccess, onError])
 
   const iconMap: Record<VerificationStatus, { icon: React.ReactNode; bg: string; color: string }> = {
     success: {
@@ -126,7 +108,6 @@ function PaymentResultPage() {
   return (
     <div className="mx-auto max-w-6xl px-3 pb-4 pt-8 md:px-6 md:pb-8">
       <div className="max-w-md text-center space-y-6">
-        {/* Icon */}
         <div className="text-6xl">
           {verificationStatus === 'verifying' ? (
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--lagoon)] border-t-transparent mx-auto" />
@@ -139,7 +120,6 @@ function PaymentResultPage() {
           )}
         </div>
 
-        {/* Title */}
         <h1 className="font-figtree text-[var(--sea-ink)] text-[22px] font-bold tracking-[-0.04em] leading-[1.25]">
           {verificationStatus === 'verifying' && 'Vérification en cours'}
           {verificationStatus === 'success' && 'Paiement confirmé'}
@@ -148,12 +128,10 @@ function PaymentResultPage() {
           {verificationStatus === 'no_transaction' && 'Transaction introuvable'}
         </h1>
 
-        {/* Message */}
         <p className="font-figtree text-[var(--sea-ink-soft)] text-base leading-relaxed">
           {verificationMessage}
         </p>
 
-        {/* Action button */}
         <div className="pt-4">
           <Button onClick={() => navigate({ to: '/wallet' })}>
             Aller au wallet

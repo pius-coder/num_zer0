@@ -9,3 +9,5 @@ export function getDefaultMarginXaf(costUsd: number): number {
   if (costUsd <= 1.0) return 1500
   return 2000
 }
+
+export const XAF_USD_RATE = 600

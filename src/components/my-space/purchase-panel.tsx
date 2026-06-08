@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { FLAG_BASE, XAF_USD_RATE } from './constants'
+import { FLAG_BASE } from './constants'
 import { getDefaultMarginXaf } from './utils'
 import { OperatorSelector } from './operator-selector'
 import { PriceStepper } from './price-stepper'
@@ -15,6 +15,7 @@ import {
   useRentPriceList,
   useFreePrices,
 } from '@/components/purchases/hooks'
+import { useWalletBalance, useXafUsdRate } from '@/components/wallet/hooks'
 import type { Service, CountryPrice } from '@/components/services/data'
 
 type PurchaseMode = 'one-time' | 'subscription'
@@ -22,7 +23,6 @@ type PurchaseMode = 'one-time' | 'subscription'
 interface PurchasePanelProps {
   service: Service
   country: CountryPrice
-  balanceUsd: number
   onActivate: (activationId: string) => void
   onRecharge: () => void
 }
@@ -190,10 +190,13 @@ function UnavailableState() {
 export function PurchasePanel({
   service,
   country,
-  balanceUsd,
   onActivate,
   onRecharge,
 }: PurchasePanelProps) {
+  const { data: balanceData } = useWalletBalance()
+  const { data: rateData } = useXafUsdRate()
+  const XAF_USD_RATE = rateData?.rate ?? 600
+  const balanceUsd = balanceData?.balanceUsd ?? 0
   const initiateActivation = useInitiateActivation()
   const initiateRental = useInitiateRentalActivation()
   const [error, setError] = useState<string | null>(null)

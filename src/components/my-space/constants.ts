@@ -56,6 +56,5 @@ export const NO_ICON_IDS = new Set([
   'zb', 'zi', 'zj', 'zo', 'zr', 'zs',
 ])
 
-export const XAF_USD_RATE = 600
 export const FLAG_BASE = 'https://flagcdn.com'
 export const PAGE_SIZE = 20

@@ -7,7 +7,8 @@ import type { SmsActivation } from '#/type/sms_activation'
 import { isActiveStatus } from './utils'
 import { STATUS_LABELS, STATUS_COLORS, FLAG_BASE } from './constants'
 import { TimelineLine } from './timeline-line'
-import { useCompleteActivation, useCancelActivation, useRequestAnotherSms, useBalance } from '@/components/purchases/hooks'
+import { useCompleteActivation, useCancelActivation, useRequestAnotherSms } from '@/components/purchases/hooks'
+import { useWalletBalance } from '@/components/wallet/hooks'
 import { PurchasePanel } from './purchase-panel'
 import type { Id } from '../../../convex/_generated/dataModel'
 
@@ -17,7 +18,7 @@ interface ActivationPageProps {
 
 export function ActivationPage({ activation }: ActivationPageProps) {
   const navigate = useNavigate()
-  const { data: balanceData } = useBalance()
+  const { data: balanceData } = useWalletBalance()
   const balanceUsd = balanceData?.balanceUsd ?? 0
   const completeActivation = useCompleteActivation()
   const cancelActivation = useCancelActivation()
@@ -85,7 +86,7 @@ export function ActivationPage({ activation }: ActivationPageProps) {
         {isTerminalError && serviceObj && countryInfo ? (
           <div className="space-y-4">
             <p className="font-figtree text-white/65 text-[15px] font-semibold text-center">{errorContextMsg}</p>
-            <PurchasePanel service={serviceObj} country={countryInfo} balanceUsd={balanceUsd}
+            <PurchasePanel service={serviceObj} country={countryInfo}
               onActivate={(activationId) => navigate({ to: `/my-space/activations/${activationId}` })}
               onRecharge={() => navigate({ to: '/recharge' })} />
           </div>

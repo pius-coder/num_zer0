@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { COUNTRIES } from '@/components/services/data'
 import { getDefaultMarginXaf } from './utils'
-import { FLAG_BASE, PAGE_SIZE, XAF_USD_RATE } from './constants'
+import { FLAG_BASE, PAGE_SIZE } from './constants'
+import { XAF_USD_RATE } from './utils'
 import type { TopCountryResult } from '#/type/sms_activation'
 
 interface CountryListPageProps {
