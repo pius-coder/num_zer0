@@ -132,4 +132,130 @@ export default defineSchema({
     .index('by_providerId', ['providerId'])
     .index('by_status', ['status'])
     .index('by_userId_status', ['userId', 'status']),
+
+  wallets: defineTable({
+    userId: v.string(),
+    balanceCents: v.number(),
+    currency: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_userId', ['userId']),
+
+  wallet_ledger_entries: defineTable({
+    walletId: v.id('wallets'),
+    type: v.union(
+      v.literal('credit'),
+      v.literal('debit'),
+      v.literal('release'),
+      v.literal('refund'),
+    ),
+    amountCents: v.number(),
+    balanceAfterCents: v.number(),
+    referenceType: v.union(
+      v.literal('payment_intent'),
+      v.literal('escrow'),
+      v.literal('order'),
+      v.literal('admin'),
+    ),
+    referenceId: v.string(),
+    description: v.string(),
+    metadata: v.optional(v.object({ xafRate: v.optional(v.number()) })),
+    createdAt: v.number(),
+  })
+    .index('by_walletId', ['walletId'])
+    .index('by_walletId_createdAt', ['walletId', 'createdAt'])
+    .index('by_reference', ['referenceType', 'referenceId']),
+
+  payment_intents: defineTable({
+    userId: v.string(),
+    amountCents: v.number(),
+    currency: v.string(),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('processing'),
+      v.literal('succeeded'),
+      v.literal('failed'),
+      v.literal('cancelled'),
+      v.literal('expired'),
+    ),
+    gateway: v.string(),
+    gatewayTransactionId: v.optional(v.string()),
+    idempotencyKey: v.string(),
+    xafAmount: v.number(),
+    xafRate: v.number(),
+    failureReason: v.optional(v.string()),
+    metadata: v.optional(v.object({
+      phone: v.optional(v.string()),
+      paymentMethod: v.optional(v.string()),
+      promoCode: v.optional(v.string()),
+      promoDiscount: v.optional(v.number()),
+    })),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_userId', ['userId'])
+    .index('by_idempotencyKey', ['idempotencyKey'])
+    .index('by_gatewayTransactionId', ['gatewayTransactionId'])
+    .index('by_status', ['status']),
+
+  escrows: defineTable({
+    userId: v.string(),
+    activationId: v.id('activations'),
+    amountCents: v.number(),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('held'),
+      v.literal('released'),
+      v.literal('refunded'),
+      v.literal('partial_released'),
+    ),
+    providerCostCents: v.optional(v.number()),
+    marginCents: v.optional(v.number()),
+    description: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_userId', ['userId'])
+    .index('by_activationId', ['activationId'])
+    .index('by_status', ['status']),
+
+  orders: defineTable({
+    userId: v.string(),
+    type: v.union(
+      v.literal('recharge'),
+      v.literal('activation'),
+      v.literal('rental'),
+    ),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('completed'),
+      v.literal('cancelled'),
+      v.literal('refunded'),
+    ),
+    amountCents: v.number(),
+    paymentIntentId: v.optional(v.id('payment_intents')),
+    escrowId: v.optional(v.id('escrows')),
+    description: v.string(),
+    metadata: v.optional(v.object({})),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_userId', ['userId'])
+    .index('by_type', ['type']),
+
+  provider_operations: defineTable({
+    provider: v.string(),
+    operation: v.string(),
+    request: v.string(),
+    response: v.string(),
+    status: v.union(
+      v.literal('success'),
+      v.literal('error'),
+    ),
+    referenceId: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index('by_referenceId', ['referenceId'])
+    .index('by_provider_operation', ['provider', 'operation']),
 })

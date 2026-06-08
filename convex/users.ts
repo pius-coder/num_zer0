@@ -1,11 +1,6 @@
 import { query, mutation, internalMutation } from './_generated/server'
 import { v } from 'convex/values'
-
-const XAF_TO_USD = 600
-
-export function xafToUsd(xaf: number): number {
-  return Math.round((xaf / XAF_TO_USD) * 100) / 100
-}
+import { xafToUsd } from './lib/rates'
 
 export const getUserBalance = query({
   args: {},

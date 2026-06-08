@@ -2,6 +2,7 @@ import { query, mutation, action, internalMutation, internalQuery } from './_gen
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Id, Doc } from './_generated/dataModel'
+import { XAF_TO_USD_RATE } from './lib/rates'
 
 const FAPSHI_API_BASE =
   process.env.FAPSHI_ENV === 'live' ? 'https://live.fapshi.com' : 'https://sandbox.fapshi.com'
@@ -86,7 +87,7 @@ export const handlePaymentSuccess = mutation({
     if (purchase.status === 'confirmed') return
     await ctx.db.patch(purchase._id, { status: 'confirmed' })
 
-    const creditUsd = Math.round((purchase.priceXaf / 600) * 100) / 100
+    const creditUsd = Math.round((purchase.priceXaf / XAF_TO_USD_RATE) * 100) / 100
 
     const user = await ctx.db
       .query('users')
@@ -425,18 +426,18 @@ export const verifyPurchase = action({
           {
             compteCode: `411-${userId}`,
             sens: 'debit',
-            montant: Math.round((purchase.priceXaf / 600) * 100) / 100,
+            montant: Math.round((purchase.priceXaf / XAF_TO_USD_RATE) * 100) / 100,
           },
           {
             compteCode: '701-recharge',
             sens: 'credit',
-            montant: Math.round((purchase.priceXaf / 600) * 100) / 100,
+            montant: Math.round((purchase.priceXaf / XAF_TO_USD_RATE) * 100) / 100,
           },
         ],
       })
     }
 
-    const creditUsd = Math.round((purchase.priceXaf / 600) * 100) / 100
+    const creditUsd = Math.round((purchase.priceXaf / XAF_TO_USD_RATE) * 100) / 100
     const user = await ctx.runQuery(internal.purchases.internalGetUserByBetterAuthId, {
       betterAuthUserId: userId,
     })
@@ -479,7 +480,7 @@ export const backfillComptes = internalMutation({
         .first()
       if (existingPiece) continue
 
-      const creditUsd = Math.round((purchase.priceXaf / 600) * 100) / 100
+      const creditUsd = Math.round((purchase.priceXaf / XAF_TO_USD_RATE) * 100) / 100
 
       await ctx.runMutation(internal.comptabilite.ensureCompte, {
         code: `411-${purchase.userId}`,
