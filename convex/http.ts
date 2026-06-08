@@ -1,7 +1,7 @@
 import { httpRouter } from 'convex/server'
 import { httpAction } from './_generated/server'
 import { authComponent, createAuth } from './auth'
-import { api } from './_generated/api'
+import { api, internal } from './_generated/api'
 
 const http = httpRouter()
 
@@ -27,19 +27,39 @@ http.route({
     const externalId: string = body.externalId || ''
     const status: string = body.status || ''
 
-    if (event === 'successful' || status === 'SUCCESSFUL') {
-      await ctx.runMutation(api.purchases.handlePaymentSuccess, {
-        transId,
-        externalId,
-      })
-    }
+    const pi = await ctx.runQuery(api.orders.getPaymentIntentByGateway, {
+      gatewayTransactionId: transId,
+    })
 
-    if (event === 'failed' || event === 'expired' || status === 'FAILED' || status === 'EXPIRED') {
-      await ctx.runMutation(api.purchases.handlePaymentFailure, {
-        transId,
-        externalId,
-        reason: `fapshi_${event || status || 'failed'}`,
-      })
+    const isSuccess = event === 'successful' || status === 'SUCCESSFUL'
+    const isFailure = event === 'failed' || event === 'expired' || status === 'FAILED' || status === 'EXPIRED'
+
+    if (pi) {
+      if (isSuccess) {
+        await ctx.runMutation(internal.payment_intents.internalConfirmPaymentIntent, {
+          paymentIntentId: pi._id,
+        })
+      } else if (isFailure) {
+        await ctx.runMutation(internal.payment_intents.internalMarkPaymentFailed, {
+          paymentIntentId: pi._id,
+          failureReason: `fapshi_${event || status || 'failed'}`,
+        })
+      }
+    } else {
+      if (isSuccess) {
+        await ctx.runMutation(api.purchases.handlePaymentSuccess, {
+          transId,
+          externalId,
+        })
+      }
+
+      if (isFailure) {
+        await ctx.runMutation(api.purchases.handlePaymentFailure, {
+          transId,
+          externalId,
+          reason: `fapshi_${event || status || 'failed'}`,
+        })
+      }
     }
 
     return new Response(JSON.stringify({ ok: true }), {
