@@ -1,13 +1,4 @@
 export {
-  usePurchases,
-  useValidatePromoCode,
-  useVerifyPurchase,
-  useCancelPurchase,
-  useInitiateDirectPay,
-  purchaseKeys,
-} from './use-purchases'
-
-export {
   useWalletBalance as useBalance,
   useWalletLedger as useMouvements,
 } from '@/components/wallet/hooks'

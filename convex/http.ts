@@ -45,21 +45,6 @@ http.route({
           failureReason: `fapshi_${event || status || 'failed'}`,
         })
       }
-    } else {
-      if (isSuccess) {
-        await ctx.runMutation(api.purchases.handlePaymentSuccess, {
-          transId,
-          externalId,
-        })
-      }
-
-      if (isFailure) {
-        await ctx.runMutation(api.purchases.handlePaymentFailure, {
-          transId,
-          externalId,
-          reason: `fapshi_${event || status || 'failed'}`,
-        })
-      }
     }
 
     return new Response(JSON.stringify({ ok: true }), {

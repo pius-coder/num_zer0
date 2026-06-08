@@ -15,18 +15,18 @@ export const activationKeys = {
 
 export function useActivation(activationId: Id<'activations'> | null) {
   return useQuery({
-    ...convexQuery(api.sms_provider.getActivation, { activationId: activationId! }),
+    ...convexQuery(api.activations.getActivation, { activationId: activationId! }),
     enabled: !!activationId,
   })
 }
 
 export function useMyActivations() {
-  return useQuery(convexQuery(api.sms_provider.getMyActivations, {}))
+  return useQuery(convexQuery(api.activations.getMyActivations, {}))
 }
 
 export function useInitiateActivation() {
   const qc = useQueryClient()
-  const mutationFn = useConvexMutation(api.sms_provider.initiateActivation)
+  const mutationFn = useConvexMutation(api.activations.initiateActivation)
   return useMutation({
     mutationFn,
     onSettled: () => {
@@ -37,7 +37,7 @@ export function useInitiateActivation() {
 
 export function useCompleteActivation() {
   const qc = useQueryClient()
-  const mutationFn = useConvexMutation(api.sms_provider.completeActivation)
+  const mutationFn = useConvexMutation(api.activations.completeActivation)
   return useMutation({
     mutationFn,
     onSettled: () => {
@@ -48,7 +48,7 @@ export function useCompleteActivation() {
 
 export function useCancelActivation() {
   const qc = useQueryClient()
-  const mutationFn = useConvexMutation(api.sms_provider.cancelActivation)
+  const mutationFn = useConvexMutation(api.activations.cancelActivation)
   return useMutation({
     mutationFn,
     onSettled: () => {
@@ -59,7 +59,7 @@ export function useCancelActivation() {
 
 export function useRequestAnotherSms() {
   const qc = useQueryClient()
-  const mutationFn = useConvexMutation(api.sms_provider.requestAnotherSms)
+  const mutationFn = useConvexMutation(api.activations.requestAnotherSms)
   return useMutation({
     mutationFn,
     onSettled: () => {
@@ -69,7 +69,7 @@ export function useRequestAnotherSms() {
 }
 
 export function useNumberQuantity(country: string) {
-  const actionFn = useConvexAction(api.sms_provider.getNumberQuantity)
+  const actionFn = useConvexAction(api.admin.sync.getNumberQuantity)
   return useQuery({
     queryKey: activationKeys.numberQuantity(country),
     queryFn: () => actionFn({ country }),
@@ -79,7 +79,7 @@ export function useNumberQuantity(country: string) {
 }
 
 export function useTopCountries(service: string) {
-  const actionFn = useConvexAction(api.sms_provider.getTopCountries)
+  const actionFn = useConvexAction(api.admin.sync.getTopCountries)
   return useQuery({
     queryKey: activationKeys.topCountries(service),
     queryFn: () => actionFn({ service }),
@@ -89,7 +89,7 @@ export function useTopCountries(service: string) {
 }
 
 export function useOperators(country: string) {
-  const actionFn = useConvexAction(api.sms_provider.getOperators)
+  const actionFn = useConvexAction(api.admin.sync.getOperators)
   return useQuery({
     queryKey: activationKeys.operators(country),
     queryFn: () => actionFn({ country }),
@@ -99,7 +99,7 @@ export function useOperators(country: string) {
 }
 
 export function usePrices(country: string, service?: string) {
-  const actionFn = useConvexAction(api.sms_provider.getPrices)
+  const actionFn = useConvexAction(api.admin.sync.getPrices)
   return useQuery({
     queryKey: activationKeys.prices(country, service),
     queryFn: () => actionFn({ country, service }),
@@ -109,7 +109,7 @@ export function usePrices(country: string, service?: string) {
 }
 
 export function useRentPriceList(country: string, service: string) {
-  const actionFn = useConvexAction(api.sms_provider.getRentPriceList)
+  const actionFn = useConvexAction(api.admin.sync.getRentPriceList)
   return useQuery({
     queryKey: [...activationKeys.all, 'rent', country, service],
     queryFn: () => actionFn({ country, service }),
@@ -119,7 +119,7 @@ export function useRentPriceList(country: string, service: string) {
 }
 
 export function useFreePrices(country: string, service: string) {
-  const actionFn = useConvexAction(api.sms_provider.getFreePrices)
+  const actionFn = useConvexAction(api.admin.sync.getFreePrices)
   return useQuery({
     queryKey: [...activationKeys.all, 'freePrices', country, service],
     queryFn: () => actionFn({ country, service }),
@@ -130,7 +130,7 @@ export function useFreePrices(country: string, service: string) {
 
 export function useInitiateRentalActivation() {
   const qc = useQueryClient()
-  const mutationFn = useConvexMutation(api.sms_provider.initiateRentalActivation)
+  const mutationFn = useConvexMutation(api.activations.initiateRentalActivation)
   return useMutation({
     mutationFn,
     onSettled: () => {

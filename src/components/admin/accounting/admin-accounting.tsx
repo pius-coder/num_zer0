@@ -1,13 +1,31 @@
-import { useAdminComptes, useAdminPieces } from '../hooks/use-admin-queries'
+import { useAdminWallets, useAdminPurchases } from '../hooks/use-admin-queries'
 import { Badge } from '#/common/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '#/common/ui/table'
 
 function formatDate(ts: number) {
-  return new Date(ts).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
+  return new Date(ts).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
-function ComptesSection() {
-  const { data: comptes, isLoading } = useAdminComptes()
+const STATUS_BADGE: Record<string, 'success' | 'destructive' | 'warning' | 'default'> = {
+  succeeded: 'success',
+  failed: 'destructive',
+  pending: 'warning',
+  processing: 'warning',
+  cancelled: 'default',
+  expired: 'destructive',
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  succeeded: 'Réussi',
+  failed: 'Échoué',
+  pending: 'En attente',
+  processing: 'En cours',
+  cancelled: 'Annulé',
+  expired: 'Expiré',
+}
+
+function WalletsSection() {
+  const { data: wallets, isLoading } = useAdminWallets()
 
   if (isLoading) {
     return (
@@ -19,7 +37,7 @@ function ComptesSection() {
     )
   }
 
-  if (!comptes || comptes.length === 0) {
+  if (!wallets || wallets.length === 0) {
     return (
       <div className="flex items-center justify-center py-10">
         <span className="font-figtree text-[var(--sea-ink-soft)] text-[18px]">Aucune donnée</span>
@@ -31,19 +49,21 @@ function ComptesSection() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Code</TableHead>
-          <TableHead>Libellé</TableHead>
-          <TableHead>Solde</TableHead>
+          <TableHead>Utilisateur</TableHead>
+          <TableHead>Solde (cents)</TableHead>
+          <TableHead>Solde (USD)</TableHead>
+          <TableHead>Devise</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {comptes.map((c: any) => (
-          <TableRow key={c._id}>
-            <TableCell className="font-figtree font-medium">{c.code ?? '—'}</TableCell>
-            <TableCell className="font-figtree">{c.libelle ?? '—'}</TableCell>
-            <TableCell className={`font-figtree font-medium ${(c.solde ?? 0) >= 0 ? 'text-[#25D366]' : 'text-red-500'}`}>
-              {c.solde != null ? `${c.solde.toLocaleString()} XAF` : '—'}
+        {wallets.map((w: any) => (
+          <TableRow key={w._id}>
+            <TableCell className="font-figtree text-[13px] text-[var(--sea-ink-soft)]">{w.userId}</TableCell>
+            <TableCell className="font-figtree font-medium">{w.balanceCents}</TableCell>
+            <TableCell className={`font-figtree font-medium ${(w.balanceCents ?? 0) >= 0 ? 'text-[#25D366]' : 'text-red-500'}`}>
+              ${(w.balanceCents / 100).toFixed(2)}
             </TableCell>
+            <TableCell className="font-figtree">{w.currency ?? 'USD'}</TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -51,8 +71,8 @@ function ComptesSection() {
   )
 }
 
-function PiecesSection() {
-  const { data: pieces, isLoading } = useAdminPieces()
+function PaymentsSection() {
+  const { data: payments, isLoading } = useAdminPurchases()
 
   if (isLoading) {
     return (
@@ -64,7 +84,7 @@ function PiecesSection() {
     )
   }
 
-  if (!pieces || pieces.length === 0) {
+  if (!payments || payments.length === 0) {
     return (
       <div className="flex items-center justify-center py-10">
         <span className="font-figtree text-[var(--sea-ink-soft)] text-[18px]">Aucune donnée</span>
@@ -77,22 +97,26 @@ function PiecesSection() {
       <TableHeader>
         <TableRow>
           <TableHead>Date</TableHead>
-          <TableHead>Libellé</TableHead>
+          <TableHead>Utilisateur</TableHead>
+          <TableHead>Montant</TableHead>
           <TableHead>Statut</TableHead>
-          <TableHead>Référence</TableHead>
+          <TableHead>Réf. passerelle</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {pieces.map((p: any) => (
+        {payments.map((p: any) => (
           <TableRow key={p._id}>
-            <TableCell className="font-figtree">{p.date ? formatDate(p.date) : '—'}</TableCell>
-            <TableCell className="font-figtree">{p.libelle ?? '—'}</TableCell>
+            <TableCell className="font-figtree">{p._creationTime ? formatDate(p._creationTime) : '—'}</TableCell>
+            <TableCell className="font-figtree text-[13px] text-[var(--sea-ink-soft)]">{p.userId}</TableCell>
+            <TableCell className="font-figtree font-medium">
+              ${(p.amountCents / 100).toFixed(2)} {p.xafAmount ? `/ ${p.xafAmount.toLocaleString()} XAF` : ''}
+            </TableCell>
             <TableCell>
-              <Badge variant={p.statut === 'validé' ? 'success' : p.statut === 'rejeté' ? 'destructive' : 'warning'}>
-                {p.statut ?? '—'}
+              <Badge variant={STATUS_BADGE[p.status] ?? 'default'}>
+                {STATUS_LABELS[p.status] ?? p.status}
               </Badge>
             </TableCell>
-            <TableCell className="font-figtree text-[13px] text-[var(--sea-ink-soft)]">{p.reference ?? '—'}</TableCell>
+            <TableCell className="font-figtree text-[13px] text-[var(--sea-ink-soft)]">{p.gatewayTransactionId ?? '—'}</TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -105,16 +129,16 @@ export function AdminAccounting() {
     <div className="space-y-8">
       <div className="rounded-xl bg-[var(--surface)] border border-[var(--line)]/50 p-5">
         <h3 className="font-figtree text-[15px] font-semibold uppercase tracking-wider text-[var(--sea-ink-soft)] mb-4">
-          Comptes
+          Portefeuilles
         </h3>
-        <ComptesSection />
+        <WalletsSection />
       </div>
 
       <div className="rounded-xl bg-[var(--surface)] border border-[var(--line)]/50 p-5">
         <h3 className="font-figtree text-[15px] font-semibold uppercase tracking-wider text-[var(--sea-ink-soft)] mb-4">
-          Écritures
+          Paiements
         </h3>
-        <PiecesSection />
+        <PaymentsSection />
       </div>
     </div>
   )

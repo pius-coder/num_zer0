@@ -8,21 +8,25 @@
  * @module
  */
 
+import type * as activations from "../activations.js";
+import type * as admin_sync from "../admin/sync.js";
 import type * as analytics from "../analytics.js";
 import type * as auth from "../auth.js";
-import type * as comptabilite from "../comptabilite.js";
 import type * as escrows from "../escrows.js";
 import type * as http from "../http.js";
 import type * as lib_auth_helpers from "../lib/auth_helpers.js";
 import type * as lib_rates from "../lib/rates.js";
 import type * as margin_tiers from "../margin_tiers.js";
 import type * as margins from "../margins.js";
+import type * as migrations_backfill_escrows from "../migrations/backfill_escrows.js";
+import type * as migrations_backfill_payment_intents from "../migrations/backfill_payment_intents.js";
+import type * as migrations_backfill_wallets from "../migrations/backfill_wallets.js";
+import type * as migrations_verify from "../migrations/verify.js";
 import type * as orders from "../orders.js";
 import type * as packages from "../packages.js";
 import type * as payment_intents from "../payment_intents.js";
 import type * as promo_codes from "../promo_codes.js";
 import type * as provider_operations from "../provider_operations.js";
-import type * as purchases from "../purchases.js";
 import type * as rates from "../rates.js";
 import type * as sms_countries from "../sms_countries.js";
 import type * as sms_provider from "../sms_provider.js";
@@ -37,21 +41,25 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  activations: typeof activations;
+  "admin/sync": typeof admin_sync;
   analytics: typeof analytics;
   auth: typeof auth;
-  comptabilite: typeof comptabilite;
   escrows: typeof escrows;
   http: typeof http;
   "lib/auth_helpers": typeof lib_auth_helpers;
   "lib/rates": typeof lib_rates;
   margin_tiers: typeof margin_tiers;
   margins: typeof margins;
+  "migrations/backfill_escrows": typeof migrations_backfill_escrows;
+  "migrations/backfill_payment_intents": typeof migrations_backfill_payment_intents;
+  "migrations/backfill_wallets": typeof migrations_backfill_wallets;
+  "migrations/verify": typeof migrations_verify;
   orders: typeof orders;
   packages: typeof packages;
   payment_intents: typeof payment_intents;
   promo_codes: typeof promo_codes;
   provider_operations: typeof provider_operations;
-  purchases: typeof purchases;
   rates: typeof rates;
   sms_countries: typeof sms_countries;
   sms_provider: typeof sms_provider;

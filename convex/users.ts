@@ -1,4 +1,4 @@
-import { query, mutation, internalMutation } from './_generated/server'
+import { query, mutation, internalMutation, internalQuery } from './_generated/server'
 import { v } from 'convex/values'
 import { xafToUsd } from './lib/rates'
 
@@ -13,12 +13,12 @@ export const getUserBalance = query({
       .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', identity.subject))
       .unique()
 
-    const compte = await ctx.db
-      .query('comptes')
-      .withIndex('by_code', (q) => q.eq('code', `411-${identity.subject}`))
-      .unique()
+    const wallet = await ctx.db
+      .query('wallets')
+      .withIndex('by_userId', (q) => q.eq('userId', identity.subject))
+      .first()
 
-    return { balanceUsd: compte?.solde ?? 0, userId: user?._id ?? null }
+    return { balanceUsd: (wallet?.balanceCents ?? 0) / 100, userId: user?._id ?? null }
   },
 })
 
@@ -270,5 +270,15 @@ export const deleteUser = mutation({
 
     await ctx.db.delete(args.userId)
     return { success: true }
+  },
+})
+
+export const internalGetUserByBetterAuthId = internalQuery({
+  args: { betterAuthUserId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query('users')
+      .withIndex('by_betterAuthUserId', (q) => q.eq('betterAuthUserId', args.betterAuthUserId))
+      .unique()
   },
 })

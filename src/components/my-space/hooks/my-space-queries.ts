@@ -5,7 +5,7 @@ import type { Id } from '../../../../convex/_generated/dataModel'
 
 export const mySpaceQueries = {
   myActivations: () => queryOptions({
-    ...convexQuery(api.sms_provider.getMyActivations, {}),
+    ...convexQuery(api.activations.getMyActivations, {}),
     staleTime: 30 * 1000,
   }),
 
@@ -15,22 +15,22 @@ export const mySpaceQueries = {
   }),
 
   activation: (id: Id<'activations'>) => queryOptions({
-    ...convexQuery(api.sms_provider.getActivation, { activationId: id }),
+    ...convexQuery(api.activations.getActivation, { activationId: id }),
     staleTime: 15 * 1000,
   }),
 
   topCountries: (serviceId: string) => queryOptions({
-    ...convexAction(api.sms_provider.getTopCountries, { service: serviceId }),
+    ...convexAction(api.admin.sync.getTopCountries, { service: serviceId }),
     staleTime: 60 * 1000,
   }),
 
   prices: (countryIso: string, serviceId: string) => queryOptions({
-    ...convexAction(api.sms_provider.getPrices, { country: countryIso, service: serviceId }),
+    ...convexAction(api.admin.sync.getPrices, { country: countryIso, service: serviceId }),
     staleTime: 30 * 1000,
   }),
 
   freePrices: (countryIso: string, serviceId: string) => queryOptions({
-    ...convexAction(api.sms_provider.getFreePrices, { country: countryIso, service: serviceId }),
+    ...convexAction(api.admin.sync.getFreePrices, { country: countryIso, service: serviceId }),
     staleTime: 30 * 1000,
   }),
 }

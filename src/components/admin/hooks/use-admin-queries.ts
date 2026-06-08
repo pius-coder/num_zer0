@@ -28,19 +28,19 @@ export function useAdminUsers() {
 }
 
 export function useAdminPurchases() {
-  return useQuery(convexQuery(api.purchases.getAllPurchases, {}))
+  return useQuery(convexQuery(api.payment_intents.listAllPaymentIntents, {}))
 }
 
 export function useAdminActivations() {
-  return useQuery(convexQuery(api.sms_provider.getAllActivations, {}))
+  return useQuery(convexQuery(api.admin.sync.getAllActivations, {}))
 }
 
-export function useAdminComptes() {
-  return useQuery(convexQuery(api.comptabilite.getAllComptes, {}))
+export function useAdminLedger() {
+  return useQuery(convexQuery(api.orders.getUserOrders, {}))
 }
 
-export function useAdminPieces() {
-  return useQuery(convexQuery(api.comptabilite.getAllPieces, {}))
+export function useAdminEscrows() {
+  return useQuery(convexQuery(api.escrows.getActiveEscrows, {}))
 }
 
 export function useAdminPromoCodes() {
